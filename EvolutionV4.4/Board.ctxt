@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.params=pixelSize\ bs
+comment0.target=Board(int,\ int)
+comment1.params=s
+comment1.target=void\ setBoardSize(int)
+comment2.params=
+comment2.target=java.awt.Dimension\ getPreferredSize()
+comment3.params=g
+comment3.target=void\ paintComponent(java.awt.Graphics)
+comment4.params=c
+comment4.target=void\ fillCanvas(java.awt.Color)
+comment5.params=point\ c
+comment5.target=void\ draw(java.awt.Point,\ java.awt.Color)
+comment6.params=point
+comment6.target=void\ erase(java.awt.Point)
+numComments=7
