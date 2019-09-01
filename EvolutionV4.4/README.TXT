@@ -10,3 +10,5 @@ VERSION or DATE:
 HOW TO START THIS PROJECT:
 AUTHORS:
 USER INSTRUCTIONS:
+
+//Sky Vercauteren making changes for changelog purpose.
