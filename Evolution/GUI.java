@@ -3,6 +3,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class GUI     {
    private JFrame mainFrame;
@@ -43,8 +49,7 @@ public class GUI     {
      
        while (i < boardSize / 2 )
       {
-          //j = (i % 9) / 3;
-          j = 0;
+          j = (i % 4) / 2;
           while (j < boardSize)
           {
               simulator.addBarrier(new Point(i, j));
@@ -177,8 +182,11 @@ public class GUI     {
       JTextField x2 = new JTextField("x2");
       JTextField y1 = new JTextField("y1");
       JTextField y2 = new JTextField("y2");
+      JTextField saveLoad = new JTextField("Save/Load");
       
       JButton play = new JButton("Stop");
+      JButton save = new JButton("Save");
+      JButton load = new JButton("Load");
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
@@ -293,13 +301,27 @@ public class GUI     {
             {
                 simulator.pause();
                 play.setText("Start");
+                run = true;
             }
             else
             {
                 simulator.unpause();
                 play.setText("Stop");
+                run = false;
             }
-        }  
+        } 
+      });
+      
+      save.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            save(saveLoad.getText());
+        } 
+      });
+      
+      load.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            load(saveLoad.getText());
+        } 
       });
       
       cSpeed = new JLabel(" "+speed);
@@ -398,6 +420,17 @@ public class GUI     {
       gbc.gridx = 3;
       gbc.gridy = 0;
       controlPanel.add(play,gbc);
+      gbc.gridx = 0;
+      gbc.gridy = 7;
+      controlPanel.add(saveLoad,gbc);
+      gbc.gridx = 1;
+      gbc.gridy = 7;
+      controlPanel.add(save,gbc);
+      gbc.gridx = 2;
+      gbc.gridy = 7;
+      controlPanel.add(load,gbc);
+      
+      
       gbc.gridx = 6;
       gbc.gridy = 0;
       gbc.fill = GridBagConstraints.VERTICAL;
@@ -407,4 +440,44 @@ public class GUI     {
       mainFrame.setContentPane(controlPanel);
       mainFrame.setVisible(true); 
    } 
+   
+   public void save(String filename)
+   {        
+       // write object to file
+       try{
+           if (run = false)
+           {
+               FileOutputStream fos = new FileOutputStream(filename);
+               ObjectOutputStream oos = new ObjectOutputStream(fos);
+               oos.writeObject(simulator);
+               oos.close();
+            }  
+       } catch (FileNotFoundException e) {
+			e.printStackTrace();
+       } catch (IOException e) {
+			e.printStackTrace();
+		}
+  }
+
+   public void load(String filename)
+   {
+            // read object from file
+       try{
+           if (run = false)
+           {
+            FileInputStream fis = new FileInputStream(filename);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Simulator loadedSim = (Simulator) ois.readObject();
+            ois.close();
+           }  
+       } catch (FileNotFoundException e) {
+			e.printStackTrace();
+       } catch (IOException e) {
+			e.printStackTrace();
+       } catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+            
+    }
 }
