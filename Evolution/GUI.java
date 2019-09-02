@@ -3,9 +3,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.Scanner;
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class GUI     {
-   private JFrame mainFrame;
+public class GUI {
+   private Frame mainFrame;
    private JPanel controlPanel;
    private static Simulator simulator;
    private int sleepCost;
@@ -27,34 +32,9 @@ public class GUI     {
    private int startfRate = boardSize/10;
    private boolean run = true;
    
-   public GUI(){
-      prepareGUI();
-   }
-   public Simulator getSimulator()
-   {
-       return simulator;
-   }
-   
    public static void main(String[] args){
       prompt();
       int refreshRate = 2;
-      int i = 0;
-      int j = 0;
-     
-       while (i < boardSize / 2 )
-      {
-          //j = (i % 9) / 3;
-          j = 0;
-          while (j < boardSize)
-          {
-              simulator.addBarrier(new Point(i, j));
-              j += 2;
-          }
-          
-          i += 2;
-       }
-      
-      
       while (true)
       {
           simulator.gameTimeStep();
@@ -71,6 +51,17 @@ public class GUI     {
         }
       } */
    }
+   
+   public GUI(){
+      prepareGUI();
+   }
+   
+   public Simulator getSimulator()
+   {
+       return simulator;
+   }
+   
+   
    
    //method to prompt the user for initial values
    private static void prompt()
@@ -110,7 +101,7 @@ public class GUI     {
         catch(NullPointerException e) 
         { 
             restart(0,3,1,160);
-            System.out.print("NullPointerException Caught"); 
+            //System.out.print("NullPointerException Caught"); 
         } 
        
     }
@@ -125,7 +116,7 @@ public class GUI     {
       simulator.addCritter("M", startingPopulation);
    }
    public void prepareGUI(){
-      mainFrame = new JFrame("Worm Evolution");
+      mainFrame = new Frame("Worm Evolution");
       mainFrame.setSize(1200,1200);
       //mainFrame.setLayout(new FlowLayout());
       mainFrame.addWindowListener(new WindowAdapter() {
@@ -173,6 +164,9 @@ public class GUI     {
       JButton drawLine = new JButton("Draw Line");
       JButton drawPoint = new JButton("Draw Point");
       JButton eraseLine = new JButton("Erase Line");
+      JButton dragLine = new JButton("Drag Line");
+      JButton dropPoint = new JButton("Drop Point");
+      JButton dragGraph = new JButton("Drag Graph");
       JTextField x1 = new JTextField("x1");
       JTextField x2 = new JTextField("x2");
       JTextField y1 = new JTextField("y1");
@@ -184,7 +178,7 @@ public class GUI     {
           public void actionPerformed (ActionEvent e){
               mainFrame.setVisible(false);
               mainFrame.dispose();
-              prompt();
+             prompt();
             }
         });
       speedSlider.addChangeListener(new ChangeListener() {
@@ -286,6 +280,24 @@ public class GUI     {
             simulator.removeBarrierLine(Integer.parseInt(x1.getText()),Integer.parseInt(y1.getText()),Integer.parseInt(x2.getText()),Integer.parseInt(y2.getText()));
         }  
       });
+      //
+      dragLine.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            mainFrame.lTrue();
+        }  
+      });
+      
+      dropPoint.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            mainFrame.pTrue();
+            }
+      }); 
+      
+      dragGraph.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+           mainFrame.gTrue();
+            }
+      });
     
       play.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
@@ -383,6 +395,9 @@ public class GUI     {
       gbc.gridx = 2;
       gbc.gridy = 5;
       controlPanel.add(drawPoint,gbc);
+      gbc.gridx = 3;
+      gbc.gridy = 5;
+      controlPanel.add(dropPoint,gbc);
       gbc.gridx = 0;
       gbc.gridy = 6;
       controlPanel.add(x2,gbc);
@@ -394,17 +409,26 @@ public class GUI     {
       controlPanel.add(drawLine,gbc);
       gbc.gridx = 3;
       gbc.gridy = 6;
+      controlPanel.add(dragLine,gbc);
+      gbc.gridx = 0;
+      gbc.gridy = 8;
       controlPanel.add(eraseLine,gbc);
+      gbc.gridx = 0;
+      gbc.gridy = 7;
+      controlPanel.add(dragGraph,gbc);
       gbc.gridx = 3;
       gbc.gridy = 0;
       controlPanel.add(play,gbc);
-      gbc.gridx = 6;
+      gbc.gridx = 5;
       gbc.gridy = 0;
       gbc.fill = GridBagConstraints.VERTICAL;
-      gbc.gridheight = 6;
+      gbc.gridheight = 9;
       simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
       controlPanel.add(simulator.board,gbc);
+      mainFrame.sim = simulator;
+      mainFrame.bs = bs;
       mainFrame.setContentPane(controlPanel);
       mainFrame.setVisible(true); 
    } 
+   
 }

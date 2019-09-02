@@ -767,6 +767,25 @@ public class Simulator
         }
     }
     
+    public void addBarrierGraph(Point p1, Point p2)
+    {
+        int i = p1.x;
+      int j = p1.y;
+     
+       while (i < p2.x )
+      {
+          //j = (i % 9) / 3;
+          j = 0;
+          while (j < p2.y)
+          {
+              addBarrier(new Point(i, j));
+              j += 2;
+          }
+          
+          i += 2;
+       }
+    }
+    
     public void removeBarrierLine(int x1, int y1, int x2, int y2)
     {
         if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
