@@ -46,6 +46,7 @@ public class GUI     {
       int refreshRate = 2;
       int i = 0;
       int j = 0;
+      boardSize = simulator.getBoardSize();
      
        while (i < boardSize / 2 )
       {
@@ -90,7 +91,7 @@ public class GUI     {
        System.out.println("");
        System.out.println("");
        System.out.println("");
-       System.out.println("Please enter a size for the simulator between 24 and 318: ");
+       System.out.println("Please enter a size for the simulator between 50 and 900: ");
        s = obj.nextInt();
        System.out.println("Starting number of Critters = " + s/10);
        System.out.println("Starting Food Value = " + s/3);
@@ -114,7 +115,7 @@ public class GUI     {
         } 
         catch(NullPointerException e) 
         { 
-            restart(0,3,1,160);
+            restart(0,3,1,200);
             System.out.print("NullPointerException Caught"); 
         } 
        
@@ -153,8 +154,8 @@ public class GUI     {
       JButton reset = new JButton("Reset");
       JSlider speedSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
       JSlider mutationSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
-      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 200, bs/2);
-      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, 30, (bs/10));
+      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 300,150 );
+      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs, (bs/5));
       JSlider sleepCostSlider = new JSlider(JSlider.VERTICAL, 0,10,sleepC);
       JSlider moveCostSlider = new JSlider(JSlider.VERTICAL, 0,10,moveC);
       JSlider turnCostSlider = new JSlider(JSlider.VERTICAL, 0,10,turnC);

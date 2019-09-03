@@ -33,6 +33,7 @@ public class Simulator
     private boolean[][] isFood;
     private boolean[][] isBarrier;
     private boolean[][] isCritter;
+    public int boardTick;
    
     //------------------------------CONSTRUCTORS-------------------------------
     /**
@@ -60,8 +61,8 @@ public class Simulator
         setSleepCost(sC);
         setMoveCost(mC);
         setTurnCost(tC);
-        pixelSize = 4;
-        board = new Board(4,bs);
+        pixelSize = 900 / boardSize;
+        board = new Board(pixelSize,bs);
         critters = new ArrayList<Critter>();
         this.foodRate = bs/10;
         this.foodValue = bs/3;
@@ -70,6 +71,7 @@ public class Simulator
         this.speed = 10;
         colorVar = 0.5;
         sightRange = 10;
+        boardTick = 0;
         isFood = new boolean[bs][bs];
         isCritter = new boolean[bs][bs];
         isBarrier = new boolean[bs][bs];
@@ -99,6 +101,11 @@ public class Simulator
         return paused;
     }
     
+    public void boardTick()
+    {
+        if (boardTick == 2) {boardTick = 0;}
+        else {boardTick++;}
+    }
     
     //-------------------------------------------------------------------------
     //Method used by UI to change the size.
@@ -148,6 +155,11 @@ public class Simulator
     public void setMutationRate(double mutationRate)
     {
         this.mutationRate = mutationRate;
+    }
+    
+    public int getBoardSize()
+    {
+        return boardSize;
     }
     
     public double getColorVar()
@@ -272,7 +284,7 @@ public class Simulator
 
     public void addFood(int x, int y)
     {
-        if (!isBarrier[x][y])
+        if (!isBarrier(x,y) && !isCritter(x,y))
         {
             isFood[x][y] = true;
             board.draw(new Point(x,y), Color.green);
@@ -289,7 +301,6 @@ public class Simulator
         if (isFood[x][y])
         {
             isFood[x][y] = false;
-            board.erase(new Point(x,y));
         }
     }
     
@@ -362,77 +373,8 @@ public class Simulator
         }
     }
 
-    /* public boolean isFoodU(int x, int y)
-    {
-        Point thisPoint = new Point(x,y);
-        for (int i = 1 ; i < sightRange; i++)
-        {
-            thisPoint.y = y-i;
-            if (barriers.contains(thisPoint))
-            {
-                return false;
-            }
-            if (isFood(thisPoint))
-            {
-                return true;                
-            }
-        }
-        return false;
-    }     
-
-    public boolean isFoodD(int x, int y)
-    {
-        Point thisPoint = new Point(x,y);
-        for (int i = 1 ; i < sightRange; i++)
-        {
-            thisPoint.y = y+i;
-            if (barriers.contains(thisPoint))
-            {
-                return false;
-            }
-            if (isFood(thisPoint))
-            {
-                return true;                
-            }
-        }
-        return false;
-    }  
-
-    public boolean isFoodR(int x, int y)
-    {
-        Point thisPoint = new Point(x,y);
-        for (int i = 1 ; i < sightRange; i++)
-        {
-            thisPoint.x = x+i;
-            if (barriers.contains(thisPoint))
-            {
-                return false;
-            }
-            if (isFood(thisPoint))
-            {
-                return true;                
-            }
-        }
-        return false;
-    }  
-
-    public boolean isFoodL(int x, int y)
-    {
-        Point thisPoint = new Point(x,y);
-        for (int i = 1 ; i < sightRange; i++)
-        {
-            thisPoint.x = x-i;
-            if (barriers.contains(thisPoint))
-            {
-                return false;
-            }
-            if (isFood(thisPoint))
-            {
-                return true;                
-            }
-        }
-        return false;
-    } */
+   
+    
     //-------------------------------------------------------------------------
     public String toString(String[] string)
     {
@@ -511,10 +453,8 @@ public class Simulator
         {
             if (length > 1)
             {
-                int last2X = body[length - 2].x;
-                int last2Y = body[length - 2].y;
 
-                Point last2Point = new Point(last2X, last2Y);
+                Point last2Point = body[length - 2];
                 if (!(lastPoint.equals(last2Point)))
                 {
                     removeCritterPoint(lastPoint);
@@ -830,9 +770,12 @@ public class Simulator
 
     public void addBarrier(Point point)
     {
-        if (isFood(point)){removeFood(point);}
-        isBarrier[point.x][point.y] = true;
-        board.draw(point, Color.gray);
+        if (!isCritter(point))
+        {
+            if (isFood(point)){removeFood(point);}
+            isBarrier[point.x][point.y] = true;
+            board.draw(point, Color.gray);
+        }
     }
     
     public void removeBarrier(Point point)
@@ -863,7 +806,7 @@ public class Simulator
             while (x <= x2)
             {
                 Point point = new Point(x, (int)(y + .5));
-                if (!isBarrier(point))
+                if (!isBarrier(point) && !isCritter(point))
                 {
                     addBarrier(point);
                 }
@@ -1006,9 +949,10 @@ public class Simulator
             addFood((int)(Math.random() * boardSize),(int)(Math.random() * boardSize));
         }
         }
-        board.repaint();
-        wait(speed);
         
+        if (speed > 0 || boardTick == 0) {board.repaint();}
+        wait(speed);
+        boardTick();
     }
 
     public void gameTimeStep(int steps)

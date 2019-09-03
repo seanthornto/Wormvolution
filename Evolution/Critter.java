@@ -54,25 +54,6 @@ public class Critter
         color = dnaToColor();
         head = 0;
     }
-    public Critter(String[] newDNA, int xPos, int yPos, String facing)
-    {
-        length = newDNA.length;
-        body = new Point[length];
-        dna = newDNA;
-        for (int i = 0; i < length; i++)
-        {
-            body[i] = new Point(xPos, yPos);
-        }
-        baseEnergy = 200 + (length * 50);
-        energy = baseEnergy;
-        this.facing = facing;
-        dnaStep = 0;
-        age = 0;
-        maxAge = 200 + (length * 50);
-        timeStep = 0;
-        blocked = false;
-        head = 0;
-    }
     public Critter(String[] newDNA, int xPos, int yPos, String facing, Color color)
     {
         length = newDNA.length;
@@ -82,12 +63,12 @@ public class Critter
         {
             body[i] = new Point(xPos, yPos);
         }
-        baseEnergy = 200 + (length * 50);
+        baseEnergy = 300 + (length * 50);
         energy = baseEnergy;
         this.facing = facing;
         dnaStep = 0;
         age = 0;
-        maxAge = 200 + (length * 50);
+        maxAge = 100 + (length * 25);
         timeStep = 0;
         blocked = false;
         this.color = color;
