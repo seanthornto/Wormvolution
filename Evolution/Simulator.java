@@ -924,8 +924,11 @@ public class Simulator
     
     public void removeBarrier(Point point)
     {
-        isBarrier[point.x][point.y] = false;
-        board.erase(point);
+        if (isBarrier[point.x][point.y] = true) 
+        {
+            isBarrier[point.x][point.y] = false;
+            board.erase(point);
+        }
     }
 
     public void addBarrierLine(int x1, int y1, int x2, int y2)
@@ -1020,6 +1023,40 @@ public class Simulator
        }
     }
     
+    public void addBarrierGraph(int x1, int y1, int x2, int y2, int xSpace, int ySpace, int xOff, int yOff)
+    {
+      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+      int temp;
+      if (x1 > x2)
+      {
+          temp = x1;
+          x1 = x2;
+          x2 = temp;
+      }
+      if (y1 > y2)
+      {
+          temp = y1;
+          y1 = y2;
+          y2 = temp;
+      }
+      
+      int i = 0;
+      int j = 0;
+      int xRange = x2 - x1;
+      int yRange = y2 - y1;
+     
+      while (i < xRange)
+      {
+          while (j < yRange)
+          {
+              addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j));
+              j += ySpace + 1;
+          }
+          i += xSpace + 1;
+          j = yOff * (i / (xSpace + 1)) % (ySpace + 1);
+       }
+    }
+    
     public void removeBarrierLine(int x1, int y1, int x2, int y2)
     {
         if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
@@ -1079,6 +1116,38 @@ public class Simulator
             }
             
         }
+    }
+    
+    public void removeBarrierRect(int x1, int y1, int x2, int y2)   
+    {
+      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+      int temp;
+      if (x1 > x2)
+      {
+          temp = x1;
+          x1 = x2;
+          x2 = temp;
+      }
+      if (y1 > y2)
+      {
+          temp = y1;
+          y1 = y2;
+          y2 = temp;
+      }
+      
+      int i = x1;
+      int j = y1;
+      
+      while (i <= x2)
+      {
+          while (j <= y2)
+          {
+              removeBarrier(new Point(i, j));
+              j++;
+          }
+          i++;
+          j = y1;
+      }
     }
 
     //-------------------------------------------------------------------------

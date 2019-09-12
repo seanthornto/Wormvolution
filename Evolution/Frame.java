@@ -14,10 +14,16 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
     public boolean p;
     public boolean l;
     public boolean g;
+    public boolean e;
     public boolean dragging;
     public int boardX;
     public int boardY;
     public int pixelSize;
+    public int xSpace;
+    public int xOff;
+    public int ySpace;
+    public int yOff;
+    
     
     public Frame(String title)
     {
@@ -79,8 +85,13 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         }
         else if(g == true)
         {
-            sim.addBarrierGraph(x1,y1,x2,y2);
+            sim.addBarrierGraph(x1,y1,x2,y2,xSpace,ySpace,xOff,yOff);
             g = false;
+        }
+        else if (e == true)
+        {
+            sim.removeBarrierRect(x1,y1,x2,y2);
+            e = false;
         }
     }
     
@@ -104,5 +115,10 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
     {
         g = true;
     }
+    public void eTrue()
+    {
+        e = true;
+    }
+
    
 }

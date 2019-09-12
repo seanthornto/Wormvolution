@@ -48,9 +48,9 @@ public class GUI     {
       int i = 0;
       int j = 0;
       boardSize = simulator.getBoardSize();
-      
       while (true)
       {
+          
           simulator.gameTimeStep();
       }
       
@@ -164,16 +164,14 @@ public class GUI     {
       JLabel cFrate = new JLabel(" x");
       
       int cs;
-      JButton drawLine = new JButton("Draw Line");
-      JButton drawPoint = new JButton("Draw Point");
-      JButton eraseLine = new JButton("Erase Line");
-      JTextField x1 = new JTextField("x1");
-      JTextField x2 = new JTextField("x2");
-      JTextField y1 = new JTextField("y1");
-      JTextField y2 = new JTextField("y2");
+      JTextField xSpace = new JTextField("x Space");
+      JTextField xOff = new JTextField("x Offset");
+      JTextField ySpace = new JTextField("y Space");
+      JTextField yOff = new JTextField("y Offset");
       JButton dragLine = new JButton("Drag Line");
       JButton dropPoint = new JButton("Drop Point");
       JButton dragGraph = new JButton("Drag Graph");
+      JButton eraseRect = new JButton("Erase");
       
       JTextField saveLoad = new JTextField("Save/Load");
       JButton play = new JButton("Stop");
@@ -271,23 +269,8 @@ public class GUI     {
          
       });
       
-      drawLine.addActionListener(new ActionListener(){  
-          public void actionPerformed(ActionEvent e){  
-            simulator.addBarrierLine(Integer.parseInt(x1.getText()),Integer.parseInt(y1.getText()),Integer.parseInt(x2.getText()),Integer.parseInt(y2.getText()));
-        }  
-      });
-      
-      drawPoint.addActionListener(new ActionListener(){  
-          public void actionPerformed(ActionEvent e){  
-            simulator.addBarrier(new Point(Integer.parseInt(x1.getText()),Integer.parseInt(y1.getText())));
-        }  
-      }); 
-      
-      eraseLine.addActionListener(new ActionListener(){  
-          public void actionPerformed(ActionEvent e){  
-            simulator.removeBarrierLine(Integer.parseInt(x1.getText()),Integer.parseInt(y1.getText()),Integer.parseInt(x2.getText()),Integer.parseInt(y2.getText()));
-        }  
-      });
+    
+ 
     
       play.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
@@ -349,8 +332,21 @@ public class GUI     {
       dragGraph.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
            mainFrame.gTrue();
+           mainFrame.xSpace = Integer.parseInt(xSpace.getText());
+           mainFrame.xOff = Integer.parseInt(xOff.getText());
+           mainFrame.ySpace = Integer.parseInt(ySpace.getText());
+           mainFrame.yOff = Integer.parseInt(yOff.getText());
             }
       });
+      
+      eraseRect.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+           mainFrame.eTrue();
+
+            }
+      });
+      
+      
       
       cSpeed = new JLabel(" "+speed);
       cMutate = new JLabel(" "+mutation);
@@ -446,15 +442,15 @@ public class GUI     {
       comp++;
       gbc.gridx = 0;
       gbc.gridy = 5;
-      controlPanel.add(x1,gbc);
+      controlPanel.add(xSpace,gbc);
       comp++;
       gbc.gridx = 1;
       gbc.gridy = 5;
-      controlPanel.add(y1,gbc);
+      controlPanel.add(ySpace,gbc);
       comp++;
       gbc.gridx = 2;
       gbc.gridy = 5;
-      controlPanel.add(drawPoint,gbc);
+      controlPanel.add(eraseRect,gbc);
       comp++;
       gbc.gridx = 3;
       gbc.gridy = 5;
@@ -462,23 +458,15 @@ public class GUI     {
       comp++;
       gbc.gridx = 0;
       gbc.gridy = 6;
-      controlPanel.add(x2,gbc);
+      controlPanel.add(xOff,gbc);
       comp++;
       gbc.gridx = 1;
       gbc.gridy = 6;
-      controlPanel.add(y2,gbc);
+      controlPanel.add(yOff,gbc);
       comp++;
-      gbc.gridx = 2;
-      gbc.gridy = 6;
-      controlPanel.add(drawLine,gbc);
-      comp++;
-       gbc.gridx = 3;
+      gbc.gridx = 3;
       gbc.gridy = 6;
       controlPanel.add(dragLine,gbc);
-      comp++;
-      gbc.gridx = 0;
-      gbc.gridy = 8;
-      controlPanel.add(eraseLine,gbc);
       comp++;
       gbc.gridx = 3;
       gbc.gridy = 0;
