@@ -79,7 +79,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         }
         else if(g == true)
         {
-            sim.addBarrierGraph(p1,p2);
+            sim.addBarrierGraph(x1,y1,x2,y2);
             g = false;
         }
     }

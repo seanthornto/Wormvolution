@@ -3,13 +3,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.Scanner;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-public class GUI {
+public class GUI     {
    private Frame mainFrame;
    private JPanel controlPanel;
    private static Simulator simulator;
@@ -32,9 +33,21 @@ public class GUI {
    private int startfRate = boardSize/10;
    private boolean run = true;
    
+   public GUI(){
+      prepareGUI();
+   }
+   public Simulator getSimulator()
+   {
+       return simulator;
+   }
+   
    public static void main(String[] args){
       prompt();
       int refreshRate = 2;
+      int i = 0;
+      int j = 0;
+      boardSize = simulator.getBoardSize();
+      
       while (true)
       {
           simulator.gameTimeStep();
@@ -52,17 +65,6 @@ public class GUI {
       } */
    }
    
-   public GUI(){
-      prepareGUI();
-   }
-   
-   public Simulator getSimulator()
-   {
-       return simulator;
-   }
-   
-   
-   
    //method to prompt the user for initial values
    private static void prompt()
    {
@@ -76,7 +78,7 @@ public class GUI {
        System.out.println("");
        System.out.println("");
        System.out.println("");
-       System.out.println("Please enter a size for the simulator between 24 and 318: ");
+       System.out.println("Please enter a size for the simulator between 50 and 900: ");
        s = obj.nextInt();
        System.out.println("Starting number of Critters = " + s/10);
        System.out.println("Starting Food Value = " + s/3);
@@ -100,8 +102,8 @@ public class GUI {
         } 
         catch(NullPointerException e) 
         { 
-            restart(0,3,1,160);
-            //System.out.print("NullPointerException Caught"); 
+            restart(0,3,1,200);
+            System.out.print("NullPointerException Caught"); 
         } 
        
     }
@@ -139,8 +141,8 @@ public class GUI {
       JButton reset = new JButton("Reset");
       JSlider speedSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
       JSlider mutationSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
-      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 200, bs/2);
-      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, 30, (bs/10));
+      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 300,150 );
+      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs, (bs/5));
       JSlider sleepCostSlider = new JSlider(JSlider.VERTICAL, 0,10,sleepC);
       JSlider moveCostSlider = new JSlider(JSlider.VERTICAL, 0,10,moveC);
       JSlider turnCostSlider = new JSlider(JSlider.VERTICAL, 0,10,turnC);
@@ -164,21 +166,24 @@ public class GUI {
       JButton drawLine = new JButton("Draw Line");
       JButton drawPoint = new JButton("Draw Point");
       JButton eraseLine = new JButton("Erase Line");
-      JButton dragLine = new JButton("Drag Line");
-      JButton dropPoint = new JButton("Drop Point");
-      JButton dragGraph = new JButton("Drag Graph");
       JTextField x1 = new JTextField("x1");
       JTextField x2 = new JTextField("x2");
       JTextField y1 = new JTextField("y1");
       JTextField y2 = new JTextField("y2");
+      JButton dragLine = new JButton("Drag Line");
+      JButton dropPoint = new JButton("Drop Point");
+      JButton dragGraph = new JButton("Drag Graph");
+      JTextField saveLoad = new JTextField("Save/Load");
       
       JButton play = new JButton("Stop");
+      JButton save = new JButton("Save");
+      JButton load = new JButton("Load");
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
               mainFrame.setVisible(false);
               mainFrame.dispose();
-             prompt();
+              prompt();
             }
         });
       speedSlider.addChangeListener(new ChangeListener() {
@@ -280,7 +285,36 @@ public class GUI {
             simulator.removeBarrierLine(Integer.parseInt(x1.getText()),Integer.parseInt(y1.getText()),Integer.parseInt(x2.getText()),Integer.parseInt(y2.getText()));
         }  
       });
-      //
+    
+      play.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            if (!simulator.isPaused())
+            {
+                simulator.pause();
+                play.setText("Start");
+                run = true;
+            }
+            else
+            {
+                simulator.unpause();
+                play.setText("Stop");
+                run = false;
+            }
+        } 
+      });
+      
+     /* save.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            save(saveLoad.getText());
+        } 
+      });
+      
+      load.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            load(saveLoad.getText());
+        } 
+      });*/
+      
       dragLine.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
             mainFrame.lTrue();
@@ -297,21 +331,6 @@ public class GUI {
           public void actionPerformed(ActionEvent e){  
            mainFrame.gTrue();
             }
-      });
-    
-      play.addActionListener(new ActionListener(){  
-          public void actionPerformed(ActionEvent e){  
-            if (!simulator.isPaused())
-            {
-                simulator.pause();
-                play.setText("Start");
-            }
-            else
-            {
-                simulator.unpause();
-                play.setText("Stop");
-            }
-        }  
       });
       
       cSpeed = new JLabel(" "+speed);
@@ -434,7 +453,7 @@ public class GUI {
       gbc.gridy = 6;
       controlPanel.add(drawLine,gbc);
       comp++;
-      gbc.gridx = 3;
+       gbc.gridx = 3;
       gbc.gridy = 6;
       controlPanel.add(dragLine,gbc);
       comp++;
@@ -442,14 +461,22 @@ public class GUI {
       gbc.gridy = 8;
       controlPanel.add(eraseLine,gbc);
       comp++;
-      gbc.gridx = 0;
-      gbc.gridy = 7;
-      controlPanel.add(dragGraph,gbc);
-      comp++;
       gbc.gridx = 3;
       gbc.gridy = 0;
       controlPanel.add(play,gbc);
       comp++;
+      gbc.gridx = 0;
+      gbc.gridy = 7;
+      controlPanel.add(dragGraph,gbc);
+      comp++;
+      /*controlPanel.add(saveLoad,gbc);
+      gbc.gridx = 1;
+      gbc.gridy = 7;
+      controlPanel.add(save,gbc);
+      gbc.gridx = 2;
+      gbc.gridy = 7;
+      controlPanel.add(load,gbc);
+      */
       gbc.gridx = 5;
       gbc.gridy = 0;
       gbc.fill = GridBagConstraints.VERTICAL;
@@ -464,4 +491,43 @@ public class GUI {
       mainFrame.pixelSize = simulator.pixelSize;
    } 
    
+   public void save(String filename)
+   {        
+       // write object to file
+       try{
+           if (run = false)
+           {
+               FileOutputStream fos = new FileOutputStream(filename);
+               ObjectOutputStream oos = new ObjectOutputStream(fos);
+               oos.writeObject(simulator);
+               oos.close();
+            }  
+       } catch (FileNotFoundException e) {
+			e.printStackTrace();
+       } catch (IOException e) {
+			e.printStackTrace();
+		}
+  }
+
+   public void load(String filename)
+   {
+            // read object from file
+       try{
+           if (run = false)
+           {
+            FileInputStream fis = new FileInputStream(filename);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Simulator loadedSim = (Simulator) ois.readObject();
+            ois.close();
+           }  
+       } catch (FileNotFoundException e) {
+			e.printStackTrace();
+       } catch (IOException e) {
+			e.printStackTrace();
+       } catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+            
+    }
 }
