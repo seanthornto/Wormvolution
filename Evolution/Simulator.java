@@ -34,6 +34,7 @@ public class Simulator
     private boolean[][] isBarrier;
     private boolean[][] isCritter;
     public int boardTick;
+    private Color barrierColor;
    
     //------------------------------CONSTRUCTORS-------------------------------
     /**
@@ -74,6 +75,7 @@ public class Simulator
         colorVar = 0.5;
         sightRange = 10;
         boardTick = 0;
+        barrierColor = Color.gray;
         isFood = new boolean[bs][bs];
         isCritter = new boolean[bs][bs];
         isBarrier = new boolean[bs][bs];
@@ -374,7 +376,133 @@ public class Simulator
             return false;
         }
     }
-
+     public boolean lookBarrier(int x, int y, String facing)
+    {
+        if (facing.equals("U"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x,y-i))
+                {
+                    return true;
+                }
+                if (isCritter(x,y-i))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        else if (facing.equals("D"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x,y+i))
+                {
+                    return true;
+                }
+                if (isCritter(x,y+i))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        else if (facing.equals("L"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x-i,y))
+                {
+                    return true;
+                }
+                if (isCritter(x-i,y))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x+i,y))
+                {
+                    return true;
+                }
+                if (isCritter(x+i,y))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+    }
+    
+    public boolean lookCritter(int x, int y, String facing)
+    {
+        if (facing.equals("U"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x,y-i))
+                {
+                    return false;
+                }
+                if (isCritter(x,y-i))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (facing.equals("D"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x,y+i))
+                {
+                    return false;
+                }
+                if (isCritter(x,y+i))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (facing.equals("L"))
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x-i,y))
+                {
+                    return false;
+                }
+                if (isCritter(x-i,y))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            for (int i = 1; i < sightRange; i++)
+            {
+                if (isBarrier(x+i,y))
+                {
+                    return false;
+                }
+                if (isCritter(x+i,y))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
    
     
     //-------------------------------------------------------------------------
@@ -453,12 +581,13 @@ public class Simulator
 
         if (!isBarrier(newSpace) && !isCritter(newSpace))
         {
-            if (length > 1)
+            if (critter.curled && length > 1)
             {
 
                 Point last2Point = body[length - 2];
                 if (!(lastPoint.equals(last2Point)))
                 {
+                    critter.curled = false;
                     removeCritterPoint(lastPoint);
                     board.erase(lastPoint);
                     if (critter.getEnergy() >= critter.getBaseEnergy() * 2)
@@ -770,6 +899,19 @@ public class Simulator
     }
     //-------------------------------------------------------------------------
 
+    public void setBarrierColor(Color color)
+    {
+        barrierColor = color;
+        for (int i = 0; i < boardSize; i++)
+        {
+            for (int j = 0; j < boardSize; j++)
+            if (isBarrier[i][j])
+            {
+                board.draw(new Point(i,j), color);
+            }
+        }
+    }
+    
     public void addBarrier(Point point)
     {
         if (!isCritter(point))

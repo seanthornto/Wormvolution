@@ -26,6 +26,8 @@ public class Critter
     public int length;
     private boolean hasElse;
     private int lastCondition;
+    public boolean curled;
+    public boolean reproduced;
     
 
 
@@ -48,11 +50,13 @@ public class Critter
         facing = facings[(int)(Math.random()*4)];
         dnaStep = 0;
         age = 0;
-        maxAge = 200 + (length * 50);
+        maxAge = 100 + (length * 50);
         timeStep = 0;
         blocked = false;
         color = dnaToColor();
         head = 0;
+        curled = true;
+        reproduced = false;
     }
     public Critter(String[] newDNA, int xPos, int yPos, String facing, Color color)
     {
@@ -63,16 +67,18 @@ public class Critter
         {
             body[i] = new Point(xPos, yPos);
         }
-        baseEnergy = 300 + (length * 50);
+        baseEnergy = 200 + (length * 50);
         energy = baseEnergy;
         this.facing = facing;
         dnaStep = 0;
         age = 0;
-        maxAge = 100 + (length * 25);
+        maxAge = 100 + (length * 50);
         timeStep = 0;
         blocked = false;
         this.color = color;
         head = 0;
+        curled = true;
+        reproduced = false;
     }
     
     public int getMaxAge()
@@ -290,6 +296,7 @@ public class Critter
 
     public Critter reproduce(double mutationRate, Point point, double colorVar)
     {
+        reproduced = true;
         ArrayList<String> newDNA = new ArrayList<String>(); 
         float newR = (float)(color.getRed() / 255.0);
         float newG = (float)(color.getGreen() / 255.0);

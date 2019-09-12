@@ -75,6 +75,8 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         else if(l == true)
         {
             sim.addBarrierLine(x1,y1,x2,y2);
+            System.out.println(x1 + " " + y1);
+            System.out.println(x2 + " " + y2);
             l = false;
         }
         else if(g == true)

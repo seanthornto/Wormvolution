@@ -32,6 +32,7 @@ public class GUI     {
    private int startfVal = boardSize/2;
    private int startfRate = boardSize/10;
    private boolean run = true;
+   private boolean barrierVis = true;
    
    public GUI(){
       prepareGUI();
@@ -173,11 +174,13 @@ public class GUI     {
       JButton dragLine = new JButton("Drag Line");
       JButton dropPoint = new JButton("Drop Point");
       JButton dragGraph = new JButton("Drag Graph");
-      JTextField saveLoad = new JTextField("Save/Load");
       
+      JTextField saveLoad = new JTextField("Save/Load");
       JButton play = new JButton("Stop");
       JButton save = new JButton("Save");
       JButton load = new JButton("Load");
+      
+      JButton toggleInv = new JButton("Make Barr Inv");
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
@@ -314,6 +317,22 @@ public class GUI     {
             load(saveLoad.getText());
         } 
       });*/
+      toggleInv.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+              if (barrierVis)
+              {
+                  simulator.setBarrierColor(Color.black);
+                  barrierVis = false;
+                  toggleInv.setText("Make Barr Vis");
+              }
+              else
+              {
+                  simulator.setBarrierColor(Color.gray);
+                  barrierVis = true;
+                  toggleInv.setText("Make Barr Inv");
+              }
+        } 
+      });
       
       dragLine.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
@@ -477,6 +496,11 @@ public class GUI     {
       gbc.gridy = 7;
       controlPanel.add(load,gbc);
       */
+      gbc.gridx = 2;
+      gbc.gridy = 7;
+      controlPanel.add(toggleInv,gbc);
+
+      
       gbc.gridx = 5;
       gbc.gridy = 0;
       gbc.fill = GridBagConstraints.VERTICAL;
