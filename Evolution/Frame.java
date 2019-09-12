@@ -51,17 +51,17 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         Point point = event.getPoint();
         p2 = point;
         boardX = sim.board.getX();
-        boardY= sim.board.getY();
+        boardY = sim.board.getY();
         boardX += this.getContentPane().getX();
         boardY += this.getContentPane().getY();
-        p1.x -= boardX;
-        p1.y -= boardY;
-        p2.x -= boardX;
-        p2.y -= boardY;
-        int x1 = (int) p1.x/pixelSize;
-        int y1 = (int) p1.y/pixelSize;
-        int x2 = (int) p2.x/pixelSize;
-        int y2 = (int) p2.y/pixelSize;
+        p1.x -= boardX + 8;
+        p1.y -= boardY + 32;
+        p2.x -= boardX + 8;
+        p2.y -= boardY + 32;
+        int x1 = p1.x/pixelSize;
+        int y1 = p1.y/pixelSize;
+        int x2 = p2.x/pixelSize;
+        int y2 = p2.y/pixelSize;
         p1.x = x1;
         p1.y = y1;
         p2.x = x2;
@@ -75,8 +75,6 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         else if(l == true)
         {
             sim.addBarrierLine(x1,y1,x2,y2);
-            System.out.println(x1 + " " + y1);
-            System.out.println(x2 + " " + y2);
             l = false;
         }
         else if(g == true)
