@@ -55,6 +55,8 @@ public class Simulator
         sightRange = 10;
         isFood = new boolean[bs][bs]; 
     } */
+    
+    //This one
     public Simulator(int bs,int sC, int mC, int tC)
     {   
         boardSize = bs;
@@ -843,6 +845,23 @@ public class Simulator
             }
             
         }
+    }
+    
+    public void addBarrierGraph(int x1, int y1, int x2, int y2)
+    {
+      int i = x1;
+      int j = y1;
+     
+       while (i < x2 )
+      {
+          while (j < y2)
+          {
+              addBarrier(new Point(i, j));
+              j += 2;
+          }
+          j = x1;
+          i += 2;
+       }
     }
     
     public void removeBarrierLine(int x1, int y1, int x2, int y2)
