@@ -991,6 +991,20 @@ public class Simulator
     
     public void addBarrierGraph(int x1, int y1, int x2, int y2)
     {
+      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+      int temp;
+      if (x1 > x2)
+      {
+          temp = x1;
+          x1 = x2;
+          x2 = temp;
+      }
+      if (y1 > y2)
+      {
+          temp = y1;
+          y1 = y2;
+          y2 = temp;
+      }
       int i = x1;
       int j = y1;
      
@@ -1001,7 +1015,7 @@ public class Simulator
               addBarrier(new Point(i, j));
               j += 2;
           }
-          j = x1;
+          j = y1;
           i += 2;
        }
     }
