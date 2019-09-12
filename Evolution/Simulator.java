@@ -914,6 +914,7 @@ public class Simulator
     
     public void addBarrier(Point point)
     {
+        if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) return;
         if (!isCritter(point))
         {
             if (isFood(point)){removeFood(point);}
@@ -924,6 +925,7 @@ public class Simulator
     
     public void removeBarrier(Point point)
     {
+        if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) return;
         if (isBarrier[point.x][point.y] = true) 
         {
             isBarrier[point.x][point.y] = false;
@@ -933,7 +935,7 @@ public class Simulator
 
     public void addBarrierLine(int x1, int y1, int x2, int y2)
     {
-        if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+        
         if (Math.abs(y1 - y2) <= Math.abs(x1 - x2))
         {
             if (x1 > x2)
@@ -994,7 +996,7 @@ public class Simulator
     
     public void addBarrierGraph(int x1, int y1, int x2, int y2)
     {
-      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+      
       int temp;
       if (x1 > x2)
       {
@@ -1025,7 +1027,7 @@ public class Simulator
     
     public void addBarrierGraph(int x1, int y1, int x2, int y2, int xSpace, int ySpace, int xOff, int yOff)
     {
-      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+      
       int temp;
       if (x1 > x2)
       {
@@ -1059,7 +1061,7 @@ public class Simulator
     
     public void removeBarrierLine(int x1, int y1, int x2, int y2)
     {
-        if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
+        
         if (Math.abs(y1 - y2) <= Math.abs(x1 - x2))
         {
             if (x1 > x2)
@@ -1120,7 +1122,6 @@ public class Simulator
     
     public void removeBarrierRect(int x1, int y1, int x2, int y2)   
     {
-      if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= boardSize || y1 >= boardSize || x2 >= boardSize || y2 >= boardSize) return;
       int temp;
       if (x1 > x2)
       {

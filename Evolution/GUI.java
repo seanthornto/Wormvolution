@@ -170,7 +170,7 @@ public class GUI     {
       JTextField yOff = new JTextField("y Offset");
       JButton dragLine = new JButton("Drag Line");
       JButton dropPoint = new JButton("Drop Point");
-      JButton dragGraph = new JButton("Drag Graph");
+      JButton dragGraph = new JButton("Drag Grid");
       JButton eraseRect = new JButton("Erase");
       
       JTextField saveLoad = new JTextField("Save/Load");
@@ -464,6 +464,10 @@ public class GUI     {
       gbc.gridy = 6;
       controlPanel.add(yOff,gbc);
       comp++;
+      gbc.gridx = 2;
+      gbc.gridy = 6;
+      controlPanel.add(dragGraph,gbc);
+      comp++;
       gbc.gridx = 3;
       gbc.gridy = 6;
       controlPanel.add(dragLine,gbc);
@@ -472,10 +476,7 @@ public class GUI     {
       gbc.gridy = 0;
       controlPanel.add(play,gbc);
       comp++;
-      gbc.gridx = 0;
-      gbc.gridy = 7;
-      controlPanel.add(dragGraph,gbc);
-      comp++;
+      
       /*controlPanel.add(saveLoad,gbc);
       gbc.gridx = 1;
       gbc.gridy = 7;

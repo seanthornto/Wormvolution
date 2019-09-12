@@ -76,22 +76,18 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
         if(p == true)
         {
             sim.addBarrier(p1);
-            p = false;
         }
         else if(l == true)
         {
             sim.addBarrierLine(x1,y1,x2,y2);
-            l = false;
         }
         else if(g == true)
         {
             sim.addBarrierGraph(x1,y1,x2,y2,xSpace,ySpace,xOff,yOff);
-            g = false;
         }
         else if (e == true)
         {
             sim.removeBarrierRect(x1,y1,x2,y2);
-            e = false;
         }
     }
     
@@ -106,18 +102,30 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
     public void lTrue()
     {
         l = true;
+        p = false;
+        g = false;
+        e = false;
     }
     public void pTrue()
     {
         p = true;
+        l = false;
+        g = false;
+        e = false;
     }
     public void gTrue()
     {
         g = true;
+        p = false;
+        l = false;
+        e = false;
     }
     public void eTrue()
     {
         e = true;
+        p = false;
+        g = false;
+        l = false;
     }
 
    
