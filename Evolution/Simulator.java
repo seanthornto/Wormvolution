@@ -980,7 +980,7 @@ public class Simulator
     public void removeBarrier(Point point)
     {
         if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) return;
-        if (isBarrier[point.x][point.y] = true) 
+        if (isBarrier[point.x][point.y] == true) 
         {
             isBarrier[point.x][point.y] = false;
             board.erase(point);
