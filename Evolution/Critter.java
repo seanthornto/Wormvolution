@@ -20,7 +20,7 @@ public class Critter
     private int timeStep;
     private Color color;
     private boolean blocked;
-    private String[] commands = {"M", "Z", "<", ">", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "U", "R", "D", "L", "H"};
+    private String[] commands = {"M", "M","Z", "Z", "<", "<", ">",  ">", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" , "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     private String[] facings = {"U", "R", "D", "L"};
     public int head;
     public int length;
@@ -145,6 +145,11 @@ public class Critter
     public int getTimeStep()
     {
         return timeStep;
+    }
+    
+    public void setTimeStep(int step)
+    {
+        timeStep = step;
     }
 
     public void resetTimeStep()

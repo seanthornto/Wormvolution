@@ -20,7 +20,7 @@ public class Simulator
     private int foodValue;
     private int maxTimeSteps;
     private double mutationRate;
-    private String[] commands = {"M", "M","Z", "Z", "<", "<", ">",  ">", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" };
+    // private String[] commands = {"M", "M","Z", "Z", "<", "<", ">",  ">", "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" };
     private int speed;
     public int pixelSize;
     private int boardSize;
@@ -40,22 +40,6 @@ public class Simulator
     /**
      * Constructor for objects of class Simulator
      */
-    /*public Simulator(int foodRate, int foodValue, double mutationRate, int speed, int pixelSize)
-    {
-        this.pixelSize = pixelSize;
-
-        critters = new ArrayList<Critter>();
-        food = new ArrayList<Point>();
-        this.foodRate = foodRate;
-        this.foodValue = foodValue;
-        maxTimeSteps = 10;
-        this.mutationRate = mutationRate;
-        barriers = new ArrayList<Point>();
-        this.speed = speed;
-        colorVar = 0.5;
-        sightRange = 10;
-        isFood = new boolean[bs][bs]; 
-    } */
     
     //This one
     public Simulator(int bs,int sC, int mC, int tC)
@@ -302,10 +286,7 @@ public class Simulator
 
     public void removeFood(int x, int y)
     {
-        if (isFood[x][y])
-        {
-            isFood[x][y] = false;
-        }
+        isFood[x][y] = false;
     }
     
     public void removeFood(Point point)
@@ -656,7 +637,7 @@ public class Simulator
          }
          if (isEnd)
          {
-             critter.goToStep(j + 1);
+             critter.goToStep(j + 1); //Go to step after END
          }
          else
          {
@@ -664,12 +645,69 @@ public class Simulator
          }
     }
     
+    public void checkOr(Critter critter)
+    {
+        int step = critter.getStep();
+        String[] dna = critter.getDNA();
+        if (step + 2 < dna.length)
+        {
+            if (dna[step + 1].equals("v")) //If next step is an OR
+            {
+                try {
+                        int temp = Integer.parseInt(dna[step + 2]); //Test if the step after OR is a conditional
+                        critter.goToStep(step + 2); //If it is, go to that step
+                    }   catch(Exception e) {
+                        findElse(critter);  //Otherwise, proceed as normal
+                    }
+                }
+                else
+                {findElse(critter);} //No OR, proceed as normal
+            }
+            else
+            {findElse(critter);}
+    }
+    public void skipOr(Critter critter)
+    {
+        int step = critter.getStep() + 1;
+        String[] dna = critter.getDNA();
+        boolean done = false;
+        boolean lastOr = false;
+        while (!done && step < dna.length)
+        {   
+            if (dna[step].equals("v")) //If this step is OR
+            {
+                lastOr = true;
+                step++; //Skips through all ORs.
+            }
+            else if (lastOr) //If last step was OR
+            {
+                lastOr = false;
+                try {
+                        int temp = Integer.parseInt(dna[step]); //Tests if step is a conditional
+                        step++; //If it is, skips step
+                    } catch(Exception e) {
+                        critter.goToStep(step); //Otherwise, go to this step
+                        done = true;
+                    }
+            }
+            else //If neither this step nor last step were OR
+            {
+                critter.goToStep(step); //Go to this step
+                done = true;
+            }
+        }
+        if (step == dna.length)
+        {
+            critter.goToStep(0);
+        }
+    }
+    
     public void critterTimeStep(Critter critter)
     {
         if (critter.getTimeStep() >= maxTimeSteps)
         {
             critter.sleep();
-            critter.spendEnergy(sleepC + 1);
+            critter.spendEnergy(sleepC);
             return;
         }
         critter.timeStep();
@@ -698,7 +736,7 @@ public class Simulator
             int x = critter.getBody()[0].x;
             int y = critter.getBody()[0].y;
             Point point = new Point(x,y);
-            if (isFood[point.x][point.y])
+            if (isFood(point))
             {
                 critter.addEnergy(foodValue);
                 removeFood(point.x, point.y);
@@ -708,7 +746,7 @@ public class Simulator
             x = critter.getBody()[0].x;
             y = critter.getBody()[0].y;
             point = new Point(x,y);
-            if (isFood[point.x][point.y])
+            if (isFood(point))
             {
                 critter.addEnergy(foodValue);
                 removeFood(point.x, point.y);
@@ -770,7 +808,7 @@ public class Simulator
             findEnd(critter);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("E"))
+        else if (dna[step].equals("E") || dna[step].equals("v"))
         {
             critter.nextStep();
             critterTimeStep(critter);
@@ -782,36 +820,26 @@ public class Simulator
         }
         else if (dna[step].equals("0")) //If the critter sees food
         {
-            /* boolean seeFood = 
-                (facing.equals("U") && isFoodU(body[0].x, body[0].y)) ||   
-                (facing.equals("R") && isFoodR(body[0].x, body[0].y)) ||   
-                (facing.equals("D") && isFoodD(body[0].x, body[0].y)) ||  
-                (facing.equals("L") && isFoodL(body[0].x, body[0].y)); */
             if (lookFood(body[0].x, body[0].y, facing))
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("1")) //If the critter does not see food
         {
-            /* boolean seeFood = 
-                (facing.equals("U") && isFoodU(body[0].x, body[0].y)) ||   
-                (facing.equals("R") && isFoodR(body[0].x, body[0].y)) ||   
-                (facing.equals("D") && isFoodD(body[0].x, body[0].y)) ||  
-                (facing.equals("L") && isFoodL(body[0].x, body[0].y)); */
             if (!lookFood(body[0].x, body[0].y, facing))
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -821,11 +849,11 @@ public class Simulator
 
             if (critter.isBlocked())
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -835,11 +863,11 @@ public class Simulator
 
             if (!(critter.isBlocked()))
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -848,11 +876,11 @@ public class Simulator
         {
             if (critter.getEnergy() < critter.getBaseEnergy())
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -861,11 +889,11 @@ public class Simulator
         {
             if (critter.getEnergy() >= critter.getBaseEnergy())
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -874,11 +902,11 @@ public class Simulator
         {
             if (critter.getAge() >= critter.getMaxAge() / 2)
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
@@ -887,11 +915,37 @@ public class Simulator
         {
             if (critter.getAge() < critter.getMaxAge() / 2)
             {
-                critter.nextStep();
+                skipOr(critter);
             }
             else
             {
-                findElse(critter);
+                checkOr(critter);
+            }
+            critter.setLastCondition(step);
+            critterTimeStep(critter);
+        }
+        else if (dna[step].equals("8"))
+        {
+            if (critter.reproduced)
+            {
+                skipOr(critter);
+            }
+            else
+            {
+                checkOr(critter);
+            }
+            critter.setLastCondition(step);
+            critterTimeStep(critter);
+        }
+        else if (dna[step].equals("9"))
+        {
+            if (!critter.reproduced)
+            {
+                skipOr(critter);
+            }
+            else
+            {
+                checkOr(critter);
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
