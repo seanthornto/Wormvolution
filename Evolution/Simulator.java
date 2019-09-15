@@ -35,6 +35,7 @@ public class Simulator
     private boolean[][] isCritter;
     public int boardTick;
     private Color barrierColor;
+    private ArrayList<Population> populations;
    
     //------------------------------CONSTRUCTORS-------------------------------
     /**
@@ -51,6 +52,7 @@ public class Simulator
         pixelSize = 900 / boardSize;
         board = new Board(pixelSize,bs);
         critters = new ArrayList<Critter>();
+        populations = new ArrayList<Population>();
         this.foodRate = bs/10;
         this.foodValue = bs/3;
         maxTimeSteps = 10;
@@ -521,6 +523,22 @@ public class Simulator
         int y = critter.getBody()[0].y;
         Point point = new Point(x,y);
         addCritterPoint(point);
+        Population pop = new Population(critter.getColor(), critter.getDNA());
+        boolean exists = false;
+        for (Population p : populations)
+        {
+            if (pop.equals(p))
+            {
+                p.addMember();
+                critter.setColor(p.color);
+                exists = true;
+                break;
+            }
+        }
+        if (!exists)
+        {
+            populations.add(pop);
+        }
         board.draw(point, critter.getColor());
     }
 
@@ -1234,6 +1252,17 @@ public class Simulator
                     {
                         board.erase(iBody[j]);
                     }
+                    
+                }
+                Population pop = new Population(iCritter.getColor(), iCritter.getDNA());
+                for (Population p : populations)
+                {
+                    if (pop.equals(p))
+                    {
+                        p.removeMember();
+                        if (p.size <= 0) {populations.remove(p);}
+                        break;
+                    }
                 }
                 critters.remove(i);
             }
@@ -1273,5 +1302,24 @@ public class Simulator
             // ignoring exception at the moment
         }
     }
+    
+    
+    public Population[] getTopPopulations()
+    {
+        Population[] top = new Population[30];
+        Collections.sort(populations);
+        for (int i = 0; i < 30; i++)
+        {
+            if (i < populations.size())
+                {top[i] = populations.get(i);}
+            else
+            {
+                String[] dna = new String[1];
+                dna[0] = "";
+                top[i] = new Population(Color.gray, dna);
+            }
 
+        }
+        return top;
+    }
 }

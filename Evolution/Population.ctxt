@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.target=Population
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Population\ here.\r\n\r\n\ @author\ (your\ name)\r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=color\ dna
+comment1.target=Population(java.awt.Color,\ java.lang.String[])
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ Population\r\n
+comment2.params=
+comment2.target=void\ addMember()
+comment3.params=
+comment3.target=void\ removeMember()
+comment4.params=pop
+comment4.target=boolean\ equals(Population)
+comment5.params=pop
+comment5.target=int\ compareTo(Population)
+numComments=6
