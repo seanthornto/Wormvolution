@@ -16,6 +16,7 @@ public class Simulator
     private static final long serialVersionUID = 1L;
     private ArrayList<Critter> critters;
     public Board board;
+    public PopulationDisplay popDisp;
     private int foodRate;
     private int foodValue;
     private int maxTimeSteps;
@@ -51,6 +52,7 @@ public class Simulator
         setTurnCost(tC);
         pixelSize = 900 / boardSize;
         board = new Board(pixelSize,bs);
+        popDisp = new PopulationDisplay();
         critters = new ArrayList<Critter>();
         populations = new ArrayList<Population>();
         this.foodRate = bs/10;
@@ -93,7 +95,7 @@ public class Simulator
     
     public void boardTick()
     {
-        if (boardTick == 2) {boardTick = 0;}
+        if (boardTick == 10) {boardTick = 0;}
         else {boardTick++;}
     }
     
@@ -1278,9 +1280,10 @@ public class Simulator
         }
         }
         
-        if (speed > 0 || boardTick == 0) {board.repaint();}
+        board.repaint();
         wait(speed);
         boardTick();
+        if (boardTick == 0) {popDisp.refresh(getTopPopulations());}
     }
 
     public void gameTimeStep(int steps)

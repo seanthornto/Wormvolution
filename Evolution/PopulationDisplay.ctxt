@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=PopulationDisplay
+comment1.params=
+comment1.target=PopulationDisplay()
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ PopulationDisplay\r\n
+comment2.params=top
+comment2.target=void\ refresh(Population[])
+numComments=3

@@ -35,9 +35,6 @@ public class GUI     {
    private int startfRate = boardSize/10;
    private boolean run = true;
    private boolean barrierVis = true;
-   private JLabel[] topDNA;
-   private JLabel[] topPop;
-   private JPanel[] topColor;
    
     
    public GUI(){
@@ -137,21 +134,8 @@ public class GUI     {
       //mainFrame.add(controlPanel);
       //mainFrame.setVisible(true);  
    }
-   private void displayTop()
-   {
-       Population[] top = simulator.getTopPopulations();
-       for (int i = 0; i < top.length ; i++)
-       {
-           topColor[i].setBackground(top[i].color);
-           String temp = "";
-           for (int j = 0; j < top[i].dna.length; j++)
-           {
-               temp += top[i].dna[j];
-           }
-           topDNA[i].setText("          " + temp);
-           topPop[i].setText("          " + top[i].size + "     ");
-       }
-   }
+   
+ 
    private void showGUI(int sleepC, int moveC, int turnC, int bs){
       
        
@@ -160,47 +144,7 @@ public class GUI     {
        turnCost = turnC;
        colorVar = 0.5;
       
-      displayTop = new JPanel();
-      displayTop.setBackground(Color.gray);
-      displayTop.setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
-      
-      topColor = new JPanel[30];
-      topDNA = new JLabel[30];
-      topPop = new JLabel[30];
-      
-      for (int i = 0; i < 30; i++)
-      {
-          if (i < 15){
-          gbc.gridy = i;
-          topColor[i] = new JPanel();
-          topColor[i].setBackground(Color.white);
-          topColor[i].setSize(new Dimension(5, 5));
-          gbc.gridx = 0;
-          displayTop.add(topColor[i],gbc);
-          topDNA[i] = new JLabel("     Test");
-          gbc.gridx = 1;
-          displayTop.add(topDNA[i],gbc);
-          topPop[i] = new JLabel("     ");
-          gbc.gridx = 2;
-          displayTop.add(topPop[i],gbc); }
-          else {
-          gbc.gridy = i - 15;
-          topColor[i] = new JPanel();
-          topColor[i].setBackground(Color.white);
-          topColor[i].setSize(new Dimension(5, 5));
-          gbc.gridx = 3;
-          displayTop.add(topColor[i],gbc);
-          topDNA[i] = new JLabel("     Test");
-          gbc.gridx = 4;
-          displayTop.add(topDNA[i],gbc);
-          topPop[i] = new JLabel("     ");
-          gbc.gridx = 5;
-          displayTop.add(topPop[i],gbc); }
-          
-      }
-      
-      
       
       
       controlPanel = new JPanel();
@@ -384,11 +328,6 @@ public class GUI     {
         } 
       });
       
-      refreshList.addActionListener(new ActionListener(){
-          public void actionPerformed(ActionEvent e){
-              displayTop();
-            }
-          });
       
       dragLine.addActionListener(new ActionListener(){  
           public void actionPerformed(ActionEvent e){  
@@ -561,20 +500,22 @@ public class GUI     {
       gbc.gridx = 2;
       gbc.gridy = 7;
       controlPanel.add(toggleInv,gbc);
-      gbc.gridx = 1;
-      gbc.gridy = 7;
-      controlPanel.add(refreshList,gbc);
-      gbc.gridx = 0;
-      gbc.gridy = 8;
-      controlPanel.add(displayTop,gbc);
+      comp++;
+      
 
       
-      gbc.gridx = 5;
+      gbc.gridx = 6;
       gbc.gridy = 0;
       gbc.fill = GridBagConstraints.VERTICAL;
       gbc.gridheight = 9;
       simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
       controlPanel.add(simulator.board,gbc);
+      comp++;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.gridwidth = 6;
+      gbc.gridx = 0;
+      gbc.gridy = 8;
+      controlPanel.add(simulator.popDisp,gbc);
       comp++;
       mainFrame.sim = simulator;
       mainFrame.bs = bs;
