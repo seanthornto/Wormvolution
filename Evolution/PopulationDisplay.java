@@ -20,6 +20,7 @@ public class PopulationDisplay extends JPanel {
    private JLabel[] topDNA;
    private JLabel[] topPop;
    private JPanel[] topColor;
+   private JLabel tickSpeed;
 
     /**
      * Constructor for objects of class PopulationDisplay
@@ -29,6 +30,7 @@ public class PopulationDisplay extends JPanel {
       topColor = new JPanel[30];
       topDNA = new JLabel[30];
       topPop = new JLabel[30];
+      tickSpeed = new JLabel("0 ticks / s");
       setBackground(Color.white);
       setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
@@ -36,10 +38,11 @@ public class PopulationDisplay extends JPanel {
       for (int i = 0; i < 30; i++)
       {
           if (i < 15){
-          gbc.gridy = i;
+          gbc.gridy = i + 1;
           topColor[i] = new JPanel();
           topColor[i].setBackground(Color.white);
           topColor[i].setSize(new Dimension(5, 5));
+          topColor[i].setBorder(BorderFactory.createLineBorder(Color.black));
           gbc.gridx = 0;
           add(topColor[i],gbc);
           topDNA[i] = new JLabel("   ");
@@ -49,10 +52,11 @@ public class PopulationDisplay extends JPanel {
           gbc.gridx = 2;
           add(topPop[i],gbc); }
           else {
-          gbc.gridy = i - 15;
+          gbc.gridy = i - 14;
           topColor[i] = new JPanel();
           topColor[i].setBackground(Color.white);
           topColor[i].setSize(new Dimension(5, 5));
+          topColor[i].setBorder(BorderFactory.createLineBorder(Color.black));
           gbc.gridx = 3;
           add(topColor[i],gbc);
           topDNA[i] = new JLabel("   ");
@@ -63,6 +67,9 @@ public class PopulationDisplay extends JPanel {
           add(topPop[i],gbc); }
           
       }
+      gbc.gridy = 0;
+      gbc.gridx = 0;
+      add(tickSpeed, gbc);
     }
 
     public void refresh (Population[] top)
@@ -75,8 +82,24 @@ public class PopulationDisplay extends JPanel {
            {
                temp += top[i].dna[j];
            }
-           topDNA[i].setText("          " + temp);
-           topPop[i].setText("          " + top[i].size + "     ");
+           if (top[i].color.equals(Color.gray))
+           {
+               topDNA[i].setText("          ");
+               topPop[i].setText("               ");
+           }
+           else
+           {
+               topDNA[i].setText("          " + temp);
+               topPop[i].setText("          " + top[i].size + "     ");
+           }
        }
+    }
+    
+    public void refreshTickSpeed(long time)
+    {
+        if (time != 0)
+        {tickSpeed.setText(1000000000 / time + " ticks / s");}
+        else
+        {tickSpeed.setText("0 ticks / s");}
     }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import javax.swing.*;  
 
 public class GUI     {
    private Frame mainFrame;
@@ -35,6 +36,7 @@ public class GUI     {
    private int startfRate = boardSize/10;
    private boolean run = true;
    private boolean barrierVis = true;
+   private String[] commands = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H", "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
    
     
    public GUI(){
@@ -190,6 +192,7 @@ public class GUI     {
       
       JButton toggleInv = new JButton("Make Barr Inv");
       JButton refreshList= new JButton("Refresh List");
+      JButton commands = new JButton("Commands");
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
@@ -201,7 +204,7 @@ public class GUI     {
       speedSlider.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             int spd = ((JSlider)e.getSource()).getValue();
-            speed = (int)(100 * Math.exp(-spd * 2 / 43));
+            speed = (int)(100 * Math.exp(-spd * 2.0 / 43.0));
                 simulator.setSpeed(speed);
             
          }
@@ -523,6 +526,35 @@ public class GUI     {
       mainFrame.setVisible(true); 
       mainFrame.pixelSize = simulator.pixelSize;
    } 
+   
+   /* public void dispCommand()
+   {
+       JFrame commFrame = new JFrame("Command Toggle");
+       JDialog comDialog = new JDialog(commFrame, "Commands");
+       ArrayList<String> inactiveCommands = simulator.getInactiveCommands();
+       JCheckBox[] boxes = new JCheckBox[commands.length];
+       for (int i = 0; i < commands.length; i++)
+       {
+           if (inactiveCommands.contains(commands[i]))
+           {
+               boxes[i] = new JCheckBox(commands[i], false);
+           }
+           else
+           {
+               boxes[i] = new JCheckBox(commands[i], true);
+           }
+           boxes[i].addItemListener(new ItemListener() {    
+             public void itemStateChanged(ItemEvent e) {                 
+                if (e.getStateChange()==1) {simulator.removeInactiveCommand(commands[i]);}
+                else {simulator.addInactiveCommand(commands[i]); }   
+             } }); 
+           commFrame.add(boxes[i]);
+       } 
+       
+       
+       
+       
+   } */
    
    public void save(String filename)
    {        

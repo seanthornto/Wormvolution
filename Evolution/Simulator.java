@@ -21,7 +21,6 @@ public class Simulator
     private int foodValue;
     private int maxTimeSteps;
     private double mutationRate;
-    // private String[] commands = {"M", "M","Z", "Z", "<", "<", ">",  ">", "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" };
     private int speed;
     public int pixelSize;
     private int boardSize;
@@ -37,7 +36,8 @@ public class Simulator
     public int boardTick;
     private Color barrierColor;
     private ArrayList<Population> populations;
-   
+    private ArrayList<String> inactiveCommands;
+    private long tickTime;
     //------------------------------CONSTRUCTORS-------------------------------
     /**
      * Constructor for objects of class Simulator
@@ -55,6 +55,7 @@ public class Simulator
         popDisp = new PopulationDisplay();
         critters = new ArrayList<Critter>();
         populations = new ArrayList<Population>();
+        inactiveCommands = new ArrayList<String>();
         this.foodRate = bs/10;
         this.foodValue = bs/3;
         maxTimeSteps = 10;
@@ -62,7 +63,7 @@ public class Simulator
         this.speed = 10;
         colorVar = 0.5;
         sightRange = 10;
-        boardTick = 0;
+        boardTick = 1;
         barrierColor = Color.gray;
         isFood = new boolean[bs][bs];
         isCritter = new boolean[bs][bs];
@@ -95,7 +96,7 @@ public class Simulator
     
     public void boardTick()
     {
-        if (boardTick == 10) {boardTick = 0;}
+        if (boardTick == 50) {boardTick = 0;}
         else {boardTick++;}
     }
     
@@ -174,6 +175,20 @@ public class Simulator
         sightRange = sightR;
     }
         
+    public void addInactiveCommand(String command)
+    {
+        inactiveCommands.add(command);
+    }
+    
+    public void removeInactiveCommand(String command)
+    {
+        inactiveCommands.remove(command);
+    }
+    
+    public ArrayList<String> getInactiveCommands()
+    {
+        return inactiveCommands;
+    }
 
     //--------------------------------FOOD-------------------------------------
     public boolean isFood(int x, int y)
@@ -735,7 +750,12 @@ public class Simulator
         int step = critter.getStep();
         String facing = critter.getFacing();
         Point[] body = critter.getBody();
-        if (dna[step].equals("M"))
+        if (inactiveCommands.contains(dna[step]))
+        {
+            critter.nextStep();
+            critterTimeStep(critter);
+        }
+        else if (dna[step].equals("M"))
         {
             moveCritter(critter);
             critter.nextStep();
@@ -1228,8 +1248,16 @@ public class Simulator
     //-------------------------------------------------------------------------
     public void gameTimeStep()
     {
+        long startTime = 0;
         if (!paused)
         {
+            boardTick();
+            if (boardTick == 0)
+            {
+                startTime = System.nanoTime();
+                popDisp.refresh(getTopPopulations());
+                popDisp.refreshTickSpeed(tickTime);
+            }
             int i = 0; 
         
         while (i < critters.size())
@@ -1278,12 +1306,15 @@ public class Simulator
         {
             addFood((int)(Math.random() * boardSize),(int)(Math.random() * boardSize));
         }
-        }
         
+        }
         board.repaint();
         wait(speed);
-        boardTick();
-        if (boardTick == 0) {popDisp.refresh(getTopPopulations());}
+        if (boardTick == 0)
+        {
+            long endTime = System.nanoTime();
+            tickTime = endTime - startTime;
+        }
     }
 
     public void gameTimeStep(int steps)
