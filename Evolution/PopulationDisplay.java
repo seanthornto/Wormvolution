@@ -34,6 +34,8 @@ public class PopulationDisplay extends JPanel {
       setBackground(Color.white);
       setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
+      setBorder(BorderFactory.createLineBorder(Color.black));
+      gbc.anchor = GridBagConstraints.WEST;
       
       for (int i = 0; i < 30; i++)
       {
@@ -67,8 +69,10 @@ public class PopulationDisplay extends JPanel {
           add(topPop[i],gbc); }
           
       }
-      gbc.gridy = 0;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.gridwidth = 5;
       gbc.gridx = 0;
+      gbc.gridy = 0;
       add(tickSpeed, gbc);
     }
 
@@ -84,13 +88,13 @@ public class PopulationDisplay extends JPanel {
            }
            if (top[i].color.equals(Color.gray))
            {
-               topDNA[i].setText("          ");
-               topPop[i].setText("               ");
+               topDNA[i].setText(" ");
+               topPop[i].setText(" ");
            }
            else
            {
-               topDNA[i].setText("          " + temp);
-               topPop[i].setText("          " + top[i].size + "     ");
+               topDNA[i].setText(" " + temp);
+               topPop[i].setText(" " + top[i].size + " ");
            }
        }
     }

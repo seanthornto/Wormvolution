@@ -1310,6 +1310,7 @@ public class Simulator
         }
         board.repaint();
         wait(speed);
+        if (paused) {wait(250);}
         if (boardTick == 0)
         {
             long endTime = System.nanoTime();

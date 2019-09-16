@@ -37,6 +37,32 @@ public class GUI     {
    private boolean run = true;
    private boolean barrierVis = true;
    private String[] commands = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H", "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+   private String[] commInfo = {"Moves critter one space in the direction it is facing",
+                                "Critter rests (Does nothing)",
+                                "Changes critter facing counter-clockwise.",
+                                "Changes critter facing clockwise.",
+                                "Changes critter facing to up.",
+                                "Changes critter facing to right.",
+                                "Changes critter facing to down.",
+                                "Changes critter facing to left.",
+                                "Moves critter two spaces in the direction it is facing",
+                                "OR: for conditionals X and Y, the code XvY continues if either X or Y are true.",
+                                "Restart at head of DNA",
+                                "ELSE: if a condition is checked to be false, go to the next ELSE (or END). Go to next END if stepping into ELSE.",
+                                "END: if a condition is checked to be false, go to the next END (or ELSE). Continue on if stepping into END.",
+                                "Go back to last conditional checked. If there is none, restart. Also acts as an END.",
+                                "IF there is food within sight range in the direction the critter is facing",
+                                "IF there is NOT food",
+                                "IF the critter was blocked when it last attempted to move",
+                                "IF the critter was NOT blocked",
+                                "IF the critter's energy is below half max value",
+                                "IF the critter's energy is above half max value",
+                                "IF the critter's age is above half max value",
+                                "IF the critter's age is below half max value",
+                                "IF the critter has reproduced",
+                                "IF the critter has NOT reproduced" };
+                                
+                                
    
     
    public GUI(){
@@ -192,7 +218,7 @@ public class GUI     {
       
       JButton toggleInv = new JButton("Make Barr Inv");
       JButton refreshList= new JButton("Refresh List");
-      JButton commands = new JButton("Commands");
+      JButton comm = new JButton("Commands");
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
@@ -204,7 +230,7 @@ public class GUI     {
       speedSlider.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             int spd = ((JSlider)e.getSource()).getValue();
-            speed = (int)(100 * Math.exp(-spd * 2.0 / 43.0));
+            speed = (int)(200* Math.exp(-spd * .02) - 27);
                 simulator.setSpeed(speed);
             
          }
@@ -361,6 +387,12 @@ public class GUI     {
             }
       });
       
+      comm.addActionListener(new ActionListener(){  
+          public void actionPerformed(ActionEvent e){  
+            dispCommand();
+        }  
+      });
+      
       
       
       cSpeed = new JLabel(" "+speed);
@@ -493,13 +525,16 @@ public class GUI     {
       comp++;
       
       /*controlPanel.add(saveLoad,gbc);
-      gbc.gridx = 1;
-      gbc.gridy = 7;
-      controlPanel.add(save,gbc);
+      ;
       gbc.gridx = 2;
       gbc.gridy = 7;
       controlPanel.add(load,gbc);
       */
+     
+      gbc.gridx = 1;
+      gbc.gridy = 7;
+      controlPanel.add(comm,gbc);
+      comp++;
       gbc.gridx = 2;
       gbc.gridy = 7;
       controlPanel.add(toggleInv,gbc);
@@ -527,34 +562,52 @@ public class GUI     {
       mainFrame.pixelSize = simulator.pixelSize;
    } 
    
-   /* public void dispCommand()
+   public void dispCommand()
    {
-       JFrame commFrame = new JFrame("Command Toggle");
-       JDialog comDialog = new JDialog(commFrame, "Commands");
+       simulator.pause();
+       JDialog comDialog = new JDialog(mainFrame, "Commands");
+       
+       GridBagConstraints gbc = new GridBagConstraints();
+       gbc.gridx = 0;
+       gbc.anchor = GridBagConstraints.WEST;
+ 
+       comDialog.setLayout(new GridBagLayout());
        ArrayList<String> inactiveCommands = simulator.getInactiveCommands();
        JCheckBox[] boxes = new JCheckBox[commands.length];
        for (int i = 0; i < commands.length; i++)
        {
-           if (inactiveCommands.contains(commands[i]))
+           String command = commands[i];
+           if (inactiveCommands.contains(command))
            {
-               boxes[i] = new JCheckBox(commands[i], false);
+               boxes[i] = new JCheckBox(command + " - " + commInfo[i], false);
            }
            else
            {
-               boxes[i] = new JCheckBox(commands[i], true);
+               boxes[i] = new JCheckBox(command + " - " + commInfo[i], true);
            }
            boxes[i].addItemListener(new ItemListener() {    
              public void itemStateChanged(ItemEvent e) {                 
-                if (e.getStateChange()==1) {simulator.removeInactiveCommand(commands[i]);}
-                else {simulator.addInactiveCommand(commands[i]); }   
-             } }); 
-           commFrame.add(boxes[i]);
+                if (e.getStateChange()==1) {simulator.removeInactiveCommand(command);}
+                else {simulator.addInactiveCommand(command); }   
+             } });
+             gbc.gridy = i;
+           comDialog.add(boxes[i], gbc);
        } 
        
        
+       comDialog.addWindowListener(new WindowAdapter() 
+       {
+
+            public void windowClosing(WindowEvent e)
+            {
+                simulator.unpause();
+            }
+        });
+       comDialog.setSize(700,700);
+       comDialog.setVisible(true);
        
        
-   } */
+   }
    
    public void save(String filename)
    {        
