@@ -20,7 +20,7 @@ public class GUI     {
    private int sleepCost;
    private int moveCost;
    private int turnCost;
-   private int speed;
+   private long speed;
    private double mutation;
    private int foodVal;
    private int foodRate;
@@ -219,6 +219,13 @@ public class GUI     {
       JButton toggleInv = new JButton("Make Barr Inv");
       JButton refreshList= new JButton("Refresh List");
       JButton comm = new JButton("Commands");
+      JButton dispPop = new JButton("Disp Populations");
+      
+      dispPop.addActionListener(new ActionListener(){
+          public void actionPerformed (ActionEvent e){
+              if (!simulator.popDispVis) simulator.dispPopulations();
+            }
+        });
       
       reset.addActionListener(new ActionListener(){
           public void actionPerformed (ActionEvent e){
@@ -230,7 +237,7 @@ public class GUI     {
       speedSlider.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             int spd = ((JSlider)e.getSource()).getValue();
-            speed = (int)(200* Math.exp(-spd * .02) - 27);
+            speed = (long)(200000000 * Math.exp(-spd * 0.02)) - 27067056;
                 simulator.setSpeed(speed);
             
          }
@@ -540,6 +547,11 @@ public class GUI     {
       controlPanel.add(toggleInv,gbc);
       comp++;
       
+      gbc.gridx = 3;
+      gbc.gridy = 7;
+      controlPanel.add(dispPop,gbc);
+      comp++;
+      
 
       
       gbc.gridx = 6;
@@ -549,12 +561,12 @@ public class GUI     {
       simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
       controlPanel.add(simulator.board,gbc);
       comp++;
-      gbc.fill = GridBagConstraints.HORIZONTAL;
+      /*gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.gridwidth = 6;
       gbc.gridx = 0;
       gbc.gridy = 8;
-      controlPanel.add(simulator.popDisp,gbc);
-      comp++;
+      controlPanel.add(simulator.popDisp,gbc); 
+      comp++;*/
       mainFrame.sim = simulator;
       mainFrame.bs = bs;
       mainFrame.setContentPane(controlPanel);

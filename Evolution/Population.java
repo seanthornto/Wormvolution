@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 /**
  * Write a description of class Population here.
  *
@@ -10,16 +11,18 @@ public class Population implements Comparable<Population>
     // instance variables - replace the example below with your own
     public int size;
     public Color color;
-    public String[] dna;
-
+    public String dna;
+    public ArrayList<String> ancestors;
+    
     /**
      * Constructor for objects of class Population
      */
-    public Population(Color color, String[] dna)
+    public Population(Color color, String dna)
     {
         this.color = color;
         this.dna = dna;
         size = 1;
+        ancestors = new ArrayList<String>();
     }
 
     public void addMember()
@@ -32,23 +35,25 @@ public class Population implements Comparable<Population>
         size--;
     }
     
+    public void addAncestor(String ancestor)
+    {
+        ancestors.add(ancestor);
+        if (ancestors.size() > 10) ancestors.remove(0);
+    }
+    
+    public void addAncestors(Population pop)
+    {
+        for (String anc : pop.ancestors)
+        {
+            addAncestor(anc);
+        }
+        addAncestor(pop.dna);
+    }
+    
+    
     public boolean equals(Population pop)
     {
-        if(dna.length != pop.dna.length)
-        {
-            return false;
-        }
-        else
-        {
-            for (int i = 0; i < dna.length; i++)
-            {
-                if (!(dna[i].equals(pop.dna[i])))
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return dna.equals(pop.dna);
     }
     
     @Override

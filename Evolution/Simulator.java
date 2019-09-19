@@ -1,8 +1,21 @@
 import java.util.ArrayList;
 import java.util.*;
 import java.awt.*;
+import java.awt.event.*;
 
-
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import javax.swing.*;  
 
     
 /**
@@ -21,7 +34,7 @@ public class Simulator
     private int foodValue;
     private int maxTimeSteps;
     private double mutationRate;
-    private int speed;
+    private long speed;
     public int pixelSize;
     private int boardSize;
     private int sleepC; 
@@ -38,6 +51,8 @@ public class Simulator
     private ArrayList<Population> populations;
     private ArrayList<String> inactiveCommands;
     private long tickTime;
+    public boolean popDispVis;
+    public boolean autoRefPop;
     //------------------------------CONSTRUCTORS-------------------------------
     /**
      * Constructor for objects of class Simulator
@@ -52,7 +67,6 @@ public class Simulator
         setTurnCost(tC);
         pixelSize = 900 / boardSize;
         board = new Board(pixelSize,bs);
-        popDisp = new PopulationDisplay();
         critters = new ArrayList<Critter>();
         populations = new ArrayList<Population>();
         inactiveCommands = new ArrayList<String>();
@@ -68,6 +82,7 @@ public class Simulator
         isFood = new boolean[bs][bs];
         isCritter = new boolean[bs][bs];
         isBarrier = new boolean[bs][bs];
+        popDispVis = false;
         for(int i = 0; i < bs; i++)
         {
             for (int j = 0; j < bs; j++)
@@ -96,7 +111,7 @@ public class Simulator
     
     public void boardTick()
     {
-        if (boardTick == 50) {boardTick = 0;}
+        if (boardTick == 100) {boardTick = 0;}
         else {boardTick++;}
     }
     
@@ -118,19 +133,13 @@ public class Simulator
     {
         turnC = tC;
     }
-    //MEthod to return data to the UI
-    public int[] refresh()
-    {
-        int[] info = new int[]{speed, foodValue, foodRate};
-        return info;
-    }
     //Methods used by refresh()
     public double refreshMutationRate()
     {
         return mutationRate;
     }
     
-    public void setSpeed(int speed)
+    public void setSpeed(long speed)
     {
         this.speed = speed;
     }
@@ -540,22 +549,7 @@ public class Simulator
         int y = critter.getBody()[0].y;
         Point point = new Point(x,y);
         addCritterPoint(point);
-        Population pop = new Population(critter.getColor(), critter.getDNA());
-        boolean exists = false;
-        for (Population p : populations)
-        {
-            if (pop.equals(p))
-            {
-                p.addMember();
-                critter.setColor(p.color);
-                exists = true;
-                break;
-            }
-        }
-        if (!exists)
-        {
-            populations.add(pop);
-        }
+        
         board.draw(point, critter.getColor());
     }
 
@@ -608,7 +602,34 @@ public class Simulator
                     board.erase(lastPoint);
                     if (critter.getEnergy() >= critter.getBaseEnergy() * 2)
                     {
-                        addCritter(critter.reproduce(mutationRate, lastPoint, colorVar));
+                        Critter newCritter = critter.reproduce(mutationRate, lastPoint, colorVar);
+                         Population pop = new Population(newCritter.getColor(),toString(newCritter.getDNA()));
+                         Population parPop = new Population(critter.getColor(), toString(critter.getDNA()));
+                             boolean exists = false;
+                             boolean parFound = false;
+                             boolean different = !(pop.equals(parPop));
+                             for (Population p : populations)
+                             {
+                                 if (different &&!parFound && parPop.equals(p))
+                                 {
+                                     parPop = p;
+                                     parFound = true;
+                                 }
+                                 if (pop.equals(p))
+                                 {
+                                     p.addMember();
+                                     newCritter.setColor(p.color);
+                                     exists = true;
+                                     break;
+                                 }
+                             }
+                             if (!exists)  
+                             {
+                                 pop.addAncestors(parPop);
+                                 populations.add(pop);
+                             }
+                             
+                        addCritter(newCritter);
                     }
                 }
             }
@@ -618,7 +639,35 @@ public class Simulator
                 board.erase(lastPoint);
                 if (critter.getEnergy() >= critter.getBaseEnergy() * 2)
                 {
-                    addCritter(critter.reproduce(mutationRate, lastPoint, colorVar));
+                    Critter newCritter = critter.reproduce(mutationRate, lastPoint, colorVar);
+                         Population pop = new Population(newCritter.getColor(),toString(newCritter.getDNA()));
+                         Population parPop = new Population(critter.getColor(), toString(critter.getDNA()));
+                             boolean exists = false;
+                             boolean parFound = false;
+                             boolean different = !(pop.equals(parPop));
+                             for (Population p : populations)
+                             {
+                                 if (different &&!parFound && parPop.equals(p))
+                                 {
+                                     parPop = p;
+                                     parFound = true;
+                                 }
+                                 if (pop.equals(p))
+                                 {
+                                     p.addMember();
+                                     newCritter.setColor(p.color);
+                                     exists = true;
+                                     break;
+                                 }
+                             }
+                             if (!exists)  
+                             {
+                                 pop.addAncestors(parPop);
+                                 populations.add(pop);
+                             }
+                             
+                        addCritter(newCritter);
+                    
                 }
             }
             critter.move(newSpace);
@@ -1255,8 +1304,8 @@ public class Simulator
             if (boardTick == 0)
             {
                 startTime = System.nanoTime();
-                popDisp.refresh(getTopPopulations());
-                popDisp.refreshTickSpeed(tickTime);
+                if (popDispVis)
+                {popDisp.refresh(getTopPopulations());}
             }
             int i = 0; 
         
@@ -1284,7 +1333,7 @@ public class Simulator
                     }
                     
                 }
-                Population pop = new Population(iCritter.getColor(), iCritter.getDNA());
+                Population pop = new Population(iCritter.getColor(), toString(iCritter.getDNA()));
                 for (Population p : populations)
                 {
                     if (pop.equals(p))
@@ -1302,19 +1351,20 @@ public class Simulator
             }
 
         }
-        for (int j = 0; j < foodRate; j ++)
+        for (int j = 0; j < foodRate; j++)
         {
             addFood((int)(Math.random() * boardSize),(int)(Math.random() * boardSize));
         }
         
         }
         board.repaint();
-        wait(speed);
-        if (paused) {wait(250);}
+        hold(speed);
+        if (paused) {hold(250000000);}
         if (boardTick == 0)
         {
             long endTime = System.nanoTime();
             tickTime = endTime - startTime;
+            if (popDispVis) popDisp.refreshTickSpeed(tickTime);
         }
     }
 
@@ -1326,11 +1376,13 @@ public class Simulator
         }
     }
 
-    public void wait(int milliseconds)
+    public void hold(long nano)
     {
         try
         {
-            Thread.sleep(milliseconds);
+            long milliseconds = nano / 1000000;
+            int nanoseconds = (int) (nano - milliseconds * 1000000);
+            Thread.sleep(milliseconds, nanoseconds);
         } 
         catch (Exception e)
         {
@@ -1338,7 +1390,19 @@ public class Simulator
         }
     }
     
-    
+    public void dispPopulations()
+    {
+        popDisp = new PopulationDisplay();
+        popDisp.addWindowListener(new WindowAdapter() 
+       {
+
+            public void windowClosing(WindowEvent e)
+            {
+                popDispVis = false;
+            }
+        });
+        popDispVis = true; 
+    }    
     public Population[] getTopPopulations()
     {
         Population[] top = new Population[30];
@@ -1349,8 +1413,7 @@ public class Simulator
                 {top[i] = populations.get(i);}
             else
             {
-                String[] dna = new String[1];
-                dna[0] = "";
+                String dna = "";
                 top[i] = new Population(Color.gray, dna);
             }
 

@@ -57,6 +57,7 @@ public class Critter
         head = 0;
         curled = true;
         reproduced = false;
+        lastCondition = 0;
     }
     public Critter(String[] newDNA, int xPos, int yPos, String facing, Color color)
     {
@@ -79,6 +80,7 @@ public class Critter
         head = 0;
         curled = true;
         reproduced = false;
+        lastCondition = 0;
     }
     
     public int getMaxAge()
@@ -312,21 +314,24 @@ public class Critter
             if (Math.random() < mutationRate / length)
             {
                 int rand3 = (int)(Math.random() * 3);
+                double rand = Math.random();
+                if (rand < .5) {rand -= 1;}
+                rand *= colorVar;
                 if (rand3 == 0)
                 {
-                    newR += (float)(Math.random() - .5) * 2 * colorVar;
+                    newR += rand;
                     if (newR < .2) newR = (float).2;
                     else if (newR > 1) newR = 1;
                 }
                 else if (rand3 == 1)
                 {
-                    newG += (float)(Math.random() - .5) * 2 * colorVar;
+                    newG += rand;
                     if (newG < .2) newG = (float).2;
                     else if (newG > 1) newG = 1;
                 }
                 else
                 {
-                    newB += (float)(Math.random() - .5) * 2 * colorVar;
+                    newB += rand;
                     if (newB < .2) newB = (float).2;
                     else if (newB > 1) newB = 1;
                 }
