@@ -36,7 +36,7 @@ public class GUI     {
    private int startfRate = boardSize/10;
    private boolean run = true;
    private boolean barrierVis = true;
-   private String[] genes = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H", "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+   private String[] genes = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H", "v", "r", "e", "E", "C", "0", "-0", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "5", "-5"};
    private String[] commInfo = {"Moves critter one space in the direction it is facing",
                                 "Critter rests (Does nothing)",
                                 "Changes critter facing counter-clockwise.",
@@ -55,12 +55,14 @@ public class GUI     {
                                 "IF there is NOT food",
                                 "IF the critter was blocked when it last attempted to move",
                                 "IF the critter was NOT blocked",
-                                "IF the critter's energy is below half max value",
-                                "IF the critter's energy is above half max value",
+                                "IF the critter's energy is above half base energy",
+                                "IF the critter's energy is below half base energy",
                                 "IF the critter's age is above half max value",
                                 "IF the critter's age is below half max value",
                                 "IF the critter has reproduced",
-                                "IF the critter has NOT reproduced" };
+                                "IF the critter has NOT reproduced",
+                                "IF there is a critter within sight",
+                                "IF there is NOT a critter within sight"};
                                 
                                 
    
@@ -598,11 +600,11 @@ public class GUI     {
            String gene = genes[i];
            if (inactiveGenes.contains(gene))
            {
-               boxes[i] = new JCheckBox(gene + " - " + commInfo[i], false);
+               boxes[i] = new JCheckBox(gene + " : " + commInfo[i], false);
            }
            else
            {
-               boxes[i] = new JCheckBox(gene + " - " + commInfo[i], true);
+               boxes[i] = new JCheckBox(gene + " : " + commInfo[i], true);
            }
            boxes[i].addItemListener(new ItemListener() {    
              public void itemStateChanged(ItemEvent e) {                 

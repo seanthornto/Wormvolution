@@ -9,7 +9,7 @@ import java.awt.*;
 public class Critter
 {
     // instance variables - replace the example below with your own
-	private static String[] genes = {"M", "M","Z", "Z", "<", "<", ">",  ">", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" , "v", "r", "e", "E", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+	private static String[] genes = {"M", "M","Z", "Z", "<", "<", ">",  ">", "U", "U", "R","R",  "D","D", "L", "L", "H", "H" , "A", "v", "r", "e", "E", "C", "0", "-0", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "5", "-5"};
     private static String[] facings = {"U", "R", "D", "L"};
     private static double mutationRate = .2;
 	
@@ -24,7 +24,6 @@ public class Critter
     private int timeStep;
     private Color color;
     private boolean blocked;
-    public int head;
     public int length;
     public boolean hasElse;
     private int lastCondition;
@@ -51,7 +50,6 @@ public class Critter
         timeStep = 0;
         blocked = false;
         color = Color.red;
-        head = 0;
         curled = true;
         reproduced = false;
         lastCondition = 0;
@@ -75,7 +73,6 @@ public class Critter
         timeStep = 0;
         blocked = false;
         this.color = color;
-        head = 0;
         curled = true;
         reproduced = false;
         lastCondition = 0;
@@ -104,12 +101,6 @@ public class Critter
     public void goToLastCondition()
     {
         dnaStep = lastCondition;
-    }
-    
-    
-    public void setHead(int newHead)
-    {
-        head = newHead;
     }
     
     public void setBlocked(boolean blocked)
@@ -307,13 +298,13 @@ public class Critter
         float newG = (float)(color.getGreen() / 255.0);
         float newB = (float)(color.getBlue() / 255.0);
         
-        for (int j = 0 ; j < length ; j++)
+        for (int j = 0 ; j < length ; j++) //For each gene of the dna sequence, check if it mutates or copies.
         {
-            if (Math.random() < mutationRate / length)
+            if (Math.random() < mutationRate / length) //If it mutates
             {
-                int rand3 = (int)(Math.random() * 3);
+                int rand3 = (int)(Math.random() * 3); // Adjust the color of the new critter
                 double rand = Math.random();
-                if (rand < .5) {rand -= 1;}
+                if (rand < .5) rand -= 1;
                 rand *= colorVar;
                 if (rand3 == 0) {
                     newR += rand;
@@ -334,23 +325,24 @@ public class Critter
                 int randGene = (int)(Math.random() * genes.length);
                 
                 rand3 = (int)(Math.random() * 3);
-                if (rand3 == 1) {
+                // if (rand3 == 0) Delete gene. (Does nothing)
+                if (rand3 == 1) { //Add gene. Randomly assign to left or right of original gene.
                     int rand2 = (int)(Math.random() * 2);
                     if (rand2 == 0) {
                         newDNA.add(genes[randGene]);
                         newDNA.add(dna[j]);
                     }
-                    else {
+                    else { 
                         newDNA.add(dna[j]);
                         newDNA.add(genes[randGene]);
                     }
                 }
-                else if (rand3 == 2 || (rand3 == 0 && newDNA.size() == 0)) newDNA.add(genes[randGene]);
+                else if (rand3 == 2 || (rand3 == 0 && newDNA.size() == 0 && j == length - 1)) newDNA.add(genes[randGene]); //Replace gene. Also replaces if deleting makes the dna sequence empty
             }
-            else newDNA.add(dna[j]);
+            else newDNA.add(dna[j]); //If no mutation, copy as normal.
         }
         String newFacing;
-        
+         
         if (facing.equals("U"))  newFacing = "R";
         else if (facing.equals("R"))  newFacing = "D";
         else if (facing.equals("D"))  newFacing = "L";

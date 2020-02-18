@@ -43,6 +43,7 @@ public class Simulator
     private boolean[][] isFood;
     private boolean[][] isBarrier;
     private boolean[][] isCritter;
+    private boolean[][] attacked;
     public int boardTick;
     private Color barrierColor;
     private ArrayList<Population> populations;
@@ -50,6 +51,7 @@ public class Simulator
     private long tickTime;
     public boolean popDispVis;
     public boolean autoRefPop;
+    
     //------------------------------CONSTRUCTORS-------------------------------
     /**
      * Constructor for objects of class Simulator
@@ -78,6 +80,7 @@ public class Simulator
         isFood = new boolean[bs][bs];
         isCritter = new boolean[bs][bs];
         isBarrier = new boolean[bs][bs];
+        attacked = new boolean[bs][bs];
         popDispVis = false;
         for(int i = 0; i < bs; i++)
         {
@@ -86,6 +89,7 @@ public class Simulator
                 isFood[i][j] = false;
                 isCritter[i][j] = false;
                 isBarrier[i][j] = false;
+                attacked[i][j] = false;
             }
         }
     }
@@ -311,68 +315,36 @@ public class Simulator
     
     public boolean lookFood(int x, int y, String facing)
     {
-        if (facing.equals("U"))
-        {
-            for (int i = 1; i < sightRange; i++)
-            {
-                if (isFood(x,y-i))
-                {
-                    return true;
-                }
-                if (isBarrier(x,y-i)|| isCritter(x,y-i))
-                {
-                    return false;
-                }
+        if (facing.equals("U")) {
+            for (int i = 1; i < sightRange; i++) {
+                if (isFood(x,y-i)) return true;
+                if (isBarrier(x,y-i)|| isCritter(x,y-i)) return false;
             }
             return false;
         }
-        else if (facing.equals("D"))
-        {
-            for (int i = 1; i < sightRange; i++)
-            {
-                if (isFood(x,y+i))
-                {
-                    return true;
-                }
-                if (isBarrier(x,y+i)|| isCritter(x,y+i))
-                {
-                    return false;
-                }
+        else if (facing.equals("D")) {
+            for (int i = 1; i < sightRange; i++) {
+                if (isFood(x,y+i)) return true;
+                if (isBarrier(x,y+i)|| isCritter(x,y+i)) return false;
             }
             return false;
         }
-        else if (facing.equals("L"))
-        {
-            for (int i = 1; i < sightRange; i++)
-            {
-                if (isFood(x-i,y))
-                {
-                    return true;
-                }
-                if (isBarrier(x-i,y)|| isCritter(x-i,y))
-                {
-                    return false;
-                }
+        else if (facing.equals("L")) {
+            for (int i = 1; i < sightRange; i++) {
+                if (isFood(x-i,y))  return true;
+                if (isBarrier(x-i,y)|| isCritter(x-i,y))  return false;
             }
             return false;
         }
-        else
-        {
-            for (int i = 1; i < sightRange; i++)
-            {
-                if (isFood(x+i,y))
-                {
-                    return true;
-                }
-                if (isBarrier(x+i,y)|| isCritter(x+i,y))
-                {
-                    return false;
-                }
+        else {
+            for (int i = 1; i < sightRange; i++) {
+                if (isFood(x+i,y))  return true;
+                if (isBarrier(x+i,y)|| isCritter(x+i,y)) return false;
             }
             return false;
         }
     }
-     public boolean lookBarrier(int x, int y, String facing)
+    public boolean lookBarrier(int x, int y, String facing)
     {
         if (facing.equals("U")) {
             for (int i = 1; i < sightRange; i++) {
@@ -385,7 +357,6 @@ public class Simulator
                 if (isBarrier(x,y+i)) return true;
                 if (isCritter(x,y+i)) return false;
             }
-
         }
         else if (facing.equals("L")) {
             for (int i = 1; i < sightRange; i++) {
@@ -436,10 +407,7 @@ public class Simulator
     public String toString(String[] string)
     {
         String newString = new String();
-        for (int i = 0 ; i < string.length; i++)
-        {
-            newString += string[i];
-        }
+        for (int i = 0 ; i < string.length; i++) newString += string[i];
         return newString;
     }
     //-------------------------------------------------------------------------
@@ -474,10 +442,8 @@ public class Simulator
         int length = body.length;
         int x = body[0].x;
         int y = body[0].y;
-        int lastX = body[length - 1].x;
-        int lastY = body[length - 1].y;
         String facing = critter.getFacing();
-        Point lastPoint = new Point(lastX, lastY);
+        Point lastPoint = body[length - 1];
         
         if (facing.equals("U")) {
             if (y == 0)  y = boardSize;
@@ -492,8 +458,8 @@ public class Simulator
         }
         else  newSpace = new Point((x+1) % boardSize,y);
 
-
         if (!isBarrier(newSpace) && !isCritter(newSpace)) {
+        	
             if (critter.curled && length > 1) {
                 Point last2Point = body[length - 2];
                 if (!(lastPoint.equals(last2Point))) {
@@ -501,13 +467,13 @@ public class Simulator
                     removeCritterPoint(lastPoint);
                     board.erase(lastPoint);
                     if (critter.getEnergy() >= critter.getBaseEnergy() * 2) {
-                        Critter newCritter = critter.reproduce(lastPoint, colorVar);
-                         Population pop = new Population(newCritter.getColor(),toString(newCritter.getDNA()));
-                         Population parPop = new Population(critter.getColor(), toString(critter.getDNA()));
-                         boolean exists = false;
-                         boolean parFound = false;
-                         boolean different = !(pop.equals(parPop));
-                         for (Population p : populations) {
+                    	Critter newCritter = critter.reproduce(lastPoint, colorVar);
+                    	Population pop = new Population(newCritter.getColor(),toString(newCritter.getDNA()));
+                        Population parPop = new Population(critter.getColor(), toString(critter.getDNA()));
+                        boolean exists = false;
+                        boolean parFound = false;
+                        boolean different = !(pop.equals(parPop));
+                        for (Population p : populations) {
                              if (different &&!parFound && parPop.equals(p))  {
                                  parPop = p;
                                  parFound = true;
@@ -523,11 +489,11 @@ public class Simulator
                              pop.addAncestors(parPop);
                              populations.add(pop);
                          }
-                         
                         addCritter(newCritter);
                     }
                 }
             }
+            
             else {
                 removeCritterPoint(lastPoint);
                 board.erase(lastPoint);
@@ -564,6 +530,33 @@ public class Simulator
             critter.setBlocked(false);
         }
         else critter.setBlocked(true);
+    }
+    
+    public void critterAttack(Critter critter)
+    {
+    	Point attackSpace;
+        Point[] body = critter.getBody();
+        int x = body[0].x;
+        int y = body[0].y;
+        String facing = critter.getFacing();
+        
+        if (facing.equals("U")) {
+            if (y == 0)  y = boardSize;
+            attackSpace = new Point(x,y-1);
+        }
+        else if (facing.equals("D")) {
+            attackSpace = new Point(x,(y+1) % boardSize);
+        }
+        else if (facing.equals("L")) {
+            if (x == 0) x = boardSize;
+            attackSpace = new Point(x-1,y);
+        }
+        else  attackSpace = new Point((x+1) % boardSize,y);
+        
+        if (isCritter(attackSpace)) {
+        	attacked[attackSpace.x][attackSpace.y] = true;
+        	critter.addEnergy(moveC * 10);
+        }
     }
 
     public void findElse(Critter critter)
@@ -667,32 +660,31 @@ public class Simulator
         String facing = critter.getFacing();
         Point[] body = critter.getBody();
         
-        if (inactiveGenes.contains(dna[step])) //Checks if the current gene is an inactive one.
-        {
+        for (int i = 0; i < body.length; i++) {
+        	if (attacked[body[i].x][body[i].y]) {
+        		critter.spendEnergy(moveC * 10);
+        		attacked[body[i].x][body[i].y] = false;
+        	}
+        }
+        
+        if (inactiveGenes.contains(dna[step]))  {      //Checks if the current gene is an inactive one.
             critter.nextStep();
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("M"))
-        {
+        else if (dna[step].equals("M")) {
             moveCritter(critter);
             critter.nextStep();
-            int x = critter.getBody()[0].x;
-            int y = critter.getBody()[0].y;
-            Point point = new Point(x,y);
-            if (isFood(point))
-            {
+            Point point = critter.getBody()[0];
+            if (isFood(point)) {
                 critter.addEnergy(foodValue);
                 removeFood(point);
             }
             critter.spendEnergy(moveC);
         }
         
-        else if (dna[step].equals("H"))
-        {
+        else if (dna[step].equals("H")) {
             moveCritter(critter);
-            int x = critter.getBody()[0].x;
-            int y = critter.getBody()[0].y;
-            Point point = new Point(x,y);
+            Point point = critter.getBody()[0];
             if (isFood(point))
             {
                 critter.addEnergy(foodValue);
@@ -700,9 +692,7 @@ public class Simulator
             }
             
             moveCritter(critter);
-            x = critter.getBody()[0].x;
-            y = critter.getBody()[0].y;
-            point = new Point(x,y);
+            point = critter.getBody()[0];
             if (isFood(point))
             {
                 critter.addEnergy(foodValue);
@@ -719,89 +709,94 @@ public class Simulator
             critter.nextStep();
             critter.spendEnergy(sleepC);
         }
+        
         else if (dna[step].equals(">"))
         {
             critter.turnRight();
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
         else if (dna[step].equals("<"))
         {
             critter.turnLeft();
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
         else if (dna[step].equals("U"))
         {
             critter.changeFacing("U");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
         else if (dna[step].equals("R"))
         {
             critter.changeFacing("R");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
         else if (dna[step].equals("D"))
         {
             critter.changeFacing("D");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
         else if (dna[step].equals("L"))
         {
             critter.changeFacing("L");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
+        
+        else if (dna[step].equals("A")) {
+        	critterAttack(critter);
+        	critter.nextStep();
+        	critter.spendEnergy(moveC * 3);
+        }
+        
         else if (dna[step].equals("r"))
         {
             critter.goToStep(0);
             critterTimeStep(critter);
         }
+        
         else if (dna[step].equals("e"))
         {
             findEnd(critter);
             critterTimeStep(critter);
         }
+        
         else if (dna[step].equals("E") || dna[step].equals("v"))
         {
             critter.nextStep();
             critterTimeStep(critter);
         }
+        
         else if (dna[step].equals("C"))
         {
             critter.goToLastCondition();
             critterTimeStep(critter);
         }
+        
         else if (dna[step].equals("0")) //If the critter sees food
         {
-            if (lookFood(body[0].x, body[0].y, facing))
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (lookFood(body[0].x, body[0].y, facing)) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("1")) //If the critter does not see food
+        else if (dna[step].equals("-0")) //If the critter does not see food
         {
-            if (!lookFood(body[0].x, body[0].y, facing))
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (!lookFood(body[0].x, body[0].y, facing)) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("2")) //If the critter is blocked
+        else if (dna[step].equals("1")) //If the critter is blocked
         {
 
             if (critter.isBlocked())
@@ -815,7 +810,7 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("3")) //IF the critter is not blocked
+        else if (dna[step].equals("-1")) //IF the critter is not blocked
         {
 
             if (!(critter.isBlocked()))
@@ -829,20 +824,7 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("4"))
-        {
-            if (critter.getEnergy() < critter.getBaseEnergy())
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
-            critter.setLastCondition(step);
-            critterTimeStep(critter);
-        }
-        else if (dna[step].equals("5"))
+        else if (dna[step].equals("2"))
         {
             if (critter.getEnergy() >= critter.getBaseEnergy())
             {
@@ -855,7 +837,20 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("6"))
+        else if (dna[step].equals("-2"))
+        {
+            if (critter.getEnergy() < critter.getBaseEnergy())
+            {
+                skipOr(critter);
+            }
+            else
+            {
+                checkOr(critter);
+            }
+            critter.setLastCondition(step);
+            critterTimeStep(critter);
+        }
+        else if (dna[step].equals("3"))
         {
             if (critter.getAge() >= critter.getMaxAge() / 2)
             {
@@ -868,7 +863,7 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("7"))
+        else if (dna[step].equals("-3"))
         {
             if (critter.getAge() < critter.getMaxAge() / 2)
             {
@@ -881,7 +876,7 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("8"))
+        else if (dna[step].equals("4"))
         {
             if (critter.reproduced)
             {
@@ -894,7 +889,7 @@ public class Simulator
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("9"))
+        else if (dna[step].equals("-4"))
         {
             if (!critter.reproduced)
             {
@@ -906,6 +901,20 @@ public class Simulator
             }
             critter.setLastCondition(step);
             critterTimeStep(critter);
+        }
+        
+        else if (dna[step].equals("5")) {
+        	if (lookCritter(body[0].x, body[0].y, facing)) skipOr(critter);
+        	else checkOr(critter);
+        	critter.setLastCondition(step);
+        	critterTimeStep(critter);
+        }
+        
+        else if (dna[step].equals("-5")) {
+        	if (!lookCritter(body[0].x, body[0].y, facing)) skipOr(critter);
+        	else checkOr(critter);
+        	critter.setLastCondition(step);
+        	critterTimeStep(critter);
         }
     }
     //-------------------------------------------------------------------------
