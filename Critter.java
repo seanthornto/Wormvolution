@@ -41,12 +41,12 @@ public class Critter
             
             body[i] = new Point(xPos, yPos);
         }
-        baseEnergy = 400 + (length * 100);
+        baseEnergy = 200 + (length * 100);
         energy = baseEnergy;
         facing = facings[(int)(Math.random()*4)];
         dnaStep = 0;
         age = 0;
-        maxAge = 200 + (length * 100);
+        maxAge = 200 + (length * 200);
         timeStep = 0;
         blocked = false;
         color = Color.red;
@@ -64,7 +64,7 @@ public class Critter
         {
             body[i] = new Point(xPos, yPos);
         }
-        baseEnergy = 400 + (length * 100);
+        baseEnergy = 400 + (length * 200);
         energy = baseEnergy;
         this.facing = facing;
         dnaStep = 0;
