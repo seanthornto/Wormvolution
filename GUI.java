@@ -36,7 +36,7 @@ public class GUI     {
    private int startfRate = boardSize/10;
    private boolean run = true;
    private boolean barrierVis = true;
-   private String[] genes = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H", "v", "r", "e", "E", "C", "0", "-0", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "5", "-5"};
+   private String[] genes = {"M", "Z", "<",  ">", "U","R",  "D", "L", "H","A", "v", "r", "e", "E", "C", "0", "-0", "1", "-1", "2", "-2", "3", "-3", "4", "-4", "5", "-5"};
    private String[] commInfo = {"Moves critter one space in the direction it is facing",
                                 "Critter rests (Does nothing)",
                                 "Changes critter facing counter-clockwise.",
@@ -45,7 +45,8 @@ public class GUI     {
                                 "Changes critter facing to right.",
                                 "Changes critter facing to down.",
                                 "Changes critter facing to left.",
-                                "Moves critter two spaces in the direction it is facing",
+                                "Moves critter two spaces in the direction it is facing.",
+                                "Steals energy from a critter directly in front of the head.",
                                 "OR: for conditionals X and Y, the code XvY continues if either X or Y are true.",
                                 "Restart at head of DNA",
                                 "ELSE: if a condition is checked to be false, go to the next ELSE (or END). Go to next END if stepping into ELSE.",
@@ -188,8 +189,8 @@ public class GUI     {
       JButton reset = new JButton("Reset");
       JSlider speedSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
       JSlider mutationSlider = new JSlider(JSlider.VERTICAL, 0,100,20);
-      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50 );
-      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs * bs / 100, bs * bs / 200);
+      JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 500, 250 );
+      JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs * bs / 500, bs * bs / 1000);
       JSlider sleepCostSlider = new JSlider(JSlider.VERTICAL, 0,10,sleepC);
       JSlider moveCostSlider = new JSlider(JSlider.VERTICAL, 0,10,moveC);
       JSlider turnCostSlider = new JSlider(JSlider.VERTICAL, 0,10,turnC);
