@@ -703,50 +703,43 @@ public class Simulator
             critter.spendEnergy(2 * moveC);
         }
         
-        else if (dna[step].equals("Z"))
-        {
+        else if (dna[step].equals("Z")) {
             critter.sleep();
             critter.nextStep();
             critter.spendEnergy(sleepC);
         }
         
-        else if (dna[step].equals(">"))
-        {
+        else if (dna[step].equals(">")) {
             critter.turnRight();
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
         
-        else if (dna[step].equals("<"))
-        {
+        else if (dna[step].equals("<")) {
             critter.turnLeft();
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
         
-        else if (dna[step].equals("U"))
-        {
+        else if (dna[step].equals("U")) {
             critter.changeFacing("U");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
         
-        else if (dna[step].equals("R"))
-        {
+        else if (dna[step].equals("R")) {
             critter.changeFacing("R");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
         
-        else if (dna[step].equals("D"))
-        {
+        else if (dna[step].equals("D")) {
             critter.changeFacing("D");
             critter.nextStep();
             critter.spendEnergy(turnC);
         }
         
-        else if (dna[step].equals("L"))
-        {
+        else if (dna[step].equals("L")) {
             critter.changeFacing("L");
             critter.nextStep();
             critter.spendEnergy(turnC);
@@ -758,147 +751,89 @@ public class Simulator
         	critter.spendEnergy(moveC * 3);
         }
         
-        else if (dna[step].equals("r"))
-        {
+        else if (dna[step].equals("r")) {
             critter.goToStep(0);
             critterTimeStep(critter);
         }
         
-        else if (dna[step].equals("e"))
-        {
+        else if (dna[step].equals("e")) {
             findEnd(critter);
             critterTimeStep(critter);
         }
         
-        else if (dna[step].equals("E") || dna[step].equals("v"))
-        {
+        else if (dna[step].equals("E") || dna[step].equals("v")) {
             critter.nextStep();
             critterTimeStep(critter);
         }
         
-        else if (dna[step].equals("C"))
-        {
+        else if (dna[step].equals("C")) {
             critter.goToLastCondition();
             critterTimeStep(critter);
         }
         
-        else if (dna[step].equals("0")) //If the critter sees food
-        {
+        else if (dna[step].equals("0")) { //If the critter sees food
             if (lookFood(body[0].x, body[0].y, facing)) skipOr(critter);
             else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("-0")) //If the critter does not see food
-        {
+        else if (dna[step].equals("-0")) { //If the critter does not see food
             if (!lookFood(body[0].x, body[0].y, facing)) skipOr(critter);
             else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("1")) //If the critter is blocked
-        {
-
-            if (critter.isBlocked())
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+        else if (dna[step].equals("1")) { //If the critter is blocked
+            if (critter.isBlocked()) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
-        else if (dna[step].equals("-1")) //IF the critter is not blocked
-        {
-
-            if (!(critter.isBlocked()))
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+        else if (dna[step].equals("-1")) {//If the critter is not blocked
+            if (!(critter.isBlocked())) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("2"))
         {
-            if (critter.getEnergy() >= critter.getBaseEnergy())
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (critter.getEnergy() >= critter.getBaseEnergy()) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("-2"))
         {
-            if (critter.getEnergy() < critter.getBaseEnergy())
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (critter.getEnergy() < critter.getBaseEnergy()) skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("3"))
         {
-            if (critter.getAge() >= critter.getMaxAge() / 2)
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (critter.getAge() >= critter.getMaxAge() / 2)  skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("-3"))
         {
-            if (critter.getAge() < critter.getMaxAge() / 2)
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (critter.getAge() < critter.getMaxAge() / 2)  skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("4"))
         {
-            if (critter.reproduced)
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (critter.reproduced)  skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
         else if (dna[step].equals("-4"))
         {
-            if (!critter.reproduced)
-            {
-                skipOr(critter);
-            }
-            else
-            {
-                checkOr(critter);
-            }
+            if (!critter.reproduced)  skipOr(critter);
+            else checkOr(critter);
             critter.setLastCondition(step);
             critterTimeStep(critter);
         }
@@ -922,22 +857,16 @@ public class Simulator
     public void setBarrierColor(Color color)
     {
         barrierColor = color;
-        for (int i = 0; i < boardSize; i++)
-        {
-            for (int j = 0; j < boardSize; j++)
-            if (isBarrier[i][j])
-            {
-                board.draw(new Point(i,j), color);
-            }
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) if (isBarrier[i][j]) board.draw(new Point(i,j), color);
         }
     }
     
     public void addBarrier(Point point)
     {
         if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) return;
-        if (!isCritter(point))
-        {
-            if (isFood(point)){removeFood(point);}
+        if (!isCritter(point)) {
+            if (isFood(point)) removeFood(point);
             isBarrier[point.x][point.y] = true;
             board.draw(point, Color.gray);
         }
@@ -946,8 +875,7 @@ public class Simulator
     public void removeBarrier(Point point)
     {
         if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) return;
-        if (isBarrier[point.x][point.y] == true) 
-        {
+        if (isBarrier[point.x][point.y] == true) {
             isBarrier[point.x][point.y] = false;
             board.erase(point);
         }
@@ -955,11 +883,8 @@ public class Simulator
 
     public void addBarrierLine(int x1, int y1, int x2, int y2)
     {
-        
-        if (Math.abs(y1 - y2) <= Math.abs(x1 - x2))
-        {
-            if (x1 > x2)
-            {
+        if (Math.abs(y1 - y2) <= Math.abs(x1 - x2)) { //If slope is less than 1, iterate on x and add to y.
+            if (x1 > x2) { //If x1 > x2, switch values.
                 int temp;
                 temp = x1;
                 x1 = x2;
@@ -975,19 +900,14 @@ public class Simulator
             while (x <= x2)
             {
                 Point point = new Point(x, (int)(y + .5));
-                if (!isBarrier(point) && !isCritter(point))
-                {
-                    addBarrier(point);
-                }
+                if (!isBarrier(point) && !isCritter(point)) addBarrier(point);
                 x++;
                 y += slope; 
             }
         }
-        else
+        else //If slope is greater than 1, iterate on y and add to x.
         {
-            
-            if (y1 > y2)
-            {
+            if (y1 > y2) { //If y1 > y2, switch values.
                 int temp;
                 temp = y1;
                 y1 = y2;
@@ -1003,29 +923,22 @@ public class Simulator
             while (y <= y2)
             {
                 Point point = new Point((int)(x + .5), y);
-                if (!isBarrier(point))
-                {
-                    addBarrier(point);
-                }
+                if (!isBarrier(point) && !isCritter(point))  addBarrier(point);
                 y++;
                 x += slope; 
-            }
-            
+            }  
         }
     }
     
     public void addBarrierGraph(int x1, int y1, int x2, int y2)
     {
-      
       int temp;
-      if (x1 > x2)
-      {
+      if (x1 > x2) {
           temp = x1;
           x1 = x2;
           x2 = temp;
       }
-      if (y1 > y2)
-      {
+      if (y1 > y2) {
           temp = y1;
           y1 = y2;
           y2 = temp;
@@ -1033,10 +946,8 @@ public class Simulator
       int i = x1;
       int j = y1;
      
-       while (i < x2 )
-      {
-          while (j < y2)
-          {
+       while (i < x2 ) {
+          while (j < y2) {
               addBarrier(new Point(i, j));
               j += 2;
           }
@@ -1047,16 +958,14 @@ public class Simulator
     
     public void addBarrierGraph(int x1, int y1, int x2, int y2, int xSpace, int ySpace, int xOff, int yOff)
     {
-      
+      //Don't ask how any of this works. 
       int temp;
-      if (x1 > x2)
-      {
+      if (x1 > x2) {
           temp = x1;
           x1 = x2;
           x2 = temp;
       }
-      if (y1 > y2)
-      {
+      if (y1 > y2) {
           temp = y1;
           y1 = y2;
           y2 = temp;
@@ -1067,11 +976,9 @@ public class Simulator
       int xRange = x2 - x1;
       int yRange = y2 - y1;
      
-      while (i < xRange)
-      {
-          while (j < yRange)
-          {
-              addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j));
+      while (i < xRange) {
+          while (j < yRange) {
+              addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j));  //Yeah, this looks like math
               j += ySpace + 1;
           }
           i += xSpace + 1;
@@ -1126,8 +1033,7 @@ public class Simulator
             double x = x1;
             int y = y1;
         
-            while (y <= y2)
-            {
+            while (y <= y2) {
                 Point point = new Point((int)(x + .5), y);
                 if (isBarrier(point))
                 {
@@ -1135,8 +1041,7 @@ public class Simulator
                 }
                 y++;
                 x += slope; 
-            }
-            
+            }  
         }
     }
     
@@ -1247,10 +1152,7 @@ public class Simulator
 
     public void gameTimeStep(int steps)
     {
-        for (int i = 0; i < steps; i++)
-        {
-            gameTimeStep();
-        }
+        for (int i = 0; i < steps; i++) gameTimeStep();
     }
 
     public void hold(long nano)
