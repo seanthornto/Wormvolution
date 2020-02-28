@@ -1,0 +1,12 @@
+*.class
+*.jar
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.iso
+*.DS_Store
+*.DS_Store?
+*._*
+*.*~
+*.bak
