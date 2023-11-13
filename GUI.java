@@ -1,8 +1,9 @@
+import org.jdesktop.swingx.JXTaskPaneContainer;
+import org.jdesktop.swingx.JXTaskPane;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import javax.swing.*;
 
 public class GUI {
 	
@@ -394,7 +394,80 @@ public class GUI {
         //DRAWING COMPONENTS
         //-------------------
         
-        //INVISIBLE - Toggles visibility of barriers
+        //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer drawingComponents = new JXTaskPaneContainer();
+        JXTaskPane drawTools = new JXTaskPane();
+        drawTools.setTitle("Drawing Tools");
+        
+        
+        //LINE - Drags a line from mouse position
+        JButton dragLine = new JButton("Drag Line");
+        dragLine.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.lTrue();
+            }
+        });
+        drawTools.add(dragLine);
+        
+        //POINT - Drops a single point barrier at mouse click
+        JButton dropPoint = new JButton("Drop Point");
+        dropPoint.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.pTrue();
+            }
+        });
+        drawTools.add(dropPoint);
+        
+        //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
+        JButton dragGraph = new JButton("Drag Grid");
+        dragGraph.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.gTrue();
+            }
+        });
+        drawTools.add(dragGraph);
+        
+        //X SPACE - 
+        JTextField xSpace = new JTextField("x Space");
+        xSpace.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        		int xs  = xSpace.getText() == null ?  0 : Integer.parseInt(xSpace.getText());
+        		mainFrame.xSpace = xs;
+        	}
+        });
+        drawTools.add(xSpace);
+        
+        //X OFFSET -
+        JTextField xOff = new JTextField("x Offset");
+        xOff.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        		int xo  = xOff.getText() == null ?  0 : Integer.parseInt(xOff.getText());
+        		mainFrame.xOff = xo;
+        	}
+        });
+        drawTools.add(xOff);
+        
+        //Y SPACE -
+        JTextField ySpace = new JTextField("y Space");
+        ySpace.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        		int ys  = ySpace.getText() == null ?  0 : Integer.parseInt(ySpace.getText());
+        		mainFrame.ySpace = ys;
+        	}
+        });
+        drawTools.add(ySpace);
+        
+        //Y OFFSET - 
+        JTextField yOff = new JTextField("y Offset");
+        yOff.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        		int yo  = yOff.getText() == null ?  0 : Integer.parseInt(yOff.getText());
+        		mainFrame.yOff = yo;
+        	}
+        });
+        drawTools.add(yOff);
+        
+      //INVISIBLE - Toggles visibility of barriers
         JButton toggleInv = new JButton("Make Barr Inv");
         toggleInv.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -409,115 +482,30 @@ public class GUI {
                 }
             }
         });
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        controlPanel.add(toggleInv, gbc);
-        comp++;
+        drawTools.add(toggleInv);
         
-        //LINE - Drags a line from mouse position
-        JButton dragLine = new JButton("Drag Line");
-        dragLine.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.lTrue();
-            }
-        });
-        gbc.gridx = 1;
-        gbc.gridy = 7;
-        controlPanel.add(dragLine, gbc);
-        comp++;
-        
-        //POINT - Drops a single point barrier at mouse click
-        JButton dropPoint = new JButton("Drop Point");
-        dropPoint.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.pTrue();
-            }
-        });
-        gbc.gridx = 2;
-        gbc.gridy = 7;
-        controlPanel.add(dropPoint, gbc);
-        comp++;
-        
-        //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
-        JButton dragGraph = new JButton("Drag Grid");
-        dragGraph.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.gTrue();
-            }
-        });
-        gbc.gridx = 3;
-        gbc.gridy = 7;
-        controlPanel.add(dragGraph, gbc);
-        comp++;
-        
-        //ERASE - Erases a barriers based on a line from mouse position.
+      //ERASE - Erases a barriers based on a line from mouse position.
         JButton eraseRect = new JButton("Erase");
         eraseRect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.eTrue();
             }
         });
-        gbc.gridx = 0;
-        gbc.gridy = 8;
-        controlPanel.add(eraseRect, gbc);
-        comp++;
-        
-        //X SPACE - 
-        JTextField xSpace = new JTextField("x Space");
-        xSpace.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int xs  = xSpace.getText() == null ?  0 : Integer.parseInt(xSpace.getText());
-        		mainFrame.xSpace = xs;
-        	}
-        });
-        gbc.gridx = 0;
-        gbc.gridy = 9;
-        controlPanel.add(xSpace, gbc);
-        comp++;
-        
-        //X OFFSET -
-        JTextField xOff = new JTextField("x Offset");
-        xOff.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int xo  = xOff.getText() == null ?  0 : Integer.parseInt(xOff.getText());
-        		mainFrame.xOff = xo;
-        	}
-        });
-        gbc.gridx = 1;
-        gbc.gridy = 9;
-        controlPanel.add(xOff, gbc);
-        comp++;
-        
-        //Y SPACE -
-        JTextField ySpace = new JTextField("y Space");
-        ySpace.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int ys  = ySpace.getText() == null ?  0 : Integer.parseInt(ySpace.getText());
-        		mainFrame.ySpace = ys;
-        	}
-        });
-        gbc.gridx = 0;
-        gbc.gridy = 10;
-        controlPanel.add(ySpace, gbc);
-        comp++;
-        
-        //Y OFFSET - 
-        JTextField yOff = new JTextField("y Offset");
-        yOff.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int yo  = yOff.getText() == null ?  0 : Integer.parseInt(yOff.getText());
-        		mainFrame.yOff = yo;
-        	}
-        });
-        gbc.gridx = 1;
-        gbc.gridy = 10;
-        controlPanel.add(yOff, gbc);
-        comp++; 
+        drawTools.add(eraseRect);
         
         
         //--------------
         //FINISHING UP!
         //--------------
+        
+        //drawing task pane
+        drawingComponents.add(drawTools);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        controlPanel.add(drawingComponents);
+        comp++;
+        
+        //main gridbag
         mainFrame.sim = simulator;
         mainFrame.bs = bs;
         mainFrame.setContentPane(controlPanel);
