@@ -134,7 +134,6 @@ public class GUI {
         moveCost = moveC;
         turnCost = turnC;
         colorVar = 0.5;
-        int comp = -1; //key value for components [CURRENTLY UNUSED]
 
         GridBagConstraints gbc = new GridBagConstraints();
         controlPanel.setLayout(new GridBagLayout());
@@ -157,7 +156,6 @@ public class GUI {
         gbc.gridx = 7;
         gbc.gridy = 10;
         controlPanel.add(reset, gbc);
-        comp++;
         
         //PLAY - toggles pause/play by stopping and resuming the simulation.
         JButton play = new JButton("Stop");
@@ -177,8 +175,7 @@ public class GUI {
         gbc.gridx = 7;
         gbc.gridy = 0;
         controlPanel.add(play, gbc);
-        comp++;
-        
+
       //SIMULATOR - The big enchilada
         gbc.gridx = 6;
         gbc.gridy = 1;
@@ -187,8 +184,7 @@ public class GUI {
         gbc.gridwidth = 2;
         simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
         controlPanel.add(simulator.board, gbc);
-        comp++;
-        
+
         //SPEED - Adjusts the tick speed of the game
         JSlider speedSlider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
         speedSlider.addChangeListener(new ChangeListener() {
@@ -203,12 +199,10 @@ public class GUI {
         gbc.gridx = 0;
         gbc.gridy = 0;
         controlPanel.add(speedSlider, gbc);
-        comp++;
         JLabel spd = new JLabel("Tick Speed: ");
         gbc.gridx = 0;
         gbc.gridy = 1;
         controlPanel.add(spd, gbc);
-        comp++;
         
         //MUTATION - adjusts the rate of DNA change in new worms
         JSlider mutationSlider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
@@ -222,12 +216,10 @@ public class GUI {
         gbc.gridx = 1;
         gbc.gridy = 0;
         controlPanel.add(mutationSlider, gbc);
-        comp++;
         JLabel mut8 = new JLabel("Mutation Rate: ");
         gbc.gridx = 1;
         gbc.gridy = 1;
         controlPanel.add(mut8, gbc);
-        comp++;
         
         
         //FOOD VALUE - adjusts the amount of energy a worm gets from 1 piece of food.
@@ -242,12 +234,10 @@ public class GUI {
         gbc.gridx = 2;
         gbc.gridy = 0;
         controlPanel.add(foodValueSlider, gbc);
-        comp++;
         JLabel fVal = new JLabel("Food Value: ");
         gbc.gridx = 2;
         gbc.gridy = 1;
         controlPanel.add(fVal, gbc);
-        comp++;
         
         //FOOD RATE - Adjusts the amount of food that spawns per tick
         JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs * bs / 500, bs * bs / 1000);
@@ -261,15 +251,18 @@ public class GUI {
         gbc.gridx = 3;
         gbc.gridy = 0;
         controlPanel.add(foodRateSlider, gbc);
-        comp++;
         JLabel fR8 = new JLabel("Food Rate: ");
         gbc.gridx = 3;
         gbc.gridy = 1;
         controlPanel.add(fR8, gbc);
-        comp++;
+        
+        //Behavior cost task panel
+        JXTaskPaneContainer behaviorComponents = new JXTaskPaneContainer();
+        JXTaskPane behaviorTools = new JXTaskPane();
+        behaviorTools.setTitle("Behavior Tools");
         
         //SLEEP - adjusts the amount of energy a worm spends during a sleep tick
-        JSlider sleepCostSlider = new JSlider(JSlider.VERTICAL, 0, 10, sleepC);
+        JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
         sleepCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int sCost = ((JSlider) e.getSource()).getValue();
@@ -277,20 +270,12 @@ public class GUI {
                 simulator.setSleepCost(sleepCost);
             }
         });
-        gbc.gridheight = 1;
-        gbc.gridwidth = 1;
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        controlPanel.add(sleepCostSlider, gbc);
-        comp++;
+        behaviorTools.add(sleepCostSlider);
         JLabel sc = new JLabel("Sleep Cost: ");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        controlPanel.add(sc, gbc);
-        comp++;
+        behaviorTools.add(sc);
         
         //MOVEMENT - adjusts the amount of energy a worm spends during a movement tick
-        JSlider moveCostSlider = new JSlider(JSlider.VERTICAL, 0, 10, moveC);
+        JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
         moveCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int mCost = ((JSlider) e.getSource()).getValue();
@@ -298,18 +283,12 @@ public class GUI {
                 simulator.setMoveCost(moveCost);
             }
         });
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        controlPanel.add(moveCostSlider, gbc);
-        comp++;
+        behaviorTools.add(moveCostSlider);
         JLabel mc = new JLabel("Move Cost: ");
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        controlPanel.add(mc, gbc);
-        comp++;
+        behaviorTools.add(mc);
         
         //TURN - adjusts the amount of energy a worm spends during a turning tick
-        JSlider turnCostSlider = new JSlider(JSlider.VERTICAL, 0, 10, turnC);
+        JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
         turnCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int tCost = ((JSlider) e.getSource()).getValue();
@@ -317,15 +296,30 @@ public class GUI {
                 simulator.setTurnCost(turnCost);
             }
         });
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        controlPanel.add(turnCostSlider, gbc);
-        comp++;
+        behaviorTools.add(turnCostSlider);
         JLabel tc = new JLabel("Turn Cost: ");
-        gbc.gridx = 2;
+        behaviorTools.add(tc);
+        
+      //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
+        JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
+        sightRangeSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                int sightR = ((JSlider) e.getSource()).getValue();
+                sightRange = sightR;
+                simulator.setSightRange(sightR);
+            }
+        });
+        behaviorTools.add(sightRangeSlider);
+        JLabel sr = new JLabel("Sight Range: ");
+        behaviorTools.add(sr);
+        
+      //finishing up the behavior task pane
+        behaviorTools.setCollapsed(true);
+        behaviorComponents.add(behaviorTools);
+        gbc.gridx = 0;
         gbc.gridy = 3;
-        controlPanel.add(tc, gbc);
-        comp++;
+        controlPanel.add(behaviorComponents,gbc);
+        
         
         //COLOR - Adjusts the amount of color variation in new worm species
         JSlider colorVarSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
@@ -339,31 +333,11 @@ public class GUI {
         gbc.gridx = 3;
         gbc.gridy = 2;
         controlPanel.add(colorVarSlider, gbc);
-        comp++;
         JLabel cv = new JLabel("Color Variance: ");
         gbc.gridx = 3;
         gbc.gridy = 3;
         controlPanel.add(cv, gbc);
-        comp++;
         
-        //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
-        JSlider sightRangeSlider = new JSlider(JSlider.VERTICAL, 0, 20, 10);
-        sightRangeSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int sightR = ((JSlider) e.getSource()).getValue();
-                sightRange = sightR;
-                simulator.setSightRange(sightR);
-            }
-        });
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        controlPanel.add(sightRangeSlider, gbc);
-        comp++;
-        JLabel sr = new JLabel("Sight Range: ");
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        controlPanel.add(sr, gbc);
-        comp++;
         
         //DNA - opens pop-up sub-menu that allows user to select genes in the gene pool. 
         JButton comm = new JButton("Genes");
@@ -375,7 +349,6 @@ public class GUI {
         gbc.gridx = 0;
         gbc.gridy = 6;
         controlPanel.add(comm, gbc);
-        comp++;
         
         //POPULATION - opens pop-up info-graphic showing the most populous worm species.
         JButton dispPop = new JButton("Disp Populations");
@@ -388,7 +361,6 @@ public class GUI {
         gbc.gridx = 1;
         gbc.gridy = 6;
         controlPanel.add(dispPop, gbc);
-        comp++;
 
         //-------------------
         //DRAWING COMPONENTS
@@ -499,11 +471,11 @@ public class GUI {
         //--------------
         
         //drawing task pane
+        drawTools.setCollapsed(true);
         drawingComponents.add(drawTools);
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        controlPanel.add(drawingComponents);
-        comp++;
+        gbc.gridy = 7;
+        controlPanel.add(drawingComponents, gbc);
         
         //main gridbag
         mainFrame.sim = simulator;
