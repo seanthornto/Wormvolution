@@ -143,20 +143,6 @@ public class GUI {
         //COMPONENTS
         //----------
         
-        
-        //RESET - closes window, starts over from prompt();
-        JButton reset = new JButton("Reset");
-        reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.setVisible(false);
-                mainFrame.dispose();
-                prompt();
-            }
-        });
-        gbc.gridx = 7;
-        gbc.gridy = 10;
-        controlPanel.add(reset, gbc);
-        
         //PLAY - toggles pause/play by stopping and resuming the simulation.
         JButton play = new JButton("Stop");
         play.addActionListener(new ActionListener() {
@@ -172,21 +158,46 @@ public class GUI {
                 }
             }
         });
-        gbc.gridx = 7;
-        gbc.gridy = 0;
+        gbc.gridx = 2;
+        gbc.gridy = 8;
         controlPanel.add(play, gbc);
+        
+        //RESET - closes window, starts over from prompt();
+        JButton reset = new JButton("Reset");
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.setVisible(false);
+                mainFrame.dispose();
+                prompt();
+            }
+        });
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        controlPanel.add(reset, gbc);
 
       //SIMULATOR - The big enchilada
-        gbc.gridx = 6;
-        gbc.gridy = 1;
+        gbc.gridx = 2;
+        gbc.gridy = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.gridheight = 7;
-        gbc.gridwidth = 2;
         simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
         controlPanel.add(simulator.board, gbc);
+        
+        //reset gridbag
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        
+        //ENVIRONMENT
+        
+        //Environment tools
+        JXTaskPaneContainer environmentComponents = new JXTaskPaneContainer();
+        JXTaskPane environmentTools = new JXTaskPane();
+        environmentTools.setTitle("Environment Tools");
 
         //SPEED - Adjusts the tick speed of the game
-        JSlider speedSlider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
+        JLabel spd = new JLabel("Tick Speed: ");
+        environmentTools.add(spd);
+        JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
         speedSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int spd = ((JSlider) e.getSource()).getValue();
@@ -194,36 +205,12 @@ public class GUI {
                 simulator.setSpeed(speed);
             }
         });
-        gbc.gridheight = 1;
-        gbc.gridwidth = 1;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        controlPanel.add(speedSlider, gbc);
-        JLabel spd = new JLabel("Tick Speed: ");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        controlPanel.add(spd, gbc);
-        
-        //MUTATION - adjusts the rate of DNA change in new worms
-        JSlider mutationSlider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
-        mutationSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int mutate = ((JSlider) e.getSource()).getValue();
-                mutation = mutate / 100.0;
-                Critter.setMutationRate(mutation);
-            }
-        });
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        controlPanel.add(mutationSlider, gbc);
-        JLabel mut8 = new JLabel("Mutation Rate: ");
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        controlPanel.add(mut8, gbc);
-        
+        environmentTools.add(speedSlider);
         
         //FOOD VALUE - adjusts the amount of energy a worm gets from 1 piece of food.
-        JSlider foodValueSlider = new JSlider(JSlider.VERTICAL, 0, 500, 250);
+        JLabel fVal = new JLabel("Food Value: ");
+        environmentTools.add(fVal);
+        JSlider foodValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 500, 250);
         foodValueSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int foodV = ((JSlider) e.getSource()).getValue();
@@ -231,16 +218,12 @@ public class GUI {
                 simulator.setFoodValue(foodVal);
             }
         });
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        controlPanel.add(foodValueSlider, gbc);
-        JLabel fVal = new JLabel("Food Value: ");
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        controlPanel.add(fVal, gbc);
+        environmentTools.add(foodValueSlider);
         
         //FOOD RATE - Adjusts the amount of food that spawns per tick
-        JSlider foodRateSlider = new JSlider(JSlider.VERTICAL, 0, bs * bs / 500, bs * bs / 1000);
+        JLabel fR8 = new JLabel("Food Rate: ");
+        environmentTools.add(fR8);
+        JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 500, bs * bs / 1000);
         foodRateSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int foodR = ((JSlider) e.getSource()).getValue();
@@ -248,20 +231,27 @@ public class GUI {
                 simulator.setFoodRate(foodRate);
             }
         });
-        gbc.gridx = 3;
-        gbc.gridy = 0;
-        controlPanel.add(foodRateSlider, gbc);
-        JLabel fR8 = new JLabel("Food Rate: ");
-        gbc.gridx = 3;
+        environmentTools.add(foodRateSlider);
+        
+      //finishing up the environment task pane
+        environmentTools.setCollapsed(true);
+        environmentComponents.add(environmentTools);
+        gbc.gridx = 0;
         gbc.gridy = 1;
-        controlPanel.add(fR8, gbc);
+        controlPanel.add(environmentComponents,gbc);
+        
+        
+        //BEHAVIOR
         
         //Behavior cost task panel
         JXTaskPaneContainer behaviorComponents = new JXTaskPaneContainer();
         JXTaskPane behaviorTools = new JXTaskPane();
         behaviorTools.setTitle("Behavior Tools");
         
+        
         //SLEEP - adjusts the amount of energy a worm spends during a sleep tick
+        JLabel sc = new JLabel("Sleep Cost: ");
+        behaviorTools.add(sc);
         JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
         sleepCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -271,10 +261,10 @@ public class GUI {
             }
         });
         behaviorTools.add(sleepCostSlider);
-        JLabel sc = new JLabel("Sleep Cost: ");
-        behaviorTools.add(sc);
         
         //MOVEMENT - adjusts the amount of energy a worm spends during a movement tick
+        JLabel mc = new JLabel("Move Cost: ");
+        behaviorTools.add(mc);
         JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
         moveCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -284,10 +274,11 @@ public class GUI {
             }
         });
         behaviorTools.add(moveCostSlider);
-        JLabel mc = new JLabel("Move Cost: ");
-        behaviorTools.add(mc);
+
         
         //TURN - adjusts the amount of energy a worm spends during a turning tick
+        JLabel tc = new JLabel("Turn Cost: ");
+        behaviorTools.add(tc);
         JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
         turnCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -297,10 +288,10 @@ public class GUI {
             }
         });
         behaviorTools.add(turnCostSlider);
-        JLabel tc = new JLabel("Turn Cost: ");
-        behaviorTools.add(tc);
         
       //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
+        JLabel sr = new JLabel("Sight Range: ");
+        behaviorTools.add(sr);
         JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
         sightRangeSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -310,19 +301,39 @@ public class GUI {
             }
         });
         behaviorTools.add(sightRangeSlider);
-        JLabel sr = new JLabel("Sight Range: ");
-        behaviorTools.add(sr);
         
       //finishing up the behavior task pane
         behaviorTools.setCollapsed(true);
         behaviorComponents.add(behaviorTools);
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        controlPanel.add(behaviorComponents,gbc);
+        gbc.gridy = 2;
+        controlPanel.add(behaviorComponents,gbc);   
         
         
-        //COLOR - Adjusts the amount of color variation in new worm species
-        JSlider colorVarSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
+       //GENETICS TOOLS
+        
+        //Genetics tools task pane
+        JXTaskPaneContainer geneticsComponents = new JXTaskPaneContainer();
+        JXTaskPane geneticsTools = new JXTaskPane();
+        geneticsTools.setTitle("Genetics Tools");
+        
+        //MUTATION - adjusts the rate of DNA change in new worms
+        JLabel mut8 = new JLabel("Mutation Rate: ");
+        geneticsTools.add(mut8);
+        JSlider mutationSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
+        mutationSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                int mutate = ((JSlider) e.getSource()).getValue();
+                mutation = mutate / 100.0;
+                Critter.setMutationRate(mutation);
+            }
+        });
+        geneticsTools.add(mutationSlider);
+        
+      //COLOR - Adjusts the amount of color variation in new worm species
+        JLabel cv = new JLabel("Color Variance: ");
+        geneticsTools.add(cv);
+        JSlider colorVarSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
         colorVarSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int cVar = ((JSlider) e.getSource()).getValue();
@@ -330,14 +341,7 @@ public class GUI {
                 simulator.setColorVar(colorVar);
             }
         });
-        gbc.gridx = 3;
-        gbc.gridy = 2;
-        controlPanel.add(colorVarSlider, gbc);
-        JLabel cv = new JLabel("Color Variance: ");
-        gbc.gridx = 3;
-        gbc.gridy = 3;
-        controlPanel.add(cv, gbc);
-        
+        geneticsTools.add(colorVarSlider);
         
         //DNA - opens pop-up sub-menu that allows user to select genes in the gene pool. 
         JButton comm = new JButton("Genes");
@@ -346,9 +350,7 @@ public class GUI {
                 dispGene();
             }
         });
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        controlPanel.add(comm, gbc);
+        geneticsTools.add(comm);
         
         //POPULATION - opens pop-up info-graphic showing the most populous worm species.
         JButton dispPop = new JButton("Disp Populations");
@@ -358,9 +360,14 @@ public class GUI {
                     simulator.dispPopulations();
             }
         });
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        controlPanel.add(dispPop, gbc);
+        geneticsTools.add(dispPop);
+        
+        //finishing up genetics task pane
+        geneticsTools.setCollapsed(true);
+        geneticsComponents.add(geneticsTools);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        controlPanel.add(geneticsComponents, gbc);
 
         //-------------------
         //DRAWING COMPONENTS
@@ -466,16 +473,18 @@ public class GUI {
         drawTools.add(eraseRect);
         
         
-        //--------------
-        //FINISHING UP!
-        //--------------
-        
         //drawing task pane
         drawTools.setCollapsed(true);
         drawingComponents.add(drawTools);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridy = 4;
         controlPanel.add(drawingComponents, gbc);
+        
+        
+        //--------------
+        //FINISHING UP!
+        //--------------
         
         //main gridbag
         mainFrame.sim = simulator;
