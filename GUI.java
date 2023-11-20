@@ -27,7 +27,8 @@ public class GUI {
         prepareGUI();
     }
     public void prepareGUI() {
-        mainFrame.setSize(1500, 1500);
+        mainFrame.setSize(1200, 1100);
+        mainFrame.setLocationRelativeTo(null);
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
@@ -48,6 +49,7 @@ public class GUI {
     private int foodRate;
     private double colorVar;
     private static int boardSize = 160;
+    private boolean isFullscreen = false; 
     
     //COMPLETELY UNUSED VARIABLES - LMAO
     //TODO: ??
@@ -454,17 +456,17 @@ public class GUI {
         drawTools.add(yOff);
         
       //INVISIBLE - Toggles visibility of barriers
-        JButton toggleInv = new JButton("Make Barr Inv");
+        JButton toggleInv = new JButton("Hide Barriers");
         toggleInv.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (barrierVis) {
                     simulator.setBarrierColor(Color.black);
                     barrierVis = false;
-                    toggleInv.setText("Make Barr Vis");
+                    toggleInv.setText("Show Barriers");
                 } else {
                     simulator.setBarrierColor(Color.gray);
                     barrierVis = true;
-                    toggleInv.setText("Make Barr Inv");
+                    toggleInv.setText("Hide Barriers");
                 }
             }
         });
@@ -488,6 +490,52 @@ public class GUI {
         gbc.gridy = 4;
         controlPanel.add(drawingComponents, gbc);
         
+        
+        
+        
+        //-------------------
+        //ZOOM COMPONENTS
+        //-------------------
+        
+        //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer zoomComponents = new JXTaskPaneContainer();
+        zoomComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
+        JXTaskPane zoomTools = new JXTaskPane();
+        zoomTools.setTitle("Zoom Tools");
+        
+        //Full Screen / Windowed
+        JButton fullscreen = new JButton("Fullscreen");
+        fullscreen.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String fsName = null;
+        		if(isFullscreen == true)
+        		{
+        			//make it windowed
+        			mainFrame.setSize(1200, 1100);
+        			mainFrame.setLocationRelativeTo(null);
+        			fsName = "Fullscreen";
+        			isFullscreen = false;
+        		}else
+        		{
+        			//make it fullscreen
+        			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        			fsName = "Windowed";
+        			isFullscreen = true;
+        		}
+        		fullscreen.setText(fsName);		
+        	}
+        });
+        zoomTools.add(fullscreen);
+        
+        //
+        
+      //drawing task pane
+        zoomTools.setCollapsed(true);
+        zoomComponents.add(zoomTools);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        controlPanel.add(zoomComponents, gbc);
         
         //--------------
         //FINISHING UP!
