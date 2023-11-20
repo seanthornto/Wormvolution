@@ -138,6 +138,7 @@ public class GUI {
         GridBagConstraints gbc = new GridBagConstraints();
         controlPanel.setLayout(new GridBagLayout());
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5,5,5,5);
         
         //----------
         //COMPONENTS
@@ -178,6 +179,7 @@ public class GUI {
       //SIMULATOR - The big enchilada
         gbc.gridx = 2;
         gbc.gridy = 0;
+        gbc.insets = new Insets(0,0,0,0);
         gbc.fill = GridBagConstraints.NONE;
         gbc.gridheight = 7;
         simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
@@ -186,11 +188,13 @@ public class GUI {
         //reset gridbag
         gbc.gridheight = 1;
         gbc.gridwidth = 1;
+        gbc.insets = new Insets(5,5,5,5);
         
         //ENVIRONMENT
         
         //Environment tools
         JXTaskPaneContainer environmentComponents = new JXTaskPaneContainer();
+        environmentComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane environmentTools = new JXTaskPane();
         environmentTools.setTitle("Environment Tools");
 
@@ -245,6 +249,7 @@ public class GUI {
         
         //Behavior cost task panel
         JXTaskPaneContainer behaviorComponents = new JXTaskPaneContainer();
+        behaviorComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane behaviorTools = new JXTaskPane();
         behaviorTools.setTitle("Behavior Tools");
         
@@ -314,6 +319,7 @@ public class GUI {
         
         //Genetics tools task pane
         JXTaskPaneContainer geneticsComponents = new JXTaskPaneContainer();
+        geneticsComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane geneticsTools = new JXTaskPane();
         geneticsTools.setTitle("Genetics Tools");
         
@@ -375,6 +381,7 @@ public class GUI {
         
         //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer drawingComponents = new JXTaskPaneContainer();
+        drawingComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane drawTools = new JXTaskPane();
         drawTools.setTitle("Drawing Tools");
         
