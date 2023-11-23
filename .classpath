@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="lib" path="E:/PROGRAMS/PROGRAMS/Worms/swingx-all-1.6.5-1.jar"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="lib" path="/Users/mikevercauteren/Desktop/Worms/dependencies/swingx-all-1.6.5-1.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
