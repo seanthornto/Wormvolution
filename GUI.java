@@ -31,6 +31,7 @@ public class GUI {
     public void prepareGUI() {
         mainFrame.setSize(1200, 1100);
         mainFrame.setLocationRelativeTo(null);
+        mainFrame.xSpace = 1; mainFrame.ySpace = 1;
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
@@ -420,41 +421,57 @@ public class GUI {
         drawTools.add(dragGraph);
         
         //X SPACE - 
-        JTextField xSpace = new JTextField("x Space");
-        xSpace.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int xs  = xSpace.getText() == null ?  0 : Integer.parseInt(xSpace.getText());
-        		mainFrame.xSpace = xs;
+        JLabel xspLabel = new JLabel("X Space: 3");
+        drawTools.add(xspLabel);
+        JSlider xSpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        xSpace.setValue(3);
+        xSpace.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int xsp = ((JSlider) e.getSource()).getValue();
+        		mainFrame.xSpace = xsp;
+        		xspLabel.setText("X Space: "+xsp);
         	}
         });
         drawTools.add(xSpace);
         
         //X OFFSET -
-        JTextField xOff = new JTextField("x Offset");
-        xOff.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int xo  = xOff.getText() == null ?  0 : Integer.parseInt(xOff.getText());
-        		mainFrame.xOff = xo;
+        JLabel xoffLabel = new JLabel("X Offset: 3");
+        drawTools.add(xoffLabel);
+        JSlider xOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        xOff.setValue(3);
+        xOff.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int xof = ((JSlider) e.getSource()).getValue();
+        		mainFrame.xOff = xof;
+        		xoffLabel.setText("X Offset: "+xof);
         	}
         });
         drawTools.add(xOff);
         
         //Y SPACE -
-        JTextField ySpace = new JTextField("y Space");
-        ySpace.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int ys  = ySpace.getText() == null ?  0 : Integer.parseInt(ySpace.getText());
-        		mainFrame.ySpace = ys;
+        JLabel yspLabel = new JLabel("Y Space: 3");
+        drawTools.add(yspLabel);
+        JSlider ySpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        ySpace.setValue(3);
+        ySpace.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int ysp = ((JSlider) e.getSource()).getValue();
+        		mainFrame.ySpace = ysp;
+        		yspLabel.setText("Y Space: "+ysp);
         	}
         });
         drawTools.add(ySpace);
         
         //Y OFFSET - 
-        JTextField yOff = new JTextField("y Offset");
-        yOff.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		int yo  = yOff.getText() == null ?  0 : Integer.parseInt(yOff.getText());
-        		mainFrame.yOff = yo;
+        JLabel yoffLabel = new JLabel("Y Offset: 3");
+        drawTools.add(yoffLabel);
+        JSlider yOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        yOff.setValue(3);
+        yOff.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int yof = ((JSlider) e.getSource()).getValue();
+        		mainFrame.xOff = yof;
+        		yoffLabel.setText("Y Offset: "+yof);
         	}
         });
         drawTools.add(yOff);
