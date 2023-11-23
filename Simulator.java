@@ -4,10 +4,45 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Write a description of class Simulator here.
+ * GENES:
+ * ------
  *
- * @author (your name)
- * @version (a version number or a date)
+ * M : moves one space in facing direction
+ * Z : sleep
+ * < : Turns counter clockwise
+ * > : turns clockwise
+ * U : faces up
+ * D : faces down
+ * L : faces left
+ * R : faces right
+ * H : hop - moves 2 spaces
+ * A : attack - steals energy from critter in front of it
+ * -------------
+ * conditionals
+ * -------------
+ * v : OR conditionals XvY is true if either is true
+ * *any two conditionals behave as AND*
+ * r : restart at head
+ * e : else - skip to next e or E on false condition
+ * E : end - skip to end on false condition
+ * C : loop conditional - go back to last condition
+ * 0 : if there is food in sight
+ * -0: if there is not food
+ * 1 : if the critter was blocked
+ * -1: if the critter was not blocked
+ * 2 : if the energy is above half
+ * -2: if the energy is not above half
+ * 3 : if the age is above half
+ * -3: if the age is not above half
+ * 4 : if it has reproduced
+ * -4: if it has not reproduced
+ * 5 : if it can see a critter
+ * -5:if it can't see a critter
+ * 6 : if it can see a same species 
+ * -6: if it want see a same species
+ *
+ * @author Sean Thornton and Sky Vercauteren
+ * @version Version 1.0 November 2023
  */
 public class Simulator {
 	private static final long serialVersionUID = 1L;
