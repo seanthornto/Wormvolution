@@ -44,6 +44,7 @@ import java.awt.event.*;
  * @author Sean Thornton and Sky Vercauteren
  * @version Version 1.0 November 2023
  */
+
 public class Simulator {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Critter> critters;

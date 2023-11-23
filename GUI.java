@@ -143,7 +143,7 @@ public class GUI {
         controlPanel.setLayout(new GridBagLayout());
         tools.setLayout(new GridBagLayout());
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(0,5,0,5);
         
         //----------
         //COMPONENTS
@@ -164,8 +164,10 @@ public class GUI {
                 }
             }
         });
-        gbc.gridx = 2;
-        gbc.gridy = 8;
+        gbc.weighty = 0.1;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        //gbc.anchor = GridBagConstraints.SOUTH;
         controlPanel.add(play, gbc);
         
         //RESET - closes window, starts over from prompt();
@@ -177,22 +179,24 @@ public class GUI {
                 prompt();
             }
         });
-        gbc.gridx = 0;
         gbc.gridy = 0;
         controlPanel.add(reset, gbc);
 
       //SIMULATOR - The big enchilada
-        gbc.gridx = 2;
+        gbc.weighty = 0.0;
+        gbc.gridy = 0;
+        gbc.gridx = 1;
         gbc.insets = new Insets(0,0,0,0);
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.gridheight = 7;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridheight = 3;
         simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
         controlPanel.add(simulator.board, gbc);
         
         //reset gridbag
         gbc.gridheight = 1;
         gbc.gridwidth = 1;
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5,15,5,15);
         
         //ENVIRONMENT
         
@@ -245,7 +249,7 @@ public class GUI {
         environmentTools.setCollapsed(true);
         environmentComponents.add(environmentTools);
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 0;
         tools.add(environmentComponents,gbc);
         
         
@@ -314,7 +318,7 @@ public class GUI {
       //finishing up the behavior task pane
         behaviorTools.setCollapsed(true);
         behaviorComponents.add(behaviorTools);
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         tools.add(behaviorComponents,gbc);   
         
         
@@ -374,7 +378,7 @@ public class GUI {
         //finishing up genetics task pane
         geneticsTools.setCollapsed(true);
         geneticsComponents.add(geneticsTools);
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         tools.add(geneticsComponents, gbc);
 
         //-------------------
@@ -486,7 +490,7 @@ public class GUI {
         drawTools.setCollapsed(true);
         drawingComponents.add(drawTools);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         tools.add(drawingComponents, gbc);
         
         
@@ -532,8 +536,7 @@ public class GUI {
         zoomTools.setCollapsed(true);
         zoomComponents.add(zoomTools);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridy = 5;
-        //gbc.insets = new Insets(5,5,100,5);
+        gbc.gridy = 4;
         tools.add(zoomComponents, gbc);
         
         
@@ -541,14 +544,18 @@ public class GUI {
         //FINISHING UP!
         //--------------
         
-        //main gridbag
-        
+        //tools scroll bar
         scrollTools = new JScrollPane(tools);
+        scrollTools.setHorizontalScrollBarPolicy(scrollTools.HORIZONTAL_SCROLLBAR_NEVER);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1.5;
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridheight = 7;
-        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.gridheight = 1;
+        gbc.insets = new Insets(0,5,0,5);
         controlPanel.add(scrollTools, gbc);
+        
+        //main frame
         mainFrame.sim = simulator;
         mainFrame.bs = bs;
         mainFrame.setContentPane(controlPanel);
