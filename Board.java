@@ -10,12 +10,14 @@ public class Board extends JPanel {
 	private BufferedImage canvas;
 	private int pixelSize;
 	private int boardSize;
+	private int barrierWidth;
 
 	public Board(int pixelSize, int bs) {
 		this.pixelSize = pixelSize;
 		boardSize = bs;
 		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
 		fillCanvas(Color.black);
+		barrierWidth = pixelSize;
 	}
 
 	public void setBoardSize(int s) {
@@ -24,6 +26,21 @@ public class Board extends JPanel {
 
 	public Dimension getPreferredSize() {
 		return new Dimension(canvas.getWidth(), canvas.getHeight());
+	}
+	
+	public void setBarrierWidth(int w)
+	{
+		barrierWidth = pixelSize * w;
+	}
+	
+	public int getBarrierWidth()
+	{
+		return barrierWidth;
+	}
+	
+	public int getPixelSize()
+	{
+		return pixelSize;
 	}
 
 	public void paintComponent(Graphics g) {
@@ -51,6 +68,7 @@ public class Board extends JPanel {
 			}
 		}
 	}
+	
 
 	public void erase(Point point) {
 		draw(point, Color.black);

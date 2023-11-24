@@ -116,5 +116,12 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		g = false;
 		l = false;
 	}
+	
+	public void allFalse() {
+		e = false;
+		p = false;
+		g = false;
+		l = false;
+	}
 
 }

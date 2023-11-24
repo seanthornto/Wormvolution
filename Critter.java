@@ -78,6 +78,11 @@ public class Critter {
 	public static void setMutationRate(double set) {
 		mutationRate = set;
 	}
+	
+	public static double getMutationRate()
+	{
+		return mutationRate;
+	}
 
 	public int getMaxAge() {
 		return maxAge;

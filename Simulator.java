@@ -134,26 +134,56 @@ public class Simulator {
 	public void setSleepCost(int sC) {
 		sleepC = sC;
 	}
+	
+	public int getSleepCost()
+	{
+		return this.sleepC;
+	}
 
 	public void setMoveCost(int mC) {
 		moveC = mC;
+	}
+	
+	public int getMoveCost()
+	{
+		return this.moveC;
 	}
 
 	public void setTurnCost(int tC) {
 		turnC = tC;
 	}
+	public int getTurnCost()
+	{
+		return this.turnC;
+	}
+	
 	// Methods used by refresh()
 
 	public void setSpeed(long speed) {
 		this.speed = speed;
 	}
+	
+	public long getSpeed()
+	{
+		return this.speed;
+	}
 
 	public void setFoodRate(int foodRate) {
 		this.foodRate = foodRate;
 	}
+	
+	public int getFoodRate()
+	{
+		return this.foodRate;
+	}
 
 	public void setFoodValue(int foodValue) {
 		this.foodValue = foodValue;
+	}
+	
+	public int getFoodValue()
+	{
+		return this.foodValue;
 	}
 
 	public int getBoardSize() {
@@ -864,8 +894,14 @@ public class Simulator {
 		if (!isCritter(point)) {
 			if (isFood(point))
 				removeFood(point);
-			isBarrier[point.x][point.y] = true;
-			board.draw(point, Color.gray);
+			for(int i = point.x; i < point.x + board.getBarrierWidth(); i++)
+			{
+				for(int j = point.y; j < point.y + board.getBarrierWidth(); j++)
+				{
+					isBarrier[i][j] = true;
+					board.draw(new Point(i,j), Color.gray);
+				}
+			}
 		}
 	}
 
@@ -892,7 +928,6 @@ public class Simulator {
 			double slope = 1.0 * (y1 - y2) / (x1 - x2);
 			int x = x1;
 			double y = y1;
-
 			while (x <= x2) {
 				Point point = new Point(x, (int) (y + .5));
 				if (!isBarrier(point) && !isCritter(point))

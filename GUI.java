@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.border.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -208,40 +209,48 @@ public class GUI {
         environmentTools.setTitle("Environment Tools");
 
         //SPEED - Adjusts the tick speed of the game
-        JLabel spd = new JLabel("Tick Speed: ");
+        String isNeg = (int)simulator.getSpeed() == 0 ? "" : "-";
+        JLabel spd = new JLabel("Tick Speed: " + isNeg +(int) simulator.getSpeed());
         environmentTools.add(spd);
         JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
+        speedSlider.setValue((int) (27067056 + (Math.log(simulator.getSpeed()/0.02)/200000000)));
         speedSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                int spd = ((JSlider) e.getSource()).getValue();
-                speed = (long) (200000000 * Math.exp(-spd * 0.02)) - 27067056;
+                int sp = ((JSlider) e.getSource()).getValue();
+                speed = (long) (200000000 * Math.exp(-sp * 0.02)) - 27067056;
                 simulator.setSpeed(speed);
+                String isNeg = (int)simulator.getSpeed() == 0 ? "" : "-";
+                spd.setText("Tick Speed: "+ isNeg + (int) simulator.getSpeed());
             }
         });
         environmentTools.add(speedSlider);
         
         //FOOD VALUE - adjusts the amount of energy a worm gets from 1 piece of food.
-        JLabel fVal = new JLabel("Food Value: ");
+        JLabel fVal = new JLabel("Food Value: " + simulator.getFoodValue());
         environmentTools.add(fVal);
         JSlider foodValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 500, 250);
+        foodValueSlider.setValue(simulator.getFoodValue());
         foodValueSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int foodV = ((JSlider) e.getSource()).getValue();
                 foodVal = foodV;
                 simulator.setFoodValue(foodVal);
+                fVal.setText("Food Value: " + simulator.getFoodValue());
             }
         });
         environmentTools.add(foodValueSlider);
         
         //FOOD RATE - Adjusts the amount of food that spawns per tick
-        JLabel fR8 = new JLabel("Food Rate: ");
+        JLabel fR8 = new JLabel("Food Rate: "+simulator.getFoodRate());
         environmentTools.add(fR8);
-        JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 500, bs * bs / 1000);
+        JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 200, bs * bs / 500);
+        foodRateSlider.setValue(simulator.getFoodRate());
         foodRateSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int foodR = ((JSlider) e.getSource()).getValue();
                 foodRate = foodR;
                 simulator.setFoodRate(foodRate);
+                fR8.setText("Food Rate: "+simulator.getFoodRate());
             }
         });
         environmentTools.add(foodRateSlider);
@@ -264,54 +273,62 @@ public class GUI {
         
         
         //SLEEP - adjusts the amount of energy a worm spends during a sleep tick
-        JLabel sc = new JLabel("Sleep Cost: ");
+        JLabel sc = new JLabel("Sleep Cost: "+simulator.getSleepCost());
         behaviorTools.add(sc);
         JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
+        sleepCostSlider.setValue(simulator.getSleepCost());
         sleepCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int sCost = ((JSlider) e.getSource()).getValue();
                 sleepCost = sCost;
                 simulator.setSleepCost(sleepCost);
+                sc.setText("Sleep Cost: "+simulator.getSleepCost());
             }
         });
         behaviorTools.add(sleepCostSlider);
         
         //MOVEMENT - adjusts the amount of energy a worm spends during a movement tick
-        JLabel mc = new JLabel("Move Cost: ");
+        JLabel mc = new JLabel("Move Cost: " + simulator.getMoveCost());
         behaviorTools.add(mc);
         JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
+        moveCostSlider.setValue(simulator.getMoveCost());
         moveCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int mCost = ((JSlider) e.getSource()).getValue();
                 moveCost = mCost;
                 simulator.setMoveCost(moveCost);
+                mc.setText("Move Cost: " + simulator.getMoveCost());
             }
         });
         behaviorTools.add(moveCostSlider);
 
         
         //TURN - adjusts the amount of energy a worm spends during a turning tick
-        JLabel tc = new JLabel("Turn Cost: ");
+        JLabel tc = new JLabel("Turn Cost: " + simulator.getTurnCost());
         behaviorTools.add(tc);
         JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
+        turnCostSlider.setValue(simulator.getTurnCost());
         turnCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int tCost = ((JSlider) e.getSource()).getValue();
                 turnCost = tCost;
                 simulator.setTurnCost(turnCost);
+                tc.setText("Turn Cost: " + simulator.getTurnCost());
             }
         });
         behaviorTools.add(turnCostSlider);
         
       //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
-        JLabel sr = new JLabel("Sight Range: ");
+        JLabel sr = new JLabel("Sight Range: "+simulator.getSightRange());
         behaviorTools.add(sr);
         JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
+        sightRangeSlider.setValue(simulator.getSightRange());
         sightRangeSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int sightR = ((JSlider) e.getSource()).getValue();
                 sightRange = sightR;
                 simulator.setSightRange(sightR);
+                sr.setText("Sight Range: "+simulator.getSightRange());
             }
         });
         behaviorTools.add(sightRangeSlider);
@@ -332,27 +349,31 @@ public class GUI {
         geneticsTools.setTitle("Genetics Tools");
         
         //MUTATION - adjusts the rate of DNA change in new worms
-        JLabel mut8 = new JLabel("Mutation Rate: ");
+        JLabel mut8 = new JLabel("Mutation Rate: "+ Critter.getMutationRate());
         geneticsTools.add(mut8);
         JSlider mutationSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
+        mutationSlider.setValue((int)Critter.getMutationRate());
         mutationSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int mutate = ((JSlider) e.getSource()).getValue();
                 mutation = mutate / 100.0;
                 Critter.setMutationRate(mutation);
+                mut8.setText("Mutation Rate: " + Critter.getMutationRate());
             }
         });
         geneticsTools.add(mutationSlider);
         
       //COLOR - Adjusts the amount of color variation in new worm species
-        JLabel cv = new JLabel("Color Variance: ");
+        JLabel cv = new JLabel("Color Variance: "+simulator.getColorVar());
         geneticsTools.add(cv);
         JSlider colorVarSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        colorVarSlider.setValue((int) simulator.getColorVar());
         colorVarSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int cVar = ((JSlider) e.getSource()).getValue();
                 colorVar = cVar / 100.0;
                 simulator.setColorVar(colorVar);
+                cv.setText("Color Variance: "+simulator.getColorVar());
             }
         });
         geneticsTools.add(colorVarSlider);
@@ -392,39 +413,81 @@ public class GUI {
         JXTaskPane drawTools = new JXTaskPane();
         drawTools.setTitle("Drawing Tools");
         
+      // BARRIER WIDTH / BRUSH TYPE 
+        JLabel bwl = new JLabel("Brush Size: " + simulator.board.getBarrierWidth());
+        drawTools.add(bwl);
+        int min = simulator.pixelSize;
+        int max = simulator.pixelSize * 100;
+        JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,min,max,1);
+        barrierWidth.setValue(simulator.pixelSize);
+        barrierWidth.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int bw = ((JSlider) e.getSource()).getValue();
+        		simulator.board.setBarrierWidth(bw);
+        		bwl.setText("Brush Size: " + simulator.board.getBarrierWidth());
+        	}
+        });
+        drawTools.add(barrierWidth);
+        
+      //the following buttons are beveled, and should stay indented if selected
+        Border raised = BorderFactory.createRaisedBevelBorder();
+        JButton dragLine = new JButton("Drag Line");
+        JButton dropPoint = new JButton("Drop Point");
+        JButton dragGraph = new JButton("Drag Grid");
+        JButton eraseRect = new JButton("Erase");
+        
         
         //LINE - Drags a line from mouse position
-        JButton dragLine = new JButton("Drag Line");
+        dragLine.setBorder(raised);
         dragLine.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.lTrue();
+                toggleUtencil(dragLine, dropPoint, dragGraph, eraseRect);
             }
         });
         drawTools.add(dragLine);
         
         //POINT - Drops a single point barrier at mouse click
-        JButton dropPoint = new JButton("Drop Point");
+        dropPoint.setBorder(raised);
         dropPoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.pTrue();
+                toggleUtencil(dropPoint, dragGraph, dragLine, eraseRect);
             }
         });
         drawTools.add(dropPoint);
         
         //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
-        JButton dragGraph = new JButton("Drag Grid");
+        dragGraph.setBorder(raised);
         dragGraph.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.gTrue();
+                toggleUtencil(dragGraph, dragLine, dropPoint, eraseRect);
             }
         });
         drawTools.add(dragGraph);
         
+      //ERASE - Erases a barriers based on a line from mouse position.
+        eraseRect.setBorder(raised);
+        eraseRect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.eTrue();
+                toggleUtencil(eraseRect, dragGraph, dragLine, dropPoint);
+            }
+        });
+        drawTools.add(eraseRect);
+        
+      //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer gridComponents = new JXTaskPaneContainer();
+        gridComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
+        JXTaskPane gridTools = new JXTaskPane();
+        gridTools.setTitle("Grid Tools");
+        
         //X SPACE - 
         JLabel xspLabel = new JLabel("X Space: 3");
-        drawTools.add(xspLabel);
+        gridTools.add(xspLabel);
         JSlider xSpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
-        xSpace.setValue(3);
+        xSpace.setValue(mainFrame.xSpace);
         xSpace.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int xsp = ((JSlider) e.getSource()).getValue();
@@ -432,13 +495,13 @@ public class GUI {
         		xspLabel.setText("X Space: "+xsp);
         	}
         });
-        drawTools.add(xSpace);
+        gridTools.add(xSpace);
         
         //X OFFSET -
         JLabel xoffLabel = new JLabel("X Offset: 3");
-        drawTools.add(xoffLabel);
+        gridTools.add(xoffLabel);
         JSlider xOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
-        xOff.setValue(3);
+        xOff.setValue(mainFrame.xOff);
         xOff.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int xof = ((JSlider) e.getSource()).getValue();
@@ -446,13 +509,13 @@ public class GUI {
         		xoffLabel.setText("X Offset: "+xof);
         	}
         });
-        drawTools.add(xOff);
+        gridTools.add(xOff);
         
         //Y SPACE -
         JLabel yspLabel = new JLabel("Y Space: 3");
-        drawTools.add(yspLabel);
+        gridTools.add(yspLabel);
         JSlider ySpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
-        ySpace.setValue(3);
+        ySpace.setValue(mainFrame.ySpace);
         ySpace.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int ysp = ((JSlider) e.getSource()).getValue();
@@ -460,13 +523,13 @@ public class GUI {
         		yspLabel.setText("Y Space: "+ysp);
         	}
         });
-        drawTools.add(ySpace);
+        gridTools.add(ySpace);
         
         //Y OFFSET - 
         JLabel yoffLabel = new JLabel("Y Offset: 3");
-        drawTools.add(yoffLabel);
+        gridTools.add(yoffLabel);
         JSlider yOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
-        yOff.setValue(3);
+        yOff.setValue(mainFrame.yOff);
         yOff.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int yof = ((JSlider) e.getSource()).getValue();
@@ -474,7 +537,11 @@ public class GUI {
         		yoffLabel.setText("Y Offset: "+yof);
         	}
         });
-        drawTools.add(yOff);
+        gridTools.add(yOff);
+        
+        //add grid tools to larger panel
+        gridTools.setCollapsed(true);
+        drawTools.add(gridTools);
         
       //INVISIBLE - Toggles visibility of barriers
         JButton toggleInv = new JButton("Hide Barriers");
@@ -492,16 +559,7 @@ public class GUI {
             }
         });
         drawTools.add(toggleInv);
-        
-      //ERASE - Erases a barriers based on a line from mouse position.
-        JButton eraseRect = new JButton("Erase");
-        eraseRect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.eTrue();
-            }
-        });
-        drawTools.add(eraseRect);
-        
+       
         
         //drawing task pane
         drawTools.setCollapsed(true);
@@ -509,7 +567,6 @@ public class GUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridy = 3;
         tools.add(drawingComponents, gbc);
-        
         
         
         
@@ -580,7 +637,24 @@ public class GUI {
         mainFrame.pixelSize = simulator.pixelSize;
         
     }
-
+    
+    //helper function used by the drawing tools
+    public void toggleUtencil(JButton selected, JButton other, JButton other1, JButton other2)
+    {
+    	Border raised = BorderFactory.createRaisedBevelBorder();
+        Border lowered = BorderFactory.createLoweredBevelBorder();
+        if(selected.getBorder() == raised)
+        {
+        	selected.setBorder(lowered);
+            other.setBorder(raised);
+    		other1.setBorder(raised);	
+    		other2.setBorder(raised);
+        }else
+        {
+        	selected.setBorder(raised);
+        	mainFrame.allFalse();
+        }
+    }
     
     //helper function used by the displayPopulation button
     public void dispGene() {
