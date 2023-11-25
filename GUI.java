@@ -30,7 +30,8 @@ public class GUI {
         prepareGUI();
     }
     public void prepareGUI() {
-        mainFrame.setSize(1200, 1100);
+    	//get fullscreen dimensions.
+        mainFrame.setSize(boardSize + 15 + (boardSize/3), boardSize+70);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.xSpace = 1; mainFrame.ySpace = 1;
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -52,7 +53,7 @@ public class GUI {
     private int foodVal;
     private int foodRate;
     private double colorVar;
-    private static int boardSize = 160;
+    private static int boardSize;
     private boolean isFullscreen = false; 
     
     //COMPLETELY UNUSED VARIABLES - LMAO
@@ -106,21 +107,19 @@ public class GUI {
 
     //prompts the user for information, then starts the tick loop.
     public static void main(String[] args) {
-        prompt();
+    	//find board size by finding the smallest dimension, and ...
+    	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    	int width = gd.getDisplayMode().getWidth();
+    	int height = gd.getDisplayMode().getHeight();
+    	int smallest = width > height ? height : width;
+    	boardSize = smallest - 65;
+    	start(0, 3, 1, boardSize);
         while (true) {
 
             simulator.gameTimeStep();
         }
     }
     
-    //creates a pop-up to collect information from the user, then starts the game
-    private static void prompt() {
-        JFrame frame = new JFrame("Board Size");
-        boardSize = Integer.parseInt(JOptionPane.showInputDialog(frame,
-                "Input board size between 50 and 900"));
-        start(0, 3, 1, boardSize);
-    }
-
     // builds a fresh GUI and populates the simulation from defaults
     // takes(sleep Cost, movement Cost, turn cost, board size)
     private static void start(int sc, int mc, int tc, int bs) {
@@ -153,6 +152,7 @@ public class GUI {
         
         //PLAY - toggles pause/play by stopping and resuming the simulation.
         JButton play = new JButton("Stop");
+        play.setToolTipText("Pauses and resumes the simulation.");
         play.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!simulator.isPaused()) {
@@ -174,11 +174,12 @@ public class GUI {
         
         //RESET - closes window, starts over from prompt();
         JButton reset = new JButton("Reset");
+        reset.setToolTipText("Closes and restarts the simulation.");
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.setVisible(false);
                 mainFrame.dispose();
-                prompt();
+                start(sleepCost, moveCost, turnCost, boardSize);
             }
         });
         gbc.gridy = 0;
@@ -206,13 +207,17 @@ public class GUI {
         JXTaskPaneContainer environmentComponents = new JXTaskPaneContainer();
         environmentComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane environmentTools = new JXTaskPane();
+        environmentTools.setToolTipText("Tools: tick speed, food rate, and food value.");
         environmentTools.setTitle("Environment Tools");
 
         //SPEED - Adjusts the tick speed of the game
+        String floatText = "Adjust the speed of game ticks.";
         String isNeg = (int)simulator.getSpeed() == 0 ? "" : "-";
         JLabel spd = new JLabel("Tick Speed: " + isNeg +(int) simulator.getSpeed());
+        spd.setToolTipText(floatText);
         environmentTools.add(spd);
         JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
+        speedSlider.setToolTipText(floatText);
         speedSlider.setValue((int) (27067056 + (Math.log(simulator.getSpeed()/0.02)/200000000)));
         speedSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -226,9 +231,12 @@ public class GUI {
         environmentTools.add(speedSlider);
         
         //FOOD VALUE - adjusts the amount of energy a worm gets from 1 piece of food.
+        floatText = "adjusts the amount of energy a worm gets from 1 piece of food.";
         JLabel fVal = new JLabel("Food Value: " + simulator.getFoodValue());
+        fVal.setToolTipText(floatText);
         environmentTools.add(fVal);
         JSlider foodValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 500, 250);
+        foodValueSlider.setToolTipText(floatText);
         foodValueSlider.setValue(simulator.getFoodValue());
         foodValueSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -241,9 +249,12 @@ public class GUI {
         environmentTools.add(foodValueSlider);
         
         //FOOD RATE - Adjusts the amount of food that spawns per tick
+        floatText = "Adjusts the amount of food that spawns per tick";
         JLabel fR8 = new JLabel("Food Rate: "+simulator.getFoodRate());
+        fR8.setToolTipText(floatText);
         environmentTools.add(fR8);
         JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 200, bs * bs / 500);
+        foodRateSlider.setToolTipText(floatText);
         foodRateSlider.setValue(simulator.getFoodRate());
         foodRateSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -265,17 +276,21 @@ public class GUI {
         
         //BEHAVIOR
         
-        //Behavior cost task panel
+        //Behavior tools: Sleep Cost, Movement Cost, Turn Cost, Sight Range
         JXTaskPaneContainer behaviorComponents = new JXTaskPaneContainer();
         behaviorComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane behaviorTools = new JXTaskPane();
+        behaviorTools.setToolTipText("Tools: Sleep Cost, Movement Cost, Turn Cost, Sight Range.");
         behaviorTools.setTitle("Behavior Tools");
         
         
         //SLEEP - adjusts the amount of energy a worm spends during a sleep tick
+        floatText = "Adjusts the amount of energy a worm spends during a sleep tick.";
         JLabel sc = new JLabel("Sleep Cost: "+simulator.getSleepCost());
+        sc.setToolTipText(floatText);
         behaviorTools.add(sc);
         JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
+        sleepCostSlider.setToolTipText(floatText);
         sleepCostSlider.setValue(simulator.getSleepCost());
         sleepCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -288,9 +303,12 @@ public class GUI {
         behaviorTools.add(sleepCostSlider);
         
         //MOVEMENT - adjusts the amount of energy a worm spends during a movement tick
+        floatText = "Adjusts the amount of energy a worm spends during a movement tick.";
         JLabel mc = new JLabel("Move Cost: " + simulator.getMoveCost());
+        mc.setToolTipText(floatText);
         behaviorTools.add(mc);
         JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
+        moveCostSlider.setToolTipText(floatText);
         moveCostSlider.setValue(simulator.getMoveCost());
         moveCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -304,9 +322,12 @@ public class GUI {
 
         
         //TURN - adjusts the amount of energy a worm spends during a turning tick
+        floatText = "Adjusts the amount of energy a worm spends during a turning tick.";
         JLabel tc = new JLabel("Turn Cost: " + simulator.getTurnCost());
+        tc.setToolTipText(floatText);
         behaviorTools.add(tc);
         JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
+        turnCostSlider.setToolTipText(floatText);
         turnCostSlider.setValue(simulator.getTurnCost());
         turnCostSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -319,9 +340,12 @@ public class GUI {
         behaviorTools.add(turnCostSlider);
         
       //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
+        floatText = "Adjusts the range a worm can detect food, barriers or other worms in front of it.";
         JLabel sr = new JLabel("Sight Range: "+simulator.getSightRange());
+        sr.setToolTipText(floatText);
         behaviorTools.add(sr);
         JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
+        sightRangeSlider.setToolTipText(floatText);
         sightRangeSlider.setValue(simulator.getSightRange());
         sightRangeSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -346,12 +370,16 @@ public class GUI {
         JXTaskPaneContainer geneticsComponents = new JXTaskPaneContainer();
         geneticsComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane geneticsTools = new JXTaskPane();
+        geneticsTools.setToolTipText("Tools: Mutation Rate, Color Varience, Genes Selection, Population Display.");
         geneticsTools.setTitle("Genetics Tools");
         
         //MUTATION - adjusts the rate of DNA change in new worms
+        floatText = "Adjusts the amount of DNA mutation in a new worm species.";
         JLabel mut8 = new JLabel("Mutation Rate: "+ Critter.getMutationRate());
+        mut8.setToolTipText(floatText);
         geneticsTools.add(mut8);
         JSlider mutationSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
+        mutationSlider.setToolTipText(floatText);
         mutationSlider.setValue((int)Critter.getMutationRate());
         mutationSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -364,9 +392,12 @@ public class GUI {
         geneticsTools.add(mutationSlider);
         
       //COLOR - Adjusts the amount of color variation in new worm species
+        floatText = "Adjusts the amount of color variation in new worm species.";
         JLabel cv = new JLabel("Color Variance: "+simulator.getColorVar());
+        cv.setToolTipText(floatText);
         geneticsTools.add(cv);
         JSlider colorVarSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        colorVarSlider.setToolTipText(floatText);
         colorVarSlider.setValue((int) simulator.getColorVar());
         colorVarSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -380,6 +411,7 @@ public class GUI {
         
         //DNA - opens pop-up sub-menu that allows user to select genes in the gene pool. 
         JButton comm = new JButton("Genes");
+        comm.setToolTipText("Opens a pop-up menu that allows users to select which genes are in the gene pool.");
         comm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispGene();
@@ -389,6 +421,7 @@ public class GUI {
         
         //POPULATION - opens pop-up info-graphic showing the most populous worm species.
         JButton dispPop = new JButton("Disp Populations");
+        dispPop.setToolTipText("Opens pop-up info-graphic displaying infoormation about the most populous worm species.");
         dispPop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!simulator.popDispVis)
@@ -411,14 +444,18 @@ public class GUI {
         JXTaskPaneContainer drawingComponents = new JXTaskPaneContainer();
         drawingComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane drawTools = new JXTaskPane();
+        drawTools.setToolTipText("Place barriers of various shapes, sizes and colors that worms can't move through.");
         drawTools.setTitle("Drawing Tools");
         
       // BARRIER WIDTH / BRUSH TYPE 
+        floatText = "adjust the thickness of the barrier to be drawn.";
         JLabel bwl = new JLabel("Brush Size: " + simulator.board.getBarrierWidth());
+        bwl.setToolTipText(floatText);
         drawTools.add(bwl);
         int min = simulator.pixelSize;
         int max = simulator.pixelSize * 100;
         JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,min,max,1);
+        barrierWidth.setToolTipText(floatText);
         barrierWidth.setValue(simulator.pixelSize);
         barrierWidth.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
@@ -438,6 +475,7 @@ public class GUI {
         
         
         //LINE - Drags a line from mouse position
+        dragLine.setToolTipText("Drags a line at any angle from the mouse click to the mouse release.");
         dragLine.setBorder(raised);
         dragLine.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -448,6 +486,7 @@ public class GUI {
         drawTools.add(dragLine);
         
         //POINT - Drops a single point barrier at mouse click
+        dropPoint.setToolTipText("Drops a square barrier on each click;");
         dropPoint.setBorder(raised);
         dropPoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -458,6 +497,7 @@ public class GUI {
         drawTools.add(dropPoint);
         
         //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
+        dragGraph.setToolTipText("Creates a rectangle of square barriers in a grid formation from mouse click to mouse release.");
         dragGraph.setBorder(raised);
         dragGraph.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -468,6 +508,7 @@ public class GUI {
         drawTools.add(dragGraph);
         
       //ERASE - Erases a barriers based on a line from mouse position.
+        eraseRect.setToolTipText("Erases all barriers within the rectangle created from mouse click to mouse release.");
         eraseRect.setBorder(raised);
         eraseRect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -481,12 +522,16 @@ public class GUI {
         JXTaskPaneContainer gridComponents = new JXTaskPaneContainer();
         gridComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane gridTools = new JXTaskPane();
+        gridTools.setToolTipText("Adjusts the spacing and alignment of square barriers within a grid.");
         gridTools.setTitle("Grid Tools");
         
         //X SPACE - 
-        JLabel xspLabel = new JLabel("X Space: 3");
+        floatText = "Adjusts the horizontal space between square barriers in each row of a grid.";
+        JLabel xspLabel = new JLabel("X Space: "+mainFrame.xSpace);
+        xspLabel.setToolTipText(floatText);
         gridTools.add(xspLabel);
         JSlider xSpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        xSpace.setToolTipText(floatText);
         xSpace.setValue(mainFrame.xSpace);
         xSpace.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
@@ -498,9 +543,12 @@ public class GUI {
         gridTools.add(xSpace);
         
         //X OFFSET -
-        JLabel xoffLabel = new JLabel("X Offset: 3");
+        floatText = "Adjusts the vertical alignment of each row in a grid.";
+        JLabel xoffLabel = new JLabel("X Offset: "+mainFrame.xOff);
+        xoffLabel.setToolTipText(floatText);
         gridTools.add(xoffLabel);
         JSlider xOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        xOff.setToolTipText(floatText);
         xOff.setValue(mainFrame.xOff);
         xOff.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
@@ -512,9 +560,12 @@ public class GUI {
         gridTools.add(xOff);
         
         //Y SPACE -
-        JLabel yspLabel = new JLabel("Y Space: 3");
+        floatText = "Adjusts the vertical space between square barriers in each column of a grid.";
+        JLabel yspLabel = new JLabel("Y Space: "+mainFrame.ySpace);
+        yspLabel.setToolTipText(floatText);
         gridTools.add(yspLabel);
         JSlider ySpace = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        ySpace.setToolTipText(floatText);
         ySpace.setValue(mainFrame.ySpace);
         ySpace.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
@@ -526,9 +577,12 @@ public class GUI {
         gridTools.add(ySpace);
         
         //Y OFFSET - 
-        JLabel yoffLabel = new JLabel("Y Offset: 3");
+        floatText = "Adjusts the horizontal alignment of each column in a grid.";
+        JLabel yoffLabel = new JLabel("Y Offset: "+mainFrame.yOff);
+        yoffLabel.setToolTipText(floatText);
         gridTools.add(yoffLabel);
         JSlider yOff = new JSlider(JSlider.HORIZONTAL,0,10,1);
+        yOff.setToolTipText(floatText);
         yOff.setValue(mainFrame.yOff);
         yOff.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
@@ -545,6 +599,7 @@ public class GUI {
         
       //INVISIBLE - Toggles visibility of barriers
         JButton toggleInv = new JButton("Hide Barriers");
+        toggleInv.setToolTipText("Toggles the visibility of all barriers.");
         toggleInv.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (barrierVis) {
@@ -578,10 +633,13 @@ public class GUI {
         JXTaskPaneContainer zoomComponents = new JXTaskPaneContainer();
         zoomComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane zoomTools = new JXTaskPane();
+        zoomTools.setToolTipText("Tools: Fullscreen");
         zoomTools.setTitle("Zoom Tools");
         
         //Full Screen / Windowed
+        floatText = "Toggles between fullscreen and windowed views.";
         JButton fullscreen = new JButton("Fullscreen");
+        fullscreen.setToolTipText(floatText);
         fullscreen.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		String fsName = null;
