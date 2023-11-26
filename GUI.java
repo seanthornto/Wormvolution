@@ -537,8 +537,9 @@ public class GUI {
         JLabel bwl = new JLabel("Brush Size: " + simulator.board.getBarrierWidth());
         bwl.setToolTipText(floatText);
         drawTools.add(bwl);
-        int max = (int) (simulator.getBoardSize() / simulator.pixelSize) * 10;
-        JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,1, 50,1);
+        int max = (int) simulator.getBoardSize()/5;
+        System.out.println(simulator.getBoardSize());
+        JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,1, max,1);
         barrierWidth.setToolTipText(floatText);
         barrierWidth.setValue(1);
         barrierWidth.addChangeListener(new ChangeListener(){

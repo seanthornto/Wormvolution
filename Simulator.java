@@ -81,7 +81,6 @@ public class Simulator {
 		setMoveCost(mC);
 		setTurnCost(tC);
 		pixelSize = max / boardSize;
-		System.out.println(pixelSize);
 		board = new Board(pixelSize, bs);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
