@@ -17,7 +17,7 @@ public class Board extends JPanel {
 		boardSize = bs;
 		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
 		fillCanvas(Color.black);
-		barrierWidth = pixelSize;
+		barrierWidth = 1;
 	}
 
 	public void setBoardSize(int s) {
@@ -30,7 +30,7 @@ public class Board extends JPanel {
 	
 	public void setBarrierWidth(int w)
 	{
-		barrierWidth = pixelSize * w;
+		barrierWidth =w;
 	}
 	
 	public int getBarrierWidth()

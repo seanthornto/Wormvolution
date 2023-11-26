@@ -74,12 +74,14 @@ public class Simulator {
 	public boolean autoRefPop;
 
 	// ------------------------------CONSTRUCTOR-------------------------------
-	public Simulator(int bs, int sC, int mC, int tC) {
+	//needs board size, max size constraint, sleep cost, move cost and turn cost
+	public Simulator(int bs, int max, int sC, int mC, int tC) {
 		boardSize = bs;
 		setSleepCost(sC);
 		setMoveCost(mC);
 		setTurnCost(tC);
-		pixelSize = 900 / boardSize;
+		pixelSize = max / boardSize;
+		System.out.println(pixelSize);
 		board = new Board(pixelSize, bs);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
@@ -1107,37 +1109,40 @@ public class Simulator {
 
 			while (i < critters.size()) {
 				Critter iCritter = critters.get(i);
-				critterTimeStep(iCritter);
-				iCritter.age();
-				int iCritterEnergy = iCritter.getEnergy();
-				Point[] iBody = iCritter.getBody();
-				int length = iBody.length;
-				if (iCritterEnergy <= 0 || iCritter.getAge() >= iCritter.getMaxAge()) {
-				    if (foodValue == 0) 
-				        foodValue = 1;
-					int foodLeft = iCritterEnergy / foodValue;
-					for (int j = 0; j < length; j++) {
-						removeCritterPoint(iBody[j]);
-						if (j < foodLeft) {
-							addFood(iBody[j]);
-						} else {
-							board.erase(iBody[j]);
-						}
-
-					}
-					Population pop = new Population(iCritter.getColor(), toString(iCritter.getDNA()));
-					for (Population p : populations) {
-						if (pop.equals(p)) {
-							p.removeMember();
-							if (p.size <= 0) {
-								populations.remove(p);
+				if(iCritter != null) 
+				{
+					critterTimeStep(iCritter);
+					iCritter.age();
+					int iCritterEnergy = iCritter.getEnergy();
+					Point[] iBody = iCritter.getBody();
+					int length = iBody.length;
+					if (iCritterEnergy <= 0 || iCritter.getAge() >= iCritter.getMaxAge()) {
+					    if (foodValue == 0) 
+					        foodValue = 1;
+						int foodLeft = iCritterEnergy / foodValue;
+						for (int j = 0; j < length; j++) {
+							removeCritterPoint(iBody[j]);
+							if (j < foodLeft) {
+								addFood(iBody[j]);
+							} else {
+								board.erase(iBody[j]);
 							}
-							break;
+
 						}
+						Population pop = new Population(iCritter.getColor(), toString(iCritter.getDNA()));
+						for (Population p : populations) {
+							if (pop.equals(p)) {
+								p.removeMember();
+								if (p.size <= 0) {
+									populations.remove(p);
+								}
+								break;
+							}
+						}
+						critters.remove(i);
+					} else {
+						i++;
 					}
-					critters.remove(i);
-				} else {
-					i++;
 				}
 
 			}
@@ -1161,7 +1166,9 @@ public class Simulator {
 
 	public void gameTimeStep(int steps) {
 		for (int i = 0; i < steps; i++)
+			{
 			gameTimeStep();
+			}
 	}
 
 	public void hold(long nano) {

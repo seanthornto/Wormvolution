@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class GUI {
 	
 	//Panels and frames
+	private static Dimension screenSize;
+	private static int sizeConstraint;
     private Frame mainFrame = new Frame("Worm Evolution");
     private JPanel controlPanel = new JPanel();
     private JPanel tools = new JPanel();
@@ -109,10 +111,10 @@ public class GUI {
     public static void main(String[] args) {
     	//find board size by finding the smallest dimension, and ...
     	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    	int width = gd.getDisplayMode().getWidth();
-    	int height = gd.getDisplayMode().getHeight();
-    	int smallest = width > height ? height : width;
-    	boardSize = smallest - 65;
+    	screenSize = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
+    	sizeConstraint = screenSize.width > screenSize.height ? screenSize.height : screenSize.width;
+    	sizeConstraint -= (sizeConstraint *0.06); //regardless of screen size, every board and frame needs to be padded.
+    	boardSize = sizeConstraint;
     	start(0, 3, 1, boardSize);
         while (true) {
 
@@ -125,8 +127,10 @@ public class GUI {
     private static void start(int sc, int mc, int tc, int bs) {
         GUI gui = new GUI();
         gui.showGUI(sc, mc, tc, bs);
-        simulator.gameTimeStep(bs);
-        int startingPopulation = (bs / 10);
+        int startingPopulation = (bs/10);
+        
+        //this is to let the board populate before creating worms so no one gets "unlucky"
+        simulator.gameTimeStep(bs/3);
         simulator.addCritter("M", startingPopulation);
     }
     
@@ -139,7 +143,10 @@ public class GUI {
         moveCost = moveC;
         turnCost = turnC;
         colorVar = 0.5;
-
+        
+        //gbc for pop up's and sub menu's
+        GridBagConstraints wgbc = new GridBagConstraints();
+        //gbc for main frame
         GridBagConstraints gbc = new GridBagConstraints();
         controlPanel.setLayout(new GridBagLayout());
         tools.setLayout(new GridBagLayout());
@@ -172,14 +179,89 @@ public class GUI {
         //gbc.anchor = GridBagConstraints.SOUTH;
         controlPanel.add(play, gbc);
         
-        //RESET - closes window, starts over from prompt();
+        //RESET - prompts user with different kinds of reset options;
         JButton reset = new JButton("Reset");
-        reset.setToolTipText("Closes and restarts the simulation.");
+        reset.setToolTipText("Prompts the user with different reset variations");
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainFrame.setVisible(false);
-                mainFrame.dispose();
-                start(sleepCost, moveCost, turnCost, boardSize);
+            	
+            	//throw pop up for reset options
+            	JFrame resetFrame = new JFrame("Reset Options");
+            	resetFrame.setSize(200,400);
+            	resetFrame.setLocationRelativeTo(null);
+            	resetFrame.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent windowEvent) {
+                        resetFrame.dispose();
+                    }
+                });
+            	resetFrame.setVisible(true);
+            	JPanel resetTools = new JPanel();
+            	resetTools.setLayout(new GridBagLayout());
+            	
+            	//add default reset
+            	JButton defaults = new JButton("Reset to Defaults");
+            	defaults.setToolTipText("Starts a new simulation with default values.");
+            	defaults.addActionListener(new ActionListener()
+            			{
+            				public void actionPerformed(ActionEvent e)
+            				{
+            					mainFrame.setVisible(false);
+            					mainFrame.dispose();
+            					start(0, 3, 1, sizeConstraint);
+            				}
+            			});
+            	wgbc.gridx = 0;
+            	wgbc.gridy = 0;
+            	wgbc.insets = new Insets(5,5,5,5);
+            	resetTools.add(defaults,wgbc);
+            	
+            	//add reset with keep current settings
+            	JButton current = new JButton("Reset to Current");
+            	current.setToolTipText("Starts a new simulation with values that are currently set.");
+            	current.addActionListener(new ActionListener()
+            			{
+            				public void actionPerformed(ActionEvent e)
+            				{
+            					mainFrame.setVisible(false);
+            					mainFrame.dispose();
+            					start(sleepCost, moveCost, turnCost, boardSize);
+            				}
+            			});
+            	wgbc.gridy = 1;
+            	resetTools.add(current,wgbc);
+            	
+            	//add reset with lowest possible values
+            	JButton minimum = new JButton("Reset to Minimum");
+            	minimum.setToolTipText("Starts a new simulation lowest possible values. Sleep: 0, Move: 0, Turn: 0 and 50px board.");
+            	minimum.addActionListener(new ActionListener()
+            			{
+            				public void actionPerformed(ActionEvent e)
+            				{
+            					mainFrame.setVisible(false);
+            					mainFrame.dispose();
+            					start(0, 0, 0, 50);
+            				}
+            			});
+            	wgbc.gridy = 2;
+            	resetTools.add(minimum,wgbc);
+            	
+            	//add reset with lowest possible values
+            	JButton maximum = new JButton("Reset to Maximum");
+            	maximum.setToolTipText("Starts a new simulation highest possible values. Sleep: 10, Move: 10, Turn: 10 and largest relative board.");
+            	maximum.addActionListener(new ActionListener()
+            			{
+            				public void actionPerformed(ActionEvent e)
+            				{
+            					mainFrame.setVisible(false);
+            					mainFrame.dispose();
+            					start(10, 10, 10, sizeConstraint);
+            				}
+            			});
+            	wgbc.gridy = 3;
+            	resetTools.add(maximum,wgbc);
+            	
+            	//finalize
+                resetFrame.setContentPane(resetTools);
             }
         });
         gbc.gridy = 0;
@@ -190,10 +272,13 @@ public class GUI {
         gbc.gridy = 0;
         gbc.gridx = 1;
         gbc.insets = new Insets(0,0,0,0);
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridheight = 3;
-        simulator = new Simulator(bs, sleepCost, moveCost, turnCost);
+        gbc.gridwidth = 3;
+        simulator = new Simulator(bs, sizeConstraint, sleepCost, moveCost, turnCost);
         controlPanel.add(simulator.board, gbc);
+        
         
         //reset gridbag
         gbc.gridheight = 1;
@@ -452,11 +537,10 @@ public class GUI {
         JLabel bwl = new JLabel("Brush Size: " + simulator.board.getBarrierWidth());
         bwl.setToolTipText(floatText);
         drawTools.add(bwl);
-        int min = simulator.pixelSize;
-        int max = simulator.pixelSize * 100;
-        JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,min,max,1);
+        int max = (int) (simulator.getBoardSize() / simulator.pixelSize) * 10;
+        JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,1, 50,1);
         barrierWidth.setToolTipText(floatText);
-        barrierWidth.setValue(simulator.pixelSize);
+        barrierWidth.setValue(1);
         barrierWidth.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int bw = ((JSlider) e.getSource()).getValue();
@@ -662,7 +746,14 @@ public class GUI {
         });
         zoomTools.add(fullscreen);
         
-        //
+      //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer resizeComponents = new JXTaskPaneContainer();
+        resizeComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
+        JXTaskPane resizeTools = new JXTaskPane();
+        resizeTools.setToolTipText("Adjust the board size via Crop, Compress or Restart.");
+        resizeTools.setTitle("Resize Tools");
+        resizeTools.setCollapsed(true);
+        zoomTools.add(resizeTools);
         
       //drawing task pane
         zoomTools.setCollapsed(true);
@@ -670,7 +761,7 @@ public class GUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridy = 4;
         tools.add(zoomComponents, gbc);
-        
+         
         
         //--------------
         //FINISHING UP!
@@ -693,7 +784,6 @@ public class GUI {
         mainFrame.setContentPane(controlPanel);
         mainFrame.setVisible(true);
         mainFrame.pixelSize = simulator.pixelSize;
-        
     }
     
     //helper function used by the drawing tools
