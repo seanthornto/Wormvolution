@@ -66,7 +66,8 @@ public class GUI {
     private int foodRate;
     private double colorVar;
     private static int boardSize;
-    private boolean isFullscreen = false; 
+    private boolean isFullscreen = false;
+    private static double scale = 1;
     
     //COMPLETELY UNUSED VARIABLES - LMAO
     //TODO: ??
@@ -135,6 +136,7 @@ public class GUI {
     // builds a fresh GUI and populates the simulation from defaults
     // takes(sleep Cost, movement Cost, turn cost, board size)
     private static void start(int sc, int mc, int tc, int bs) {
+    	scale = 1;
         GUI gui = new GUI();
         gui.showGUI(sc, mc, tc, bs);
         int startingPopulation = (bs/10);
@@ -214,13 +216,13 @@ public class GUI {
         	int newBoardSize = boardSize;
         	public void autoscale()
         	{
-        		float scale = sizeConstraint - simulator.getBoardSize();
-				 scale = simulator.getBoardSize()/scale;
-				 scale +=1;
+        		scale = sizeConstraint - simulator.getBoardSize();
+				scale = simulator.getBoardSize()/scale;
+				scale +=1;
 				  
-				  simulator.board.setScale(scale);
-				  simulator.board.revalidate();
-				  simulator.board.repaint();
+				simulator.board.setScale(scale);
+				simulator.board.revalidate();
+				simulator.board.repaint();
         	}
             public void actionPerformed(ActionEvent e) {
             	
@@ -809,32 +811,29 @@ public class GUI {
         });
         zoomTools.add(fullscreen);
         
-        //beta zoom scale testing
-        JButton zoom = new JButton("Zoom.");
-        zoom.addActionListener(new ActionListener()
-        {
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		simulator.pause();
-        		
-				 float scale = sizeConstraint - simulator.getBoardSize();
-				 scale = scale/simulator.getBoardSize();
-				 scale +=1;
-				  
-				  simulator.board.setScale(scale);
-				  simulator.board.revalidate();
-				  simulator.board.repaint();
-				  
-				 /* 
-				 * b.setCanvas(simulator.board.zoom(scale)); mainFrame.bs =
-				 * simulator.getBoardSize()+s; boardSize = simulator.getBoardSize()+s;
-				 * simulator.board.setBoardSize(simulator.getBoardSize()+s);
-				 * simulator.setBoardSize(simulator.getBoardSize()+s);
-				 */
-        		
+      //DISPLAY SIZE
+        scale = 1;
+        int mx = 10000;
+        floatText = "Adjusts the scale of the simulation. DOES NOT CHANGE BOARD SIZE.";
+        JLabel dispLabel = new JLabel("Scale: "+scale);
+        dispLabel.setToolTipText(floatText);
+        zoomTools.add(dispLabel);
+        
+        JSlider displaySize = new JSlider(JSlider.HORIZONTAL,1,mx,1);
+        displaySize.setToolTipText(floatText);
+        int scl = (int)scale * mx;
+        displaySize.setValue(scl);
+        displaySize.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int sc = ((JSlider) e.getSource()).getValue();
+        		scale = (double)sc /mx;
+        		dispLabel.setText("Scale: "+scale);
+        		simulator.board.setScale(scale);
+				simulator.board.revalidate();
+				simulator.board.repaint();
         	}
         });
-        zoomTools.add(zoom);
+        zoomTools.add(displaySize);
         
       //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer resizeComponents = new JXTaskPaneContainer();
