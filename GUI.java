@@ -1,3 +1,10 @@
+/**
+ * Write a description of class Critter here.
+ *
+ * @author Sean Thornton and Sky Vercauteren
+ * @version 1.0 November 2023
+ */
+
 import org.jdesktop.swingx.JXTaskPaneContainer;
 import org.jdesktop.swingx.JXTaskPane;
 import java.awt.*;
@@ -18,6 +25,7 @@ public class GUI {
 	//Panels and frames
 	private static Dimension screenSize;
 	private static int sizeConstraint;
+	private static Dimension windowSize = new Dimension(1200,1100);
     private Frame mainFrame = new Frame("Worm Evolution");
     private JPanel controlPanel = new JPanel();
     private JPanel tools = new JPanel();
@@ -33,7 +41,9 @@ public class GUI {
     }
     public void prepareGUI() {
     	//get fullscreen dimensions.
-        mainFrame.setSize(boardSize + 15 + (boardSize/3), boardSize+70);
+    	windowSize.width = boardSize + 15 + (boardSize/3);
+    	windowSize.height = (int)(boardSize*0.06) + boardSize;
+        mainFrame.setSize(windowSize);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.xSpace = 1; mainFrame.ySpace = 1;
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -113,7 +123,7 @@ public class GUI {
     	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     	screenSize = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
     	sizeConstraint = screenSize.width > screenSize.height ? screenSize.height : screenSize.width;
-    	sizeConstraint -= (sizeConstraint *0.06); //regardless of screen size, every board and frame needs to be padded.
+    	sizeConstraint -= (sizeConstraint * 0.06); //regardless of screen size, every board and frame needs to be padded.
     	boardSize = sizeConstraint;
     	start(0, 3, 1, boardSize);
         while (true) {
@@ -150,12 +160,31 @@ public class GUI {
         GridBagConstraints gbc = new GridBagConstraints();
         controlPanel.setLayout(new GridBagLayout());
         tools.setLayout(new GridBagLayout());
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0,5,0,5);
+        
         
         //----------
         //COMPONENTS
         //----------
+        
+      //SIMULATOR - The big enchilada
+        gbc.weighty = 0;
+        gbc.gridy = 0;
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0,0,0,0);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridheight = 3;
+        gbc.gridwidth = 3;
+        simulator = new Simulator(bs, sizeConstraint, sleepCost, moveCost, turnCost);
+    	simulator.board.setPreferredSize(new Dimension(boardSize, boardSize));
+        controlPanel.add(simulator.board, gbc);
+        
+        gbc.gridx=0;
+        gbc.gridheight = 1;
+        gbc.gridheight = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;	
+        gbc.insets = new Insets(0,5,0,5);
+        
         
         //PLAY - toggles pause/play by stopping and resuming the simulation.
         JButton play = new JButton("Stop");
@@ -176,13 +205,23 @@ public class GUI {
         gbc.weighty = 0.1;
         gbc.gridx = 0;
         gbc.gridy = 2;
-        //gbc.anchor = GridBagConstraints.SOUTH;
         controlPanel.add(play, gbc);
         
         //RESET - prompts user with different kinds of reset options;
         JButton reset = new JButton("Reset");
         reset.setToolTipText("Prompts the user with different reset variations");
         reset.addActionListener(new ActionListener() {
+        	int newBoardSize = boardSize;
+        	public void autoscale()
+        	{
+        		float scale = sizeConstraint - simulator.getBoardSize();
+				 scale = simulator.getBoardSize()/scale;
+				 scale +=1;
+				  
+				  simulator.board.setScale(scale);
+				  simulator.board.revalidate();
+				  simulator.board.repaint();
+        	}
             public void actionPerformed(ActionEvent e) {
             	
             	//throw pop up for reset options
@@ -198,6 +237,25 @@ public class GUI {
             	JPanel resetTools = new JPanel();
             	resetTools.setLayout(new GridBagLayout());
             	
+            	//BoardSize
+                JLabel brd = new JLabel("Board Size: " + newBoardSize);
+                brd.setToolTipText("The size of the new board.");
+                resetTools.add(brd);;
+                JSlider newSize = new JSlider(JSlider.HORIZONTAL,4, sizeConstraint,4);
+                newSize.setToolTipText("The size of the new board.");
+                newSize.setValue(boardSize);
+                newSize.addChangeListener(new ChangeListener(){
+                	public void stateChanged(ChangeEvent e) {
+                		int bw = ((JSlider) e.getSource()).getValue();
+                		newBoardSize=(bw> 30 ? bw : 30);
+                		brd.setText("Board Size: " + newBoardSize);
+                	}
+                });
+            	wgbc.gridx = 0;
+            	wgbc.gridy = 0;
+            	wgbc.insets = new Insets(5,5,5,5);
+                resetTools.add(newSize, wgbc);
+                
             	//add default reset
             	JButton defaults = new JButton("Reset to Defaults");
             	defaults.setToolTipText("Starts a new simulation with default values.");
@@ -205,14 +263,14 @@ public class GUI {
             			{
             				public void actionPerformed(ActionEvent e)
             				{
+            					simulator.pause();
             					mainFrame.setVisible(false);
             					mainFrame.dispose();
-            					start(0, 3, 1, sizeConstraint);
+            					start(0, 3, 1, newBoardSize);
+            					autoscale();
             				}
             			});
-            	wgbc.gridx = 0;
-            	wgbc.gridy = 0;
-            	wgbc.insets = new Insets(5,5,5,5);
+            	wgbc.gridy = 1;
             	resetTools.add(defaults,wgbc);
             	
             	//add reset with keep current settings
@@ -222,42 +280,48 @@ public class GUI {
             			{
             				public void actionPerformed(ActionEvent e)
             				{
+            					simulator.pause();
             					mainFrame.setVisible(false);
             					mainFrame.dispose();
-            					start(sleepCost, moveCost, turnCost, boardSize);
+            					start(sleepCost, moveCost, turnCost, newBoardSize);
+            					autoscale();
             				}
             			});
-            	wgbc.gridy = 1;
+            	wgbc.gridy = 2;
             	resetTools.add(current,wgbc);
             	
             	//add reset with lowest possible values
             	JButton minimum = new JButton("Reset to Minimum");
-            	minimum.setToolTipText("Starts a new simulation lowest possible values. Sleep: 0, Move: 0, Turn: 0 and 50px board.");
+            	minimum.setToolTipText("Starts a new simulation lowest possible values. Sleep: 0, Move: 0, Turn: 0 and 30px board.");
             	minimum.addActionListener(new ActionListener()
             			{
             				public void actionPerformed(ActionEvent e)
             				{
+            					simulator.pause();
             					mainFrame.setVisible(false);
             					mainFrame.dispose();
-            					start(0, 0, 0, 50);
+            					start(0, 0, 0, newBoardSize);
+            					autoscale();
             				}
             			});
-            	wgbc.gridy = 2;
+            	wgbc.gridy = 3;
             	resetTools.add(minimum,wgbc);
             	
-            	//add reset with lowest possible values
+            	//add reset with highest possible values
             	JButton maximum = new JButton("Reset to Maximum");
             	maximum.setToolTipText("Starts a new simulation highest possible values. Sleep: 10, Move: 10, Turn: 10 and largest relative board.");
             	maximum.addActionListener(new ActionListener()
             			{
             				public void actionPerformed(ActionEvent e)
             				{
+            					simulator.pause();
             					mainFrame.setVisible(false);
             					mainFrame.dispose();
-            					start(10, 10, 10, sizeConstraint);
+            					start(10, 10, 10, newBoardSize);
+            					autoscale();
             				}
             			});
-            	wgbc.gridy = 3;
+            	wgbc.gridy = 4;
             	resetTools.add(maximum,wgbc);
             	
             	//finalize
@@ -266,21 +330,10 @@ public class GUI {
         });
         gbc.gridy = 0;
         controlPanel.add(reset, gbc);
-
-      //SIMULATOR - The big enchilada
-        gbc.weighty = 0.0;
-        gbc.gridy = 0;
-        gbc.gridx = 1;
-        gbc.insets = new Insets(0,0,0,0);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridheight = 3;
-        gbc.gridwidth = 3;
-        simulator = new Simulator(bs, sizeConstraint, sleepCost, moveCost, turnCost);
-        controlPanel.add(simulator.board, gbc);
         
         
         //reset gridbag
+        gbc.weighty = 0;
         gbc.gridheight = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.BOTH;
@@ -301,6 +354,7 @@ public class GUI {
         JLabel spd = new JLabel("Tick Speed: " + isNeg +(int) simulator.getSpeed());
         spd.setToolTipText(floatText);
         environmentTools.add(spd);
+        
         JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
         speedSlider.setToolTipText(floatText);
         speedSlider.setValue((int) (27067056 + (Math.log(simulator.getSpeed()/0.02)/200000000)));
@@ -320,6 +374,7 @@ public class GUI {
         JLabel fVal = new JLabel("Food Value: " + simulator.getFoodValue());
         fVal.setToolTipText(floatText);
         environmentTools.add(fVal);
+        
         JSlider foodValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 500, 250);
         foodValueSlider.setToolTipText(floatText);
         foodValueSlider.setValue(simulator.getFoodValue());
@@ -338,6 +393,7 @@ public class GUI {
         JLabel fR8 = new JLabel("Food Rate: "+simulator.getFoodRate());
         fR8.setToolTipText(floatText);
         environmentTools.add(fR8);
+        
         JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 200, bs * bs / 500);
         foodRateSlider.setToolTipText(floatText);
         foodRateSlider.setValue(simulator.getFoodRate());
@@ -374,6 +430,7 @@ public class GUI {
         JLabel sc = new JLabel("Sleep Cost: "+simulator.getSleepCost());
         sc.setToolTipText(floatText);
         behaviorTools.add(sc);
+        
         JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
         sleepCostSlider.setToolTipText(floatText);
         sleepCostSlider.setValue(simulator.getSleepCost());
@@ -392,6 +449,7 @@ public class GUI {
         JLabel mc = new JLabel("Move Cost: " + simulator.getMoveCost());
         mc.setToolTipText(floatText);
         behaviorTools.add(mc);
+        
         JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
         moveCostSlider.setToolTipText(floatText);
         moveCostSlider.setValue(simulator.getMoveCost());
@@ -411,6 +469,7 @@ public class GUI {
         JLabel tc = new JLabel("Turn Cost: " + simulator.getTurnCost());
         tc.setToolTipText(floatText);
         behaviorTools.add(tc);
+        
         JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
         turnCostSlider.setToolTipText(floatText);
         turnCostSlider.setValue(simulator.getTurnCost());
@@ -429,6 +488,7 @@ public class GUI {
         JLabel sr = new JLabel("Sight Range: "+simulator.getSightRange());
         sr.setToolTipText(floatText);
         behaviorTools.add(sr);
+        
         JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
         sightRangeSlider.setToolTipText(floatText);
         sightRangeSlider.setValue(simulator.getSightRange());
@@ -463,6 +523,7 @@ public class GUI {
         JLabel mut8 = new JLabel("Mutation Rate: "+ Critter.getMutationRate());
         mut8.setToolTipText(floatText);
         geneticsTools.add(mut8);
+        
         JSlider mutationSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
         mutationSlider.setToolTipText(floatText);
         mutationSlider.setValue((int)Critter.getMutationRate());
@@ -481,6 +542,7 @@ public class GUI {
         JLabel cv = new JLabel("Color Variance: "+simulator.getColorVar());
         cv.setToolTipText(floatText);
         geneticsTools.add(cv);
+        
         JSlider colorVarSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
         colorVarSlider.setToolTipText(floatText);
         colorVarSlider.setValue((int) simulator.getColorVar());
@@ -537,8 +599,8 @@ public class GUI {
         JLabel bwl = new JLabel("Brush Size: " + simulator.board.getBarrierWidth());
         bwl.setToolTipText(floatText);
         drawTools.add(bwl);
-        int max = (int) simulator.getBoardSize()/5;
-        System.out.println(simulator.getBoardSize());
+        
+        int max = (int) simulator.getBoardSize()/4;
         JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,1, max,1);
         barrierWidth.setToolTipText(floatText);
         barrierWidth.setValue(1);
@@ -731,7 +793,7 @@ public class GUI {
         		if(isFullscreen == true)
         		{
         			//make it windowed
-        			mainFrame.setSize(1200, 1100);
+        			mainFrame.setSize(windowSize);
         			mainFrame.setLocationRelativeTo(null);
         			fsName = "Fullscreen";
         			isFullscreen = false;
@@ -746,6 +808,33 @@ public class GUI {
         	}
         });
         zoomTools.add(fullscreen);
+        
+        //beta zoom scale testing
+        JButton zoom = new JButton("Zoom.");
+        zoom.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		simulator.pause();
+        		
+				 float scale = sizeConstraint - simulator.getBoardSize();
+				 scale = scale/simulator.getBoardSize();
+				 scale +=1;
+				  
+				  simulator.board.setScale(scale);
+				  simulator.board.revalidate();
+				  simulator.board.repaint();
+				  
+				 /* 
+				 * b.setCanvas(simulator.board.zoom(scale)); mainFrame.bs =
+				 * simulator.getBoardSize()+s; boardSize = simulator.getBoardSize()+s;
+				 * simulator.board.setBoardSize(simulator.getBoardSize()+s);
+				 * simulator.setBoardSize(simulator.getBoardSize()+s);
+				 */
+        		
+        	}
+        });
+        zoomTools.add(zoom);
         
       //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer resizeComponents = new JXTaskPaneContainer();

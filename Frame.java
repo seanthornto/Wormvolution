@@ -1,3 +1,10 @@
+/**
+ * Write a description of class Critter here.
+ *
+ * @author Sean Thornton and Sky Vercauteren
+ * @version 1.0 November 2023
+ */
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

@@ -4,8 +4,8 @@ import java.awt.*;
 /**
  * Write a description of class Critter here.
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Sean Thornton and Sky Vercauteren
+ * @version 1.0 November 2023
  */
 public class Critter {
 	// instance variables - replace the example below with your own

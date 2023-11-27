@@ -1,3 +1,10 @@
+/**
+ * Write a description of class Critter here.
+ *
+ * @author Sean Thornton and Sky Vercauteren
+ * @version 1.0 November 2023
+ */
+
 import java.util.ArrayList;
 import java.util.*;
 import java.awt.*;
@@ -899,8 +906,11 @@ public class Simulator {
 			{
 				for(int j = point.y; j < point.y + board.getBarrierWidth(); j++)
 				{
-					isBarrier[i][j] = true;
-					board.draw(new Point(i,j), Color.gray);
+					if(i < board.getWidth() && j < board.getHeight())
+					{
+						isBarrier[i][j] = true;
+						board.draw(new Point(i,j), Color.gray);
+					}
 				}
 			}
 		}

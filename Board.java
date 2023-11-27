@@ -1,8 +1,16 @@
+/**
+ * Write a description of class Critter here.
+ *
+ * @author Sean Thornton and Sky Vercauteren
+ * @version 1.0 November 2023
+ */
+
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import javax.swing.JPanel;
 
 public class Board extends JPanel {
@@ -11,11 +19,16 @@ public class Board extends JPanel {
 	private int pixelSize;
 	private int boardSize;
 	private int barrierWidth;
+	private double scale = 1;
+	private Dimension preferredSize = new Dimension(850,850);
 
 	public Board(int pixelSize, int bs) {
 		this.pixelSize = pixelSize;
 		boardSize = bs;
+		
+		
 		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
+				
 		fillCanvas(Color.black);
 		barrierWidth = 1;
 	}
@@ -23,9 +36,14 @@ public class Board extends JPanel {
 	public void setBoardSize(int s) {
 		boardSize = s;
 	}
+	
+	public void setPreferredSize(Dimension d)
+	{
+		preferredSize = d;
+	}
 
 	public Dimension getPreferredSize() {
-		return new Dimension(canvas.getWidth(), canvas.getHeight());
+		return preferredSize;
 	}
 	
 	public void setBarrierWidth(int w)
@@ -38,15 +56,33 @@ public class Board extends JPanel {
 		return barrierWidth;
 	}
 	
+	public void setScale(double s)
+	{
+		scale=s;
+	}
+	
 	public int getPixelSize()
 	{
 		return pixelSize;
 	}
+	
+	public BufferedImage getCanvas()
+	{
+		return canvas;
+	}
+	
+	public void setCanvas(BufferedImage img)
+	{
+		canvas = img;
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.drawImage(canvas, null, null);
+		Graphics2D g2d = (Graphics2D) g.create();
+        AffineTransform at = new AffineTransform();
+        at.scale(scale, scale);
+        g2d.drawImage(canvas, at, this);
+        g2d.dispose();
 	}
 
 	public void fillCanvas(Color c) {
@@ -72,5 +108,16 @@ public class Board extends JPanel {
 
 	public void erase(Point point) {
 		draw(point, Color.black);
+	}
+	
+	public BufferedImage zoom(float p)
+	{
+		BufferedImage after = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(p,p);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		after = scaleOp.filter(canvas, after);
+		
+		return after;
 	}
 }
