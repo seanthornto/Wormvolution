@@ -61,6 +61,11 @@ public class Board extends JPanel {
 		scale=s;
 	}
 	
+	public double getScale()
+	{
+		return scale;
+	}
+	
 	public int getPixelSize()
 	{
 		return pixelSize;

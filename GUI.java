@@ -160,7 +160,8 @@ public class GUI {
         GridBagConstraints wgbc = new GridBagConstraints();
         //gbc for main frame
         GridBagConstraints gbc = new GridBagConstraints();
-        controlPanel.setLayout(new GridBagLayout());
+        GridBagLayout gbl = new GridBagLayout();
+        controlPanel.setLayout(gbl);
         tools.setLayout(new GridBagLayout());
         
         
@@ -228,7 +229,7 @@ public class GUI {
             	
             	//throw pop up for reset options
             	JFrame resetFrame = new JFrame("Reset Options");
-            	resetFrame.setSize(200,400);
+            	resetFrame.setSize(boardSize/4,boardSize/3);
             	resetFrame.setLocationRelativeTo(null);
             	resetFrame.addWindowListener(new WindowAdapter() {
                     public void windowClosing(WindowEvent windowEvent) {
@@ -254,7 +255,7 @@ public class GUI {
                 	}
                 });
             	wgbc.gridx = 0;
-            	wgbc.gridy = 0;
+            	wgbc.gridy = 1;
             	wgbc.insets = new Insets(5,5,5,5);
                 resetTools.add(newSize, wgbc);
                 
@@ -272,7 +273,7 @@ public class GUI {
             					autoscale();
             				}
             			});
-            	wgbc.gridy = 1;
+            	wgbc.gridy = 2;
             	resetTools.add(defaults,wgbc);
             	
             	//add reset with keep current settings
@@ -289,7 +290,7 @@ public class GUI {
             					autoscale();
             				}
             			});
-            	wgbc.gridy = 2;
+            	wgbc.gridy = 3;
             	resetTools.add(current,wgbc);
             	
             	//add reset with lowest possible values
@@ -306,7 +307,7 @@ public class GUI {
             					autoscale();
             				}
             			});
-            	wgbc.gridy = 3;
+            	wgbc.gridy = 4;
             	resetTools.add(minimum,wgbc);
             	
             	//add reset with highest possible values
@@ -323,7 +324,7 @@ public class GUI {
             					autoscale();
             				}
             			});
-            	wgbc.gridy = 4;
+            	wgbc.gridy = 5;
             	resetTools.add(maximum,wgbc);
             	
             	//finalize
@@ -825,12 +826,22 @@ public class GUI {
         displaySize.setValue(scl);
         displaySize.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
+        		Board b = simulator.board;
         		int sc = ((JSlider) e.getSource()).getValue();
         		scale = (double)sc /mx;
         		dispLabel.setText("Scale: "+scale);
         		simulator.board.setScale(scale);
 				simulator.board.revalidate();
 				simulator.board.repaint();
+				gbc.gridy = 0;
+		        gbc.gridx = 1;
+		        gbc.weightx = 0.1;
+		        gbc.fill = GridBagConstraints.BOTH;
+		        gbc.gridheight = 3;
+		        gbc.gridwidth = 3;
+				gbl.setConstraints(simulator.board, gbc);
+				controlPanel.revalidate();
+				controlPanel.repaint();
         	}
         });
         zoomTools.add(displaySize);
