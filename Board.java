@@ -1,5 +1,5 @@
 /**
- * Write a description of class Critter here.
+ * Write a description of class Board here.
  *
  * @author Sean Thornton and Sky Vercauteren
  * @version 1.0 November 2023
@@ -18,14 +18,15 @@ public class Board extends JPanel {
 	private BufferedImage canvas;
 	private int pixelSize;
 	private int boardSize;
+	private int maxConstraint;
 	private int barrierWidth;
 	private double scale = 1;
 	private Dimension preferredSize = new Dimension(850,850);
 
-	public Board(int pixelSize, int bs) {
+	public Board(int pixelSize, int bs, int max) {
 		this.pixelSize = pixelSize;
 		boardSize = bs;
-		
+		maxConstraint = max;
 		
 		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
 				
@@ -85,6 +86,8 @@ public class Board extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform at = new AffineTransform();
+        double x = (maxConstraint - (canvas.getWidth() * scale))/2;
+        at.translate(x,x);
         at.scale(scale, scale);
         g2d.drawImage(canvas, at, this);
         g2d.dispose();

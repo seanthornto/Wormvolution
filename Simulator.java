@@ -1,5 +1,5 @@
 /**
- * Write a description of class Critter here.
+ * Write a description of class Simulator here.
  *
  * @author Sean Thornton and Sky Vercauteren
  * @version 1.0 November 2023
@@ -88,7 +88,7 @@ public class Simulator {
 		setMoveCost(mC);
 		setTurnCost(tC);
 		pixelSize = max / boardSize;
-		board = new Board(pixelSize, bs);
+		board = new Board(pixelSize, bs, max);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
 		inactiveGenes = new ArrayList<String>();

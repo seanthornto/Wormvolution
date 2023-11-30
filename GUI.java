@@ -1,5 +1,5 @@
 /**
- * Write a description of class Critter here.
+ * Write a description of class GUI here.
  *
  * @author Sean Thornton and Sky Vercauteren
  * @version 1.0 November 2023
@@ -10,6 +10,7 @@ import org.jdesktop.swingx.JXTaskPane;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import javax.swing.event.*;
 import javax.swing.border.*;
 import java.io.FileInputStream;
@@ -160,6 +161,7 @@ public class GUI {
         GridBagConstraints wgbc = new GridBagConstraints();
         //gbc for main frame
         GridBagConstraints gbc = new GridBagConstraints();
+        //to reference the gridbag itself
         GridBagLayout gbl = new GridBagLayout();
         controlPanel.setLayout(gbl);
         tools.setLayout(new GridBagLayout());
@@ -800,12 +802,34 @@ public class GUI {
         			mainFrame.setLocationRelativeTo(null);
         			fsName = "Fullscreen";
         			isFullscreen = false;
+        			gbc.insets = new Insets(0,0,0,0);
+        			gbc.weighty = 0;
+        		    gbc.gridy = 0;
+        		    gbc.gridx = 1;
+        		    gbc.fill = GridBagConstraints.BOTH;
+        		    gbc.anchor = GridBagConstraints.CENTER;
+        		    gbc.gridheight = 3;
+        		    gbc.gridwidth = 3;
+        			gbl.setConstraints(simulator.board, gbc);
         		}else
         		{
         			//make it fullscreen
         			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         			fsName = "Windowed";
         			isFullscreen = true;
+        			int left = Math.round(sizeConstraint/7);
+        			int top = Math.round(sizeConstraint/90);
+        			gbc.insets = new Insets(top,left,0,0);
+        			gbc.weighty = 0;
+        		    gbc.gridy = 0;
+        		    gbc.gridx = 1;
+        		    gbc.fill = GridBagConstraints.BOTH;
+        		    gbc.anchor = GridBagConstraints.CENTER;
+        		    gbc.gridheight = 3;
+        		    gbc.gridwidth = 3;
+        			gbl.setConstraints(simulator.board, gbc);
+    				controlPanel.revalidate();
+    				controlPanel.repaint();
         		}
         		fullscreen.setText(fsName);		
         	}
@@ -826,22 +850,11 @@ public class GUI {
         displaySize.setValue(scl);
         displaySize.addChangeListener(new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
-        		Board b = simulator.board;
         		int sc = ((JSlider) e.getSource()).getValue();
         		scale = (double)sc /mx;
         		dispLabel.setText("Scale: "+scale);
         		simulator.board.setScale(scale);
 				simulator.board.revalidate();
-				simulator.board.repaint();
-				gbc.gridy = 0;
-		        gbc.gridx = 1;
-		        gbc.weightx = 0.1;
-		        gbc.fill = GridBagConstraints.BOTH;
-		        gbc.gridheight = 3;
-		        gbc.gridwidth = 3;
-				gbl.setConstraints(simulator.board, gbc);
-				controlPanel.revalidate();
-				controlPanel.repaint();
         	}
         });
         zoomTools.add(displaySize);
@@ -869,7 +882,7 @@ public class GUI {
         
         //tools scroll bar
         scrollTools = new JScrollPane(tools);
-        scrollTools.setHorizontalScrollBarPolicy(scrollTools.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTools.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 1.5;
         gbc.gridx = 0;
