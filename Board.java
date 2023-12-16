@@ -19,6 +19,8 @@ public class Board extends JPanel {
 	private int pixelSize;
 	private int boardSize;
 	private int maxConstraint;
+	private Boolean misaligned;
+	private int[] origin = {0,0};
 	private int barrierWidth;
 	private double scale = 1;
 	private Dimension preferredSize = new Dimension(850,850);
@@ -27,7 +29,7 @@ public class Board extends JPanel {
 		this.pixelSize = pixelSize;
 		boardSize = bs;
 		maxConstraint = max;
-		
+		misaligned = false;
 		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
 				
 		fillCanvas(Color.black);
@@ -45,6 +47,17 @@ public class Board extends JPanel {
 
 	public Dimension getPreferredSize() {
 		return preferredSize;
+	}
+	
+	public void setMisaligned(Boolean b)
+	{
+		misaligned = b;
+	}
+	
+	public void setOrigin(int x, int y)
+	{
+		origin[0] = x;
+		origin[1] = y;
 	}
 	
 	public void setBarrierWidth(int w)
@@ -87,7 +100,10 @@ public class Board extends JPanel {
 		Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform at = new AffineTransform();
         double x = (maxConstraint - (canvas.getWidth() * scale))/2;
-        at.translate(x,x);
+        if(misaligned == false) {
+        	at.translate(x,x);
+        }
+        else { at.translate(origin[0], origin[1]); }
         at.scale(scale, scale);
         g2d.drawImage(canvas, at, this);
         g2d.dispose();

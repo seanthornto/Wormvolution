@@ -605,7 +605,7 @@ public class GUI {
         bwl.setToolTipText(floatText);
         drawTools.add(bwl);
         
-        int max = (int) simulator.getBoardSize()/4;
+        int max = (int) simulator.getBoardSize()/20;
         JSlider barrierWidth = new JSlider(JSlider.HORIZONTAL,1, max,1);
         barrierWidth.setToolTipText(floatText);
         barrierWidth.setValue(1);
@@ -858,6 +858,41 @@ public class GUI {
         	}
         });
         zoomTools.add(displaySize);
+      
+        //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer selectZoomComponents = new JXTaskPaneContainer();
+        selectZoomComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
+        JXTaskPane selectZoomTools = new JXTaskPane();
+        selectZoomTools.setToolTipText("Select an area to focus on.");
+        selectZoomTools.setTitle("Zoom Selection Tools");
+        selectZoomTools.setCollapsed(true);
+        zoomTools.add(selectZoomTools);
+        
+      //Zooms in on a selected area
+        JButton zoomSelect = new JButton("Select Zoom");
+        zoomSelect.setToolTipText("Zooms in on the rectangle created from mouse click to mouse release.");
+        zoomSelect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.zTrue();
+            }
+        });
+        selectZoomTools.add(zoomSelect);
+      
+        //returns to normal scale and zoom
+        JButton zoomReturn = new JButton("Return");
+        zoomReturn.setToolTipText("Returns from a selected zoom to full scale view.");
+        zoomReturn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.allFalse();
+            	mainFrame.sim.board.setScale(1);
+            	mainFrame.sim.board.setMisaligned(false);
+            	controlPanel.revalidate();
+				controlPanel.repaint();
+            }
+        });
+        selectZoomTools.add(zoomReturn);
+        
+        
         
       //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer resizeComponents = new JXTaskPaneContainer();

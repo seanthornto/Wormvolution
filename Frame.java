@@ -16,10 +16,11 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 	public int bs;
 	public Point p1;
 	public Point p2;
-	public boolean p;
-	public boolean l;
-	public boolean g;
-	public boolean e;
+	public boolean p; //drop point barrier
+	public boolean l; //draw line barrier
+	public boolean g; // drag rectangle graph barrier
+	public boolean e; // erase barrier
+	public boolean z; // zoom boolean
 	public boolean dragging;
 	public int boardX;
 	public int boardY;
@@ -85,6 +86,8 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 			sim.addBarrierGraph(x1, y1, x2, y2, xSpace, ySpace, xOff, yOff);
 		} else if (e == true) {
 			sim.removeBarrierRect(x1, y1, x2, y2);
+		} else if (z == true) {
+			sim.zoom(x1,y1,x2,y2);
 		}
 	}
 
@@ -101,6 +104,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		p = false;
 		g = false;
 		e = false;
+		z = false;
 	}
 
 	public void pTrue() {
@@ -108,6 +112,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		l = false;
 		g = false;
 		e = false;
+		z = false;
 	}
 
 	public void gTrue() {
@@ -115,10 +120,20 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		p = false;
 		l = false;
 		e = false;
+		z = false;
 	}
 
 	public void eTrue() {
 		e = true;
+		p = false;
+		g = false;
+		l = false;
+		z = false;
+	}
+	
+	public void zTrue() {
+		z = true;
+		e = false;
 		p = false;
 		g = false;
 		l = false;
@@ -129,6 +144,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		p = false;
 		g = false;
 		l = false;
+		z = false;
 	}
 
 }

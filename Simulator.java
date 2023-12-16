@@ -6,9 +6,13 @@
  */
 
 import java.util.ArrayList;
+
+import javax.swing.JScrollPane;
+
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 
 /**
  * GENES:
@@ -56,6 +60,7 @@ public class Simulator {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Critter> critters;
 	public Board board;
+	private JScrollPane scrollBoard;
 	public PopulationDisplay popDisp;
 	private int foodRate;
 	private int foodValue;
@@ -63,6 +68,7 @@ public class Simulator {
 	private long speed;
 	public int pixelSize;
 	private int boardSize;
+	private int maxSize;
 	private int sleepC;
 	private int moveC;
 	private int turnC;
@@ -84,11 +90,13 @@ public class Simulator {
 	//needs board size, max size constraint, sleep cost, move cost and turn cost
 	public Simulator(int bs, int max, int sC, int mC, int tC) {
 		boardSize = bs;
+		maxSize = max;
 		setSleepCost(sC);
 		setMoveCost(mC);
 		setTurnCost(tC);
 		pixelSize = max / boardSize;
 		board = new Board(pixelSize, bs, max);
+		scrollBoard = new JScrollPane(board);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
 		inactiveGenes = new ArrayList<String>();
@@ -885,6 +893,9 @@ public class Simulator {
 		}
 
 	}
+	
+	// -------------------------------------------------------------------------
+	//BARRIER STUFF
 	// -------------------------------------------------------------------------
 
 	public void setBarrierColor(Color color) {
@@ -1017,9 +1028,7 @@ public class Simulator {
 
 		while (i < xRange) {
 			while (j < yRange) {
-				addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j)); // Yeah, this
-																										// looks like
-																										// math
+				addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j)); // Yeah, this look s like math
 				j += ySpace + 1;
 			}
 			i += xSpace + 1;
@@ -1102,8 +1111,46 @@ public class Simulator {
 			j = y1;
 		}
 	}
+	
+	
+	//-------------------------------------------------------------------------
+	//ZOOM STUFF
+	//-------------------------------------------------------------------------
+	
+	public void zoom(int x1, int y1, int x2, int y2)
+	{
+		//refocus board to specific area
+		//HMMMM
+		//make scroll pane and dynamically alter the scoll?
+		
+		//board.setMisaligned(true);
+		//board.setOrigin(-x1,-y1);
+		
+		
+		//make the rectangle a square based on y-distance traveled.
+		int temp;
+		if (x1 > x2) {
+			temp = x1;
+			x1 = x2;
+			x2 = temp;
+		}
+		if (y1 > y2) {
+			temp = y1;
+			y1 = y2;
+			y2 = temp;
+		}
+		x2 = x1 + (y2 - y1); 
+		
+		//figure scale 
+		double s = maxSize / ((y2 - y1) * pixelSize);
+		board.setScale(s);
+		board.revalidate(); //this should repaint the board zoomed in at the scaled factor
+	}
 
 	// -------------------------------------------------------------------------
+	//GAME STUFF//
+	//--------------------------------------------------------------------------
+	
 	public void gameTimeStep() {
 		long startTime = 0;
 		if (!paused) {
