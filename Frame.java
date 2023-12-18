@@ -22,6 +22,10 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 	public boolean e; // erase barrier
 	public boolean z; // zoom boolean
 	public boolean dragging;
+	public int x1; 
+	public int x2; 
+	public int y1;
+	public int y2;
 	public int boardX;
 	public int boardY;
 	public int pixelSize;
@@ -55,28 +59,14 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		Point point = event.getPoint();
 		p1 = point;
 		dragging = true;
+		adjustP1(p1);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent event) {
 		Point point = event.getPoint();
 		p2 = point;
-		boardX = sim.board.getX();
-		boardY = sim.board.getY();
-		boardX += this.getContentPane().getX();
-		boardY += this.getContentPane().getY();
-		p1.x -= boardX + 8;
-		p1.y -= boardY + 32;
-		p2.x -= boardX + 8;
-		p2.y -= boardY + 32;
-		int x1 = p1.x / pixelSize;
-		int y1 = p1.y / pixelSize;
-		int x2 = p2.x / pixelSize;
-		int y2 = p2.y / pixelSize;
-		p1.x = x1;
-		p1.y = y1;
-		p2.x = x2;
-		p2.y = y2;
+		adjustP2(point);
 		dragging = false;
 		if (p == true) {
 			sim.addBarrier(p1);
@@ -93,6 +83,35 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 
 	@Override
 	public void mouseDragged(MouseEvent event) {
+		Point point = event.getPoint();
+		adjustP2(point);
+		
+		//flip rectangle so loops make sense.
+		int temp = 0;
+		if (p1.x > p2.x) {
+			temp = p1.x;
+			p1.x = p2.x;
+			p2.x = temp;
+		}
+		if (p1.y > p2.y) {
+			temp = p1.y;
+			p1.y = p2.y;
+			p2.y = temp;
+		}
+		p2.x = p1.x + (p2.y - p1.y);
+		
+		if(z == true)
+		{
+			for(int i=p1.x; i < p2.x; i++)
+			{
+				for (int j=p1.y; j< p2.y; j++)
+				{
+					Point p = new Point(i,j);
+					if(i == p1.x || i == p2.x){sim.board.draw(p,Color.WHITE);} //the left and right sides of the rectangle
+					if(j == p1.y || j == p2.y) {sim.board.draw(p,Color.WHITE);} //the top and bottom of the rectangle
+				}
+			}
+		}
 	}
 
 	@Override
@@ -145,6 +164,36 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		g = false;
 		l = false;
 		z = false;
+	}
+	
+	//adjusts the mouse event coordinates to line up with the simulated canvas.
+	public void adjustP1(Point point)
+	{
+		p1 = point;
+		boardX = sim.board.getX();
+		boardY = sim.board.getY();
+		boardX += this.getContentPane().getX();
+		boardY += this.getContentPane().getY();
+		p1.x -= boardX + 8;
+		p1.y -= boardY + 32;
+		x1 = p1.x / pixelSize;
+		y1 = p1.y / pixelSize;
+		p1.x = x1;
+		p1.y = y1;
+	}
+	public void adjustP2(Point point)
+	{
+		p2 = point;
+		boardX = sim.board.getX();
+		boardY = sim.board.getY();
+		boardX += this.getContentPane().getX();
+		boardY += this.getContentPane().getY();
+		p2.x -= boardX + 8;
+		p2.y -= boardY + 32;
+		x2 = p2.x / pixelSize;
+		y2 = p2.y / pixelSize;
+		p2.x = x2;
+		p2.y = y2;
 	}
 
 }

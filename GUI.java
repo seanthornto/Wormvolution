@@ -870,7 +870,7 @@ public class GUI {
         
       //Zooms in on a selected area
         JButton zoomSelect = new JButton("Select Zoom");
-        zoomSelect.setToolTipText("Zooms in on the rectangle created from mouse click to mouse release.");
+        zoomSelect.setToolTipText("Zooms in on the square created from mouse click to mouse release.");
         zoomSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.zTrue();

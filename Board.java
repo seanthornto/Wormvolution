@@ -7,9 +7,6 @@
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.*;
 import javax.swing.JPanel;
 
@@ -20,7 +17,7 @@ public class Board extends JPanel {
 	private int boardSize;
 	private int maxConstraint;
 	private Boolean misaligned;
-	private int[] origin = {0,0};
+	private Point origin = new Point(0,0);
 	private int barrierWidth;
 	private double scale = 1;
 	private Dimension preferredSize = new Dimension(850,850);
@@ -56,8 +53,7 @@ public class Board extends JPanel {
 	
 	public void setOrigin(int x, int y)
 	{
-		origin[0] = x;
-		origin[1] = y;
+		origin = new Point(x,y);
 	}
 	
 	public void setBarrierWidth(int w)
@@ -99,11 +95,15 @@ public class Board extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform at = new AffineTransform();
-        double x = (maxConstraint - (canvas.getWidth() * scale))/2;
         if(misaligned == false) {
+        	double x = (maxConstraint - (canvas.getWidth() * scale))/2;
         	at.translate(x,x);
         }
-        else { at.translate(origin[0], origin[1]); }
+        else {
+        	double x = 0 - (origin.x * scale);
+        	double y = 0 - (origin.y * scale);
+        	at.translate(x, y); 	
+        }
         at.scale(scale, scale);
         g2d.drawImage(canvas, at, this);
         g2d.dispose();

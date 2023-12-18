@@ -60,7 +60,7 @@ public class Simulator {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Critter> critters;
 	public Board board;
-	private JScrollPane scrollBoard;
+	public JScrollPane scrollBoard;
 	public PopulationDisplay popDisp;
 	private int foodRate;
 	private int foodValue;
@@ -1119,13 +1119,8 @@ public class Simulator {
 	
 	public void zoom(int x1, int y1, int x2, int y2)
 	{
-		//refocus board to specific area
-		//HMMMM
-		//make scroll pane and dynamically alter the scoll?
-		
-		//board.setMisaligned(true);
-		//board.setOrigin(-x1,-y1);
-		
+		board.setMisaligned(true);
+		board.setOrigin(x1, y1);
 		
 		//make the rectangle a square based on y-distance traveled.
 		int temp;
@@ -1144,7 +1139,11 @@ public class Simulator {
 		//figure scale 
 		double s = maxSize / ((y2 - y1) * pixelSize);
 		board.setScale(s);
-		board.revalidate(); //this should repaint the board zoomed in at the scaled factor
+	}
+	
+	public void drawZoomRect(Point p1, Point p2)
+	{
+		
 	}
 
 	// -------------------------------------------------------------------------
