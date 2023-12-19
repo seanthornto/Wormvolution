@@ -869,7 +869,7 @@ public class GUI {
         zoomTools.add(selectZoomTools);
         
       //Zooms in on a selected area
-        JButton zoomSelect = new JButton("Select Zoom");
+        JButton zoomSelect = new JButton("Square Zoom");
         zoomSelect.setToolTipText("Zooms in on the square created from mouse click to mouse release.");
         zoomSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -879,8 +879,8 @@ public class GUI {
         selectZoomTools.add(zoomSelect);
       
         //returns to normal scale and zoom
-        JButton zoomReturn = new JButton("Return");
-        zoomReturn.setToolTipText("Returns from a selected zoom to full scale view.");
+        JButton zoomReturn = new JButton("100%");
+        zoomReturn.setToolTipText("Returns to full scale view.");
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.allFalse();

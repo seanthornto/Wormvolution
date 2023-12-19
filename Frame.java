@@ -22,6 +22,8 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 	public boolean e; // erase barrier
 	public boolean z; // zoom boolean
 	public boolean dragging;
+	public Point zPoint1;
+	public Point zPoint2;
 	public int x1; 
 	public int x2; 
 	public int y1;
@@ -77,7 +79,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		} else if (e == true) {
 			sim.removeBarrierRect(x1, y1, x2, y2);
 		} else if (z == true) {
-			sim.zoom(x1,y1,x2,y2);
+			sim.zoom(zPoint1, zPoint2);
 		}
 	}
 
@@ -86,29 +88,35 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		Point point = event.getPoint();
 		adjustP2(point);
 		
-		//flip rectangle so loops make sense.
-		int temp = 0;
-		if (p1.x > p2.x) {
-			temp = p1.x;
-			p1.x = p2.x;
-			p2.x = temp;
-		}
-		if (p1.y > p2.y) {
-			temp = p1.y;
-			p1.y = p2.y;
-			p2.y = temp;
-		}
-		p2.x = p1.x + (p2.y - p1.y);
-		
-		if(z == true)
+		//handle zoom rectangle
+		if(z==true)
 		{
-			for(int i=p1.x; i < p2.x; i++)
+			//flip rectangle so loops make sense. p1<p2 //WITHOUT changing the actual p1 or p2. 
+			Point temp1 = new Point(p1.x, p1.y);
+			Point temp2 = new Point(p2.x, p2.y);
+			if (temp1.x > temp2.x) {
+				temp1.x = p2.x;
+				temp2.x = p1.x;
+			}
+			if (temp1.y > temp2.y) {
+				temp1.y = p2.y;
+				temp2.y = p1.y;
+			}
+			
+			//constrain the rectangle to be a square based on y distance change. 
+			if(p1.x < p2.x) {temp2.x = temp1.x + (temp2.y - temp1.y);}
+			else {temp1.x = temp2.x - (temp2.y - temp1.y); }
+			zPoint1 = temp1;
+			zPoint2 = temp2;
+			
+			//paint it
+			for(int i=temp1.x; i <= temp2.x; i++)
 			{
-				for (int j=p1.y; j< p2.y; j++)
+				for (int j=temp1.y; j<= temp2.y; j++)
 				{
 					Point p = new Point(i,j);
-					if(i == p1.x || i == p2.x){sim.board.draw(p,Color.WHITE);} //the left and right sides of the rectangle
-					if(j == p1.y || j == p2.y) {sim.board.draw(p,Color.WHITE);} //the top and bottom of the rectangle
+					if(i == temp1.x || i == temp2.x){sim.board.draw(p,Color.WHITE);} //the left and right sides of the rectangle
+					if(j == temp1.y || j == temp2.y) {sim.board.draw(p,Color.WHITE);} //the top and bottom of the rectangle
 				}
 			}
 		}

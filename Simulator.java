@@ -1117,34 +1117,17 @@ public class Simulator {
 	//ZOOM STUFF
 	//-------------------------------------------------------------------------
 	
-	public void zoom(int x1, int y1, int x2, int y2)
+	public void zoom(Point p1, Point p2)
 	{
 		board.setMisaligned(true);
-		board.setOrigin(x1, y1);
-		
-		//make the rectangle a square based on y-distance traveled.
-		int temp;
-		if (x1 > x2) {
-			temp = x1;
-			x1 = x2;
-			x2 = temp;
-		}
-		if (y1 > y2) {
-			temp = y1;
-			y1 = y2;
-			y2 = temp;
-		}
-		x2 = x1 + (y2 - y1); 
+		board.setOrigin(p1.x, p1.y);
 		
 		//figure scale 
-		double s = maxSize / ((y2 - y1) * pixelSize);
+		double s = (double)maxSize / ((p2.y - p1.y) * pixelSize);
 		board.setScale(s);
+		board.revalidate();
 	}
 	
-	public void drawZoomRect(Point p1, Point p2)
-	{
-		
-	}
 
 	// -------------------------------------------------------------------------
 	//GAME STUFF//
