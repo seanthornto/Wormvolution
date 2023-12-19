@@ -945,14 +945,42 @@ public class Simulator {
 	//creates a small "plus" shaped barrier TODO: other shapes?
 	public void addBarrierStamp(Point point) {
 		if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) {return;}
-		for(int i = point.x; i < point.x + board.getBarrierWidth(); i++)
+		
+		//translate the whole thing so the mouse click will represent the center of the stamp.
+		int w = board.getBarrierWidth();
+		point.x = point.x - (w/2);
+		point.y = point.y - (w/2);
+		
+		//expand to a 3 x 3 grid of points instead of 1x1.
+		int minX = point.x - w; //leftmost point of quadrant 1, 4, 7
+		int minY = point.y - w; //topmost point of quadrant 1, 2, 3
+								//point = center x and y. top left of quadrant 5
+		int midX = point.x + w; //leftmost of quadrant 3,6,9
+		int midY = point.y + w; //topmost of quadrant 7,8,9
+								//midX + w = rightmost point of quadrant 3, 6, 9
+								//midY + w = bottommost point of quadrant 7,8,9
+		for(int i = minX; i < midX + w; i++)
 		{
-			for(int j = point.y; j < point.y + board.getBarrierWidth(); j++)
+			for(int j = minY; j < midY + w; j++)
 			{
 				if(i < board.getWidth() && j < board.getHeight())
 				{
-					isBarrier[i][j] = true;
-					board.draw(new Point(i,j), barrierColor);
+					if(j < point.y && i >= point.x && i < midX)//The top square of the plus.
+					{
+						isBarrier[i][j] = true;
+						board.draw(new Point(i,j), barrierColor);
+					}
+					else if(j >= point.y && j < midY) //the full middle section
+					{
+						isBarrier[i][j] = true;
+						board.draw(new Point(i,j), barrierColor);
+					}
+					else if(j >= midY && i >= point.x && i < midX)//the bottom square of the plus
+					{
+						isBarrier[i][j] = true;
+						board.draw(new Point(i,j), barrierColor);
+					}
+					
 				}
 			}
 		}
