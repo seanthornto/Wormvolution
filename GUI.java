@@ -2,7 +2,7 @@
  * Write a description of class GUI here.
  *
  * @author Sean Thornton and Sky Vercauteren
- * @version 1.0 November 2023
+ * @version 1.0 December 2023
  */
 
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -621,7 +621,7 @@ public class GUI {
       //the following buttons are beveled, and should stay indented if selected
         Border raised = BorderFactory.createRaisedBevelBorder();
         JButton dragLine = new JButton("Drag Line");
-        JButton dropPoint = new JButton("Drop Point");
+        JButton dropPoint = new JButton("Drop Stamp");
         JButton dragGraph = new JButton("Drag Grid");
         JButton eraseRect = new JButton("Erase");
         
@@ -637,8 +637,8 @@ public class GUI {
         });
         drawTools.add(dragLine);
         
-        //POINT - Drops a single point barrier at mouse click
-        dropPoint.setToolTipText("Drops a square barrier on each click;");
+        //POINT - Drops a stamp barrier at mouse click TODO: add other stamp shapes
+        dropPoint.setToolTipText("Drops a barrier 'stamp' on each click");
         dropPoint.setBorder(raised);
         dropPoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -892,16 +892,6 @@ public class GUI {
         });
         selectZoomTools.add(zoomReturn);
         
-        
-        
-      //All of these components exist inside a task panel within the gridBag
-        JXTaskPaneContainer resizeComponents = new JXTaskPaneContainer();
-        resizeComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
-        JXTaskPane resizeTools = new JXTaskPane();
-        resizeTools.setToolTipText("Adjust the board size via Crop, Compress or Restart.");
-        resizeTools.setTitle("Resize Tools");
-        resizeTools.setCollapsed(true);
-        zoomTools.add(resizeTools);
         
       //drawing task pane
         zoomTools.setCollapsed(true);

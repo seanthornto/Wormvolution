@@ -2,7 +2,7 @@
  * Write a description of class Board here.
  *
  * @author Sean Thornton and Sky Vercauteren
- * @version 1.0 November 2023
+ * @version 1.0 December 2023
  */
 
 import java.awt.*;

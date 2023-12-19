@@ -2,7 +2,7 @@
  * Write a description of class Simulator here.
  *
  * @author Sean Thornton and Sky Vercauteren
- * @version 1.0 November 2023
+ * @version 1.0 December 2023
  */
 
 import java.util.ArrayList;
@@ -60,7 +60,6 @@ public class Simulator {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Critter> critters;
 	public Board board;
-	public JScrollPane scrollBoard;
 	public PopulationDisplay popDisp;
 	private int foodRate;
 	private int foodValue;
@@ -95,8 +94,8 @@ public class Simulator {
 		setMoveCost(mC);
 		setTurnCost(tC);
 		pixelSize = max / boardSize;
+		barrierColor = Color.GRAY;
 		board = new Board(pixelSize, bs, max);
-		scrollBoard = new JScrollPane(board);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
 		inactiveGenes = new ArrayList<String>();
@@ -119,6 +118,13 @@ public class Simulator {
 				isCritter[i][j] = null;
 			}
 		}
+	}
+	//helper
+	public String toString(String[] string) {
+		String newString = new String();
+		for (int i = 0; i < string.length; i++)
+			newString += string[i];
+		return newString;
 	}
 
 	public void pause() {
@@ -234,7 +240,11 @@ public class Simulator {
 		return inactiveGenes;
 	}
 
-	// --------------------------------FOOD-------------------------------------
+	// --------------------------------NEXT SPACE-------------------------------------
+	//methods to check the next space  for food, barriers, and other critters
+	//Add food, barriers,
+	//move and get worm locations
+	
 	public boolean isFood(int x, int y) {
 		if (x < 0) {
 			x += boardSize;
@@ -455,15 +465,10 @@ public class Simulator {
 		return null;
 	}
 
-	// -------------------------------------------------------------------------
-	public String toString(String[] string) {
-		String newString = new String();
-		for (int i = 0; i < string.length; i++)
-			newString += string[i];
-		return newString;
-	}
-	// -------------------------------------------------------------------------
 
+
+	// -------------------------------------------------------------------------
+		//DNA SEQUENCE EXECUTION
 	// -------------------------------------------------------------------------
 	public void addCritter(String dna) {
 		Critter critter = new Critter(dna, (int) (Math.random() * boardSize), (int) (Math.random() * boardSize));
@@ -906,13 +911,13 @@ public class Simulator {
 					board.draw(new Point(i, j), color);
 		}
 	}
-
-	public void addBarrier(Point point) {
+	
+	//used only by other barrier tools
+	private void addBarrier(Point point) {
 		if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize)
 			return;
 		if (!isCritter(point)) {
-			if (isFood(point))
-				removeFood(point);
+			if (isFood(point)){removeFood(point);}
 			for(int i = point.x; i < point.x + board.getBarrierWidth(); i++)
 			{
 				for(int j = point.y; j < point.y + board.getBarrierWidth(); j++)
@@ -920,13 +925,14 @@ public class Simulator {
 					if(i < board.getWidth() && j < board.getHeight())
 					{
 						isBarrier[i][j] = true;
-						board.draw(new Point(i,j), Color.gray);
+						board.draw(new Point(i,j), barrierColor);
 					}
 				}
 			}
 		}
 	}
-
+	
+	//used only by other barrier tools
 	public void removeBarrier(Point point) {
 		if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize)
 			return;
@@ -935,100 +941,99 @@ public class Simulator {
 			board.erase(point);
 		}
 	}
-
-	public void addBarrierLine(int x1, int y1, int x2, int y2) {
-		if (Math.abs(y1 - y2) <= Math.abs(x1 - x2)) { // If slope is less than 1, iterate on x and add to y.
-			if (x1 > x2) { // If x1 > x2, switch values.
-				int temp;
-				temp = x1;
-				x1 = x2;
-				x2 = temp;
-				temp = y1;
-				y1 = y2;
-				y2 = temp;
+	
+	//creates a small "plus" shaped barrier TODO: other shapes?
+	public void addBarrierStamp(Point point) {
+		if (point.x < 0 || point.y < 0 || point.x >= boardSize || point.y >= boardSize) {return;}
+		for(int i = point.x; i < point.x + board.getBarrierWidth(); i++)
+		{
+			for(int j = point.y; j < point.y + board.getBarrierWidth(); j++)
+			{
+				if(i < board.getWidth() && j < board.getHeight())
+				{
+					isBarrier[i][j] = true;
+					board.draw(new Point(i,j), barrierColor);
+				}
 			}
-			double slope = 1.0 * (y1 - y2) / (x1 - x2);
-			int x = x1;
-			double y = y1;
-			while (x <= x2) {
+		}
+	}
+	
+
+	public void addBarrierLine(Point a, Point b) {
+		if (Math.abs(a.y - b.y) <= Math.abs(a.x - b.x)) { // If slope is less than 1, iterate on x and add to y.
+			if (a.x > b.x) { // If x1 > x2, switch values.
+				Point temp = a;
+				a = b;
+				b = temp;
+			}
+			
+			double slope = 1.0 * (a.y - b.y) / (a.x - b.x);
+			int x = a.x;
+			double y = a.y;
+			while (x <= b.x) {
 				Point point = new Point(x, (int) (y + .5));
 				if (!isBarrier(point) && !isCritter(point))
+				{
 					addBarrier(point);
+				}
 				x++;
 				y += slope;
 			}
 		} else // If slope is greater than 1, iterate on y and add to x.
 		{
-			if (y1 > y2) { // If y1 > y2, switch values.
-				int temp;
-				temp = y1;
-				y1 = y2;
-				y2 = temp;
-				temp = x1;
-				x1 = x2;
-				x2 = temp;
+			if (a.y > b.y) { // If x1 > x2, switch values.
+				Point temp = a;
+				a = b;
+				b = temp;
 			}
-			double slope = 1.0 * (x1 - x2) / (y1 - y2);
-			double x = x1;
-			int y = y1;
+			double slope = 1.0 * (a.x - b.x) / (a.y - b.y);
+			double x = a.x;
+			int y = a.y;
 
-			while (y <= y2) {
+			while (y <= b.y) {
 				Point point = new Point((int) (x + .5), y);
 				if (!isBarrier(point) && !isCritter(point))
+				{
 					addBarrier(point);
+				}
 				y++;
 				x += slope;
 			}
 		}
 	}
 
-	public void addBarrierGraph(int x1, int y1, int x2, int y2) {
-		int temp;
-		if (x1 > x2) {
-			temp = x1;
-			x1 = x2;
-			x2 = temp;
-		}
-		if (y1 > y2) {
-			temp = y1;
-			y1 = y2;
-			y2 = temp;
-		}
-		int i = x1;
-		int j = y1;
+	public void addBarrierGraph(Point a, Point b) {
+		Point[] slope = justifySlope(a,b);
+		a = slope[0];
+		b = slope[1];
+		
+		int i = a.x;
+		int j = a.y;
 
-		while (i < x2) {
-			while (j < y2) {
+		while (i < b.x) {
+			while (j < b.y) {
 				addBarrier(new Point(i, j));
 				j += 2;
 			}
-			j = y1;
+			j = a.y;
 			i += 2;
 		}
 	}
 
-	public void addBarrierGraph(int x1, int y1, int x2, int y2, int xSpace, int ySpace, int xOff, int yOff) {
+	public void addBarrierGraph(Point a, Point b, int xSpace, int ySpace, int xOff, int yOff) {
+		Point[] slope = justifySlope(a,b);
+		a = slope[0];
+		b = slope[1];
+		
 		// Don't ask how any of this works.
-		int temp;
-		if (x1 > x2) {
-			temp = x1;
-			x1 = x2;
-			x2 = temp;
-		}
-		if (y1 > y2) {
-			temp = y1;
-			y1 = y2;
-			y2 = temp;
-		}
-
 		int i = 0;
 		int j = 0;
-		int xRange = x2 - x1;
-		int yRange = y2 - y1;
+		int xRange = b.x - a.x;
+		int yRange = b.y - a.y;
 
 		while (i < xRange) {
 			while (j < yRange) {
-				addBarrier(new Point(x1 + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), y1 + j)); // Yeah, this look s like math
+				addBarrier(new Point(a.x + i + (xOff * ((j / (ySpace + 1)) % (xSpace + 1))), a.y + j)); // Yeah, this look s like math
 				j += ySpace + 1;
 			}
 			i += xSpace + 1;
@@ -1036,23 +1041,19 @@ public class Simulator {
 		}
 	}
 
-	public void removeBarrierLine(int x1, int y1, int x2, int y2) {
+	public void removeBarrierLine(Point a, Point b) {
 
-		if (Math.abs(y1 - y2) <= Math.abs(x1 - x2)) {
-			if (x1 > x2) {
-				int temp;
-				temp = x1;
-				x1 = x2;
-				x2 = temp;
-				temp = y1;
-				y1 = y2;
-				y2 = temp;
+		if (Math.abs(a.y - b.y) <= Math.abs(a.x - b.x)) {
+			if (a.x > b.x) { // If x1 > x2, switch values.
+				Point temp = a;
+				a = b;
+				b = temp;
 			}
-			double slope = 1.0 * (y1 - y2) / (x1 - x2);
-			int x = x1;
-			double y = y1;
+			double slope = 1.0 * (a.y - b.y) / (a.x - b.x);
+			int x = a.x;
+			double y = a.y;
 
-			while (x <= x2) {
+			while (x <= b.x) {
 				Point point = new Point(x, (int) (y + .5));
 				if (isBarrier(point)) {
 					removeBarrier(point);
@@ -1062,20 +1063,16 @@ public class Simulator {
 			}
 		} else {
 
-			if (y1 > y2) {
-				int temp;
-				temp = y1;
-				y1 = y2;
-				y2 = temp;
-				temp = x1;
-				x1 = x2;
-				x2 = temp;
+			if (a.y > b.y) { // If x1 > x2, switch values.
+				Point temp = a;
+				a = b;
+				b = temp;
 			}
-			double slope = 1.0 * (x1 - x2) / (y1 - y2);
-			double x = x1;
-			int y = y1;
+			double slope = 1.0 * (a.x - b.x) / (a.y - b.y);
+			double x = a.x;
+			int y = a.y;
 
-			while (y <= y2) {
+			while (y <= b.y) {
 				Point point = new Point((int) (x + .5), y);
 				if (isBarrier(point)) {
 					removeBarrier(point);
@@ -1086,37 +1083,51 @@ public class Simulator {
 		}
 	}
 
-	public void removeBarrierRect(int x1, int y1, int x2, int y2) {
-		int temp;
-		if (x1 > x2) {
-			temp = x1;
-			x1 = x2;
-			x2 = temp;
-		}
-		if (y1 > y2) {
-			temp = y1;
-			y1 = y2;
-			y2 = temp;
-		}
+	public void removeBarrierRect(Point a, Point b) {
+		Point[] slope = justifySlope(a,b);
+		a = slope[0];
+		b = slope[1];
 
-		int i = x1;
-		int j = y1;
+		int i = a.x;
+		int j = a.y;
 
-		while (i <= x2) {
-			while (j <= y2) {
+		while (i <= b.x) {
+			while (j <= b.y) {
 				removeBarrier(new Point(i, j));
 				j++;
 			}
 			i++;
-			j = y1;
+			j = a.y;
 		}
+	}
+	
+	//helper that returns the slope of a rectangle so that point A << point B
+	private Point[] justifySlope(Point a, Point b)
+	{
+		Point temp1 = new Point(a.x,a.y);
+		Point temp2 = new Point(b.x,b.y);
+		
+		
+		if(a.x > b.x)
+		{
+			temp1.x = b.x; 
+			temp2.x = a.x;
+		}
+		if(a.y>b.y)
+		{
+			temp1.y = b.y; 
+			temp2.y = a.y;
+		}
+		
+		Point[] line = {temp1,temp2};
+		return line;
 	}
 	
 	
 	//-------------------------------------------------------------------------
 	//ZOOM STUFF
 	//-------------------------------------------------------------------------
-	
+	//rescales and recenters the boards display to show a larger image of a portion of the board. 
 	public void zoom(Point p1, Point p2)
 	{
 		board.setMisaligned(true);
@@ -1130,7 +1141,7 @@ public class Simulator {
 	
 
 	// -------------------------------------------------------------------------
-	//GAME STUFF//
+	//GAME STUFF//ENVIRONMENT STUFF
 	//--------------------------------------------------------------------------
 	
 	public void gameTimeStep() {

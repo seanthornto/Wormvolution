@@ -2,7 +2,7 @@
  * Write a description of class Critter here.
  *
  * @author Sean Thornton and Sky Vercauteren
- * @version 1.0 November 2023
+ * @version 1.0 December 2023
  */
 
 import java.awt.*;
@@ -71,13 +71,13 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		adjustP2(point);
 		dragging = false;
 		if (p == true) {
-			sim.addBarrier(p1);
+			sim.addBarrierStamp(p1);
 		} else if (l == true) {
-			sim.addBarrierLine(x1, y1, x2, y2);
+			sim.addBarrierLine(p1, p2);
 		} else if (g == true) {
-			sim.addBarrierGraph(x1, y1, x2, y2, xSpace, ySpace, xOff, yOff);
+			sim.addBarrierGraph(p1, p2, xSpace, ySpace, xOff, yOff);
 		} else if (e == true) {
-			sim.removeBarrierRect(x1, y1, x2, y2);
+			sim.removeBarrierRect(p1, p2);
 		} else if (z == true) {
 			sim.zoom(zPoint1, zPoint2);
 		}
@@ -91,34 +91,10 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		//handle zoom rectangle
 		if(z==true)
 		{
-			//flip rectangle so loops make sense. p1<p2 //WITHOUT changing the actual p1 or p2. 
-			Point temp1 = new Point(p1.x, p1.y);
-			Point temp2 = new Point(p2.x, p2.y);
-			if (temp1.x > temp2.x) {
-				temp1.x = p2.x;
-				temp2.x = p1.x;
-			}
-			if (temp1.y > temp2.y) {
-				temp1.y = p2.y;
-				temp2.y = p1.y;
-			}
-			
-			//constrain the rectangle to be a square based on y distance change. 
-			if(p1.x < p2.x) {temp2.x = temp1.x + (temp2.y - temp1.y);}
-			else {temp1.x = temp2.x - (temp2.y - temp1.y); }
-			zPoint1 = temp1;
-			zPoint2 = temp2;
-			
-			//paint it
-			for(int i=temp1.x; i <= temp2.x; i++)
-			{
-				for (int j=temp1.y; j<= temp2.y; j++)
-				{
-					Point p = new Point(i,j);
-					if(i == temp1.x || i == temp2.x){sim.board.draw(p,Color.WHITE);} //the left and right sides of the rectangle
-					if(j == temp1.y || j == temp2.y) {sim.board.draw(p,Color.WHITE);} //the top and bottom of the rectangle
-				}
-			}
+			drawSquare(p1,p2, Color.WHITE);	
+		}else if(g==true)
+		{
+			drawRectangle(p1,p2, Color.DARK_GRAY);
 		}
 	}
 
@@ -202,6 +178,68 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y2 = p2.y / pixelSize;
 		p2.x = x2;
 		p2.y = y2;
+	}
+	
+	//draws a rectangle from point a to point b in given color.
+	public void drawRectangle(Point a, Point b, Color color)
+	{
+		//flip rectangle so loops make sense. p1<p2 //WITHOUT changing the actual p1 or p2. 
+		Point temp1 = new Point(a.x, a.y);
+		Point temp2 = new Point(b.x, b.y);
+		if (temp1.x > temp2.x) {
+			temp1.x = b.x;
+			temp2.x = a.x;
+		}
+		if (temp1.y > temp2.y) {
+			temp1.y = b.y;
+			temp2.y = a.y;
+		}
+		
+		//paint it
+		for(int i=temp1.x; i <= temp2.x; i++)
+		{
+			for (int j=temp1.y; j<= temp2.y; j++)
+			{
+				Point p = new Point(i,j);
+				if(i == temp1.x || i == temp2.x){sim.board.draw(p,color);} //the left and right sides of the rectangle
+				if(j == temp1.y || j == temp2.y) {sim.board.draw(p,color);} //the top and bottom of the rectangle
+			}
+		}
+	}
+	//draws a square based on change in y from point a to point b in a given color
+	public void drawSquare(Point a, Point b, Color color)
+	{
+		//flip rectangle so loops make sense. p1<p2 //WITHOUT changing the actual p1 or p2. 
+		Point temp1 = new Point(a.x, a.y);
+		Point temp2 = new Point(b.x, b.y);
+		if (temp1.x > temp2.x) {
+			temp1.x = b.x;
+			temp2.x = a.x;
+		}
+		if (temp1.y > temp2.y) {
+			temp1.y = b.y;
+			temp2.y = a.y;
+		}
+		
+		//constrain the rectangle to be a square based on y distance change. 
+		if(a.x < b.x) {temp2.x = temp1.x + (temp2.y - temp1.y);}
+		else {temp1.x = temp2.x - (temp2.y - temp1.y); }
+		
+		//steal these for when zoom is using this method.
+		zPoint1 = temp1;
+		zPoint2 = temp2;
+		
+		//paint it
+		for(int i=temp1.x; i <= temp2.x; i++)
+		{
+			for (int j=temp1.y; j<= temp2.y; j++)
+			{
+				Point p = new Point(i,j);
+				if(i == temp1.x || i == temp2.x){sim.board.draw(p,color);} //the left and right sides of the rectangle
+				if(j == temp1.y || j == temp2.y) {sim.board.draw(p,color);} //the top and bottom of the rectangle
+			}
+		}
+		
 	}
 
 }
