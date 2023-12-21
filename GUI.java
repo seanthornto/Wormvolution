@@ -618,6 +618,28 @@ public class GUI {
         });
         drawTools.add(barrierWidth);
         
+      //All of these components exist inside a task panel within the gridBag
+        JXTaskPaneContainer gridColorComponents = new JXTaskPaneContainer();
+        gridColorComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
+        JXTaskPane gridColorTools = new JXTaskPane();
+        gridColorTools.setToolTipText("Adjusts the color and visibility of barriers.");
+        gridColorTools.setTitle("Barrier Color Settings");
+        
+        //COLOR - Change Barrier Color
+        JButton changeColor = new JButton("Set Color");
+        changeColor.setToolTipText("Sets chosen color for new barriers and repaints old barriers.");
+        changeColor.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		Color newColor = JColorChooser.showDialog(
+                        changeColor,
+                        "Choose Barrier Color",
+                        Color.GRAY);
+        		simulator.setBarrierColor(newColor);
+        	}
+        });
+        gridColorTools.add(changeColor);
+        
         //INVISIBLE - Toggles visibility of barriers
         JButton toggleInv = new JButton("Hide Barriers");
         toggleInv.setToolTipText("Toggles the visibility of all barriers.");
@@ -634,7 +656,11 @@ public class GUI {
                 }
             }
         });
-        drawTools.add(toggleInv);
+        gridColorTools.add(toggleInv);
+        
+      //add grid tools to larger panel
+        gridColorTools.setCollapsed(true);
+        drawTools.add(gridColorTools);
         
       //the following buttons are beveled, and should stay indented if selected
         Border raised = BorderFactory.createRaisedBevelBorder();
