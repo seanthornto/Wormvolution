@@ -618,64 +618,115 @@ public class GUI {
         });
         drawTools.add(barrierWidth);
         
+        //INVISIBLE - Toggles visibility of barriers
+        JButton toggleInv = new JButton("Hide Barriers");
+        toggleInv.setToolTipText("Toggles the visibility of all barriers.");
+        toggleInv.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (barrierVis) {
+                    simulator.setBarrierColor(Color.black);
+                    barrierVis = false;
+                    toggleInv.setText("Show Barriers");
+                } else {
+                    simulator.setBarrierColor(Color.gray);
+                    barrierVis = true;
+                    toggleInv.setText("Hide Barriers");
+                }
+            }
+        });
+        drawTools.add(toggleInv);
+        
       //the following buttons are beveled, and should stay indented if selected
         Border raised = BorderFactory.createRaisedBevelBorder();
-        JButton dragLine = new JButton("Drag Line");
-        JButton dropPoint = new JButton("Drop Stamp");
-        JButton dragGraph = new JButton("Drag Grid");
         JButton eraseRect = new JButton("Erase");
+        JButton dragLine = new JButton("Line");
+        JButton dropPoint = new JButton("Stamp");
+        JButton dragRect = new JButton("Rectangle");
+        JButton dragGraph = new JButton("Grid");
+        
+        JButton[] drawButtons = {dragLine,dropPoint,dragRect,dragGraph, eraseRect};
         
         
-        //LINE - Drags a line from mouse position
-        dragLine.setToolTipText("Drags a line at any angle from the mouse click to the mouse release.");
-        dragLine.setBorder(raised);
-        dragLine.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.lTrue();
-                toggleUtencil(dragLine, dropPoint, dragGraph, eraseRect);
-            }
-        });
-        drawTools.add(dragLine);
-        
-        //POINT - Drops a stamp barrier at mouse click TODO: add other stamp shapes
-        dropPoint.setToolTipText("Drops a barrier 'stamp' on each click");
-        dropPoint.setBorder(raised);
-        dropPoint.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.pTrue();
-                toggleUtencil(dropPoint, dragGraph, dragLine, eraseRect);
-            }
-        });
-        drawTools.add(dropPoint);
-        
-        //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
-        dragGraph.setToolTipText("Creates a rectangle of square barriers in a grid formation from mouse click to mouse release.");
-        dragGraph.setBorder(raised);
-        dragGraph.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.gTrue();
-                toggleUtencil(dragGraph, dragLine, dropPoint, eraseRect);
-            }
-        });
-        drawTools.add(dragGraph);
+        //Visually group the toggled utencil tools together
+        JPanel utencilPadding = new JPanel(new GridBagLayout());
+        utencilPadding.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        wgbc.fill = GridBagConstraints.HORIZONTAL;
+        wgbc.weightx = 1;
         
       //ERASE - Erases a barriers based on a line from mouse position.
         eraseRect.setToolTipText("Erases all barriers within the rectangle created from mouse click to mouse release.");
         eraseRect.setBorder(raised);
         eraseRect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainFrame.eTrue();
-                toggleUtencil(eraseRect, dragGraph, dragLine, dropPoint);
+            	mainFrame.setListener('e');
+                toggleUtencil(4, drawButtons);
             }
         });
-        drawTools.add(eraseRect);
+        JPanel erasePadding = new JPanel(new GridBagLayout());
+        erasePadding.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+        wgbc.insets = new Insets(5,5,5,5);
+        erasePadding.add(eraseRect,wgbc);
+        wgbc.insets = new Insets(10,10,1,10);
+        utencilPadding.add(erasePadding,wgbc);
+        
+        //LINE - Drags a line from mouse position
+        dragLine.setToolTipText("Drags a line at any angle from the mouse click to the mouse release.");
+        dragLine.setBorder(raised);
+        dragLine.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.setListener('l');
+                toggleUtencil(0, drawButtons);
+            }
+        });
+        wgbc.insets = new Insets(1,10,1,10);
+        wgbc.gridy=1;
+        utencilPadding.add(dragLine,wgbc);
+        
+        //STAMP - Drops a stamp barrier at mouse click TODO: add other stamp shapes
+        dropPoint.setToolTipText("Drops a barrier 'stamp' on each click");
+        dropPoint.setBorder(raised);
+        dropPoint.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.setListener('p');
+                toggleUtencil(1, drawButtons);
+            }
+        });
+        wgbc.gridy=2;
+        utencilPadding.add(dropPoint,wgbc);
+        
+        //RECTANGLE - creates a rectangular barrier on mouse drag
+        dragRect.setToolTipText("Drags a rectangle barrier from mouse click to mouse release.");
+        dragRect.setBorder(raised);
+        dragRect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.setListener('r');
+                toggleUtencil(2, drawButtons);
+            }
+        });
+        wgbc.gridy=3;
+        utencilPadding.add(dragRect,wgbc);
+        
+        //GRAPH - Drags a "screen" of points in a rectangle based on a line from mouse position
+        dragGraph.setToolTipText("Creates a rectangle of square barriers in a grid formation from mouse click to mouse release.");
+        dragGraph.setBorder(raised);
+        dragGraph.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.setListener('g');
+                toggleUtencil(3, drawButtons);
+            }
+        });
+        wgbc.insets = new Insets(1,10,10,10);
+        wgbc.gridy=4;
+        utencilPadding.add(dragGraph,wgbc);
+        
+        drawTools.add(utencilPadding);
         
       //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer gridComponents = new JXTaskPaneContainer();
         gridComponents.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         JXTaskPane gridTools = new JXTaskPane();
         gridTools.setToolTipText("Adjusts the spacing and alignment of square barriers within a grid.");
-        gridTools.setTitle("Grid Tools");
+        gridTools.setTitle("Grid Settings");
         
         //X SPACE - 
         floatText = "Adjusts the horizontal space between square barriers in each row of a grid.";
@@ -748,25 +799,6 @@ public class GUI {
         //add grid tools to larger panel
         gridTools.setCollapsed(true);
         drawTools.add(gridTools);
-        
-      //INVISIBLE - Toggles visibility of barriers
-        JButton toggleInv = new JButton("Hide Barriers");
-        toggleInv.setToolTipText("Toggles the visibility of all barriers.");
-        toggleInv.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (barrierVis) {
-                    simulator.setBarrierColor(Color.black);
-                    barrierVis = false;
-                    toggleInv.setText("Show Barriers");
-                } else {
-                    simulator.setBarrierColor(Color.gray);
-                    barrierVis = true;
-                    toggleInv.setText("Hide Barriers");
-                }
-            }
-        });
-        drawTools.add(toggleInv);
-       
         
         //drawing task pane
         drawTools.setCollapsed(true);
@@ -873,7 +905,7 @@ public class GUI {
         zoomSelect.setToolTipText("Zooms in on the square created from mouse click to mouse release.");
         zoomSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	mainFrame.zTrue();
+            	mainFrame.setListener('z');
             }
         });
         selectZoomTools.add(zoomSelect);
@@ -924,17 +956,19 @@ public class GUI {
         mainFrame.pixelSize = simulator.pixelSize;
     }
     
-    //helper function used by the drawing tools
-    public void toggleUtencil(JButton selected, JButton other, JButton other1, JButton other2)
+    //helper function used by the drawing tools . also Butts xD.
+    public void toggleUtencil(int index, JButton[] butt)
     {
     	Border raised = BorderFactory.createRaisedBevelBorder();
         Border lowered = BorderFactory.createLoweredBevelBorder();
+        JButton selected = butt[index];
         if(selected.getBorder() == raised)
         {
         	selected.setBorder(lowered);
-            other.setBorder(raised);
-    		other1.setBorder(raised);	
-    		other2.setBorder(raised);
+            for(int i = 0; i < butt.length; i++)
+            {
+            	if(i != index) {butt[i].setBorder(raised);}
+            }
         }else
         {
         	selected.setBorder(raised);

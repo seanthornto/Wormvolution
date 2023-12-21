@@ -19,11 +19,12 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 	public boolean p; //drop point barrier
 	public boolean l; //draw line barrier
 	public boolean g; // drag rectangle graph barrier
+	public boolean r; // drag rectangle barrier perimeter
 	public boolean e; // erase barrier
 	public boolean z; // zoom boolean
 	public boolean dragging;
-	public Point zPoint1;
-	public Point zPoint2;
+	public Point squarePoint1;
+	public Point squarePoint2;
 	public int x1; 
 	public int x2; 
 	public int y1;
@@ -76,11 +77,13 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 			sim.addBarrierLine(p1, p2);
 		} else if (g == true) {
 			sim.addBarrierGraph(p1, p2, xSpace, ySpace, xOff, yOff);
+		} else if (r == true) {
+			sim.addBarrierRect(p1, p2);
 		} else if (e == true) {
 			sim.removeBarrierRect(p1, p2);
 		} else if (z == true) {
-			sim.zoom(zPoint1, zPoint2);
-		}
+			sim.zoom(squarePoint1, squarePoint2);
+		} 
 	}
 
 	@Override
@@ -92,7 +95,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		if(z==true)
 		{
 			drawSquare(p1,p2, Color.WHITE);	
-		}else if(g==true)
+		}else if(g==true || r == true) // handle graph or perimeter rectangle.
 		{
 			drawRectangle(p1,p2, Color.DARK_GRAY);
 		}
@@ -102,49 +105,23 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 	public void mouseMoved(MouseEvent e) {
 	}
 
-	public void lTrue() {
-		l = true;
-		p = false;
-		g = false;
-		e = false;
-		z = false;
-	}
-
-	public void pTrue() {
-		p = true;
-		l = false;
-		g = false;
-		e = false;
-		z = false;
-	}
-
-	public void gTrue() {
-		g = true;
-		p = false;
-		l = false;
-		e = false;
-		z = false;
-	}
-
-	public void eTrue() {
-		e = true;
-		p = false;
-		g = false;
-		l = false;
-		z = false;
-	}
-	
-	public void zTrue() {
-		z = true;
-		e = false;
-		p = false;
-		g = false;
-		l = false;
+	public void setListener(char tool) {
+		allFalse();
+		switch(tool)
+		{
+		case 'p': p=true; break;
+		case 'l': l=true; break;
+		case 'g': g=true; break;
+		case 'e': e=true; break;
+		case 'z': z=true; break;
+		case 'r': r=true; break;
+		}
 	}
 	
 	public void allFalse() {
 		e = false;
 		p = false;
+		r = false;
 		g = false;
 		l = false;
 		z = false;
@@ -225,9 +202,9 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		if(a.x < b.x) {temp2.x = temp1.x + (temp2.y - temp1.y);}
 		else {temp1.x = temp2.x - (temp2.y - temp1.y); }
 		
-		//steal these for when zoom is using this method.
-		zPoint1 = temp1;
-		zPoint2 = temp2;
+		//steal these for some situations (zoom)
+		squarePoint1 = temp1;
+		squarePoint2 = temp2;
 		
 		//paint it
 		for(int i=temp1.x; i <= temp2.x; i++)

@@ -1029,6 +1029,23 @@ public class Simulator {
 			}
 		}
 	}
+	
+	public void addBarrierRect(Point a, Point b)
+	{
+		Point[] slope = justifySlope(a,b);
+		a = slope[0];
+		b = slope[1];
+		
+		for(int i=a.x; i <= b.x; i++)
+		{
+			for (int j=a.y; j<= b.y; j++)
+			{
+				Point p = new Point(i,j);
+				if(i == a.x || i == b.x){board.draw(p,barrierColor); addBarrier(p);} //the left and right sides of the rectangle
+				if(j == a.y || j == b.y) {board.draw(p,barrierColor); addBarrier(p);} //the top and bottom of the rectangle
+			}
+		}
+	}
 
 	public void addBarrierGraph(Point a, Point b) {
 		Point[] slope = justifySlope(a,b);
