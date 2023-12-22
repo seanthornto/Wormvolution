@@ -903,7 +903,15 @@ public class Simulator {
 	//BARRIER STUFF
 	// -------------------------------------------------------------------------
 
-	public void setBarrierColor(Color color) {
+	public void setBarrierColor(Color color)
+	{
+		barrierColor = color;
+	}
+	public Color getBarrierColor()
+	{
+		return barrierColor;
+	}
+	public void setAllBarrierColor(Color color) {
 		barrierColor = color;
 		for (int i = 0; i < boardSize; i++) {
 			for (int j = 0; j < boardSize; j++)

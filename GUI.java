@@ -627,7 +627,7 @@ public class GUI {
         
         //COLOR - Change Barrier Color
         JButton changeColor = new JButton("Set Color");
-        changeColor.setToolTipText("Sets chosen color for new barriers and repaints old barriers.");
+        changeColor.setToolTipText("Sets chosen color for new barriers.");
         changeColor.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent e)
         	{
@@ -640,17 +640,28 @@ public class GUI {
         });
         gridColorTools.add(changeColor);
         
+        //REPAINT OLD BARRIERS
+        JButton repaintBarriers = new JButton("Repaint Barriers");
+        repaintBarriers.setToolTipText("Paints existing barriers with the new set color.");
+        repaintBarriers.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		simulator.setAllBarrierColor(simulator.getBarrierColor());
+        	}
+        });
+        gridColorTools.add(repaintBarriers);
+        
         //INVISIBLE - Toggles visibility of barriers
         JButton toggleInv = new JButton("Hide Barriers");
         toggleInv.setToolTipText("Toggles the visibility of all barriers.");
         toggleInv.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (barrierVis) {
-                    simulator.setBarrierColor(Color.black);
+                    simulator.setAllBarrierColor(Color.black);
                     barrierVis = false;
                     toggleInv.setText("Show Barriers");
                 } else {
-                    simulator.setBarrierColor(Color.gray);
+                    simulator.setAllBarrierColor(Color.gray);
                     barrierVis = true;
                     toggleInv.setText("Hide Barriers");
                 }
