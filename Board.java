@@ -56,9 +56,9 @@ public class Board extends JPanel {
 		return misaligned;
 	}
 	
-	public void setOrigin(int x, int y)
+	public void setOrigin(double x, double y)
 	{
-		origin = new Point(x,y);
+		origin.setLocation(x, y);;
 	}
 	
 	public Point getOrigin()
@@ -144,7 +144,7 @@ public class Board extends JPanel {
 		draw(point, Color.black);
 	}
 	
-	public BufferedImage zoom(float p)
+	public BufferedImage zoom(double p)
 	{
 		BufferedImage after = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();

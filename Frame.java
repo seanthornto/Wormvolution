@@ -141,6 +141,12 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y1 = p1.y / pixelSize;
 		p1.x = x1;
 		p1.y = y1;
+		if(sim.board.getMisaligned() == true)
+		{
+			Point old = sim.board.getOrigin();
+			double oldScale = sim.board.getScale();
+			p1.setLocation(old.x + (p1.x/oldScale), old.y + (p1.y/oldScale));
+		}
 	}
 	public void adjustP2(Point point)
 	{
@@ -155,6 +161,12 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y2 = p2.y / pixelSize;
 		p2.x = x2;
 		p2.y = y2;
+		if(sim.board.getMisaligned() == true)
+		{
+			Point old = sim.board.getOrigin();
+			double oldScale = sim.board.getScale();
+			p2.setLocation(old.x + (p2.x/oldScale), old.y + (p2.y/oldScale));
+		}
 	}
 	
 	//draws a rectangle from point a to point b in given color.

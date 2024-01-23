@@ -170,12 +170,24 @@ public class GUI {
         //----------
         //COMPONENTS
         //----------
+       
+      //tools scroll bar
+        scrollTools = new JScrollPane(tools);
+        scrollTools.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+        scrollTools.setPreferredSize(new Dimension(boardSize/4 + 30, boardSize - 100));
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weighty = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.insets = new Insets(0,5,0,5);
+        controlPanel.add(scrollTools, gbc);
         
       //SIMULATOR - The big enchilada
         gbc.weighty = 0;
         gbc.gridy = 0;
         gbc.gridx = 1;
-        gbc.insets = new Insets(0,0,0,0);
+        gbc.insets = new Insets(0,5,5,0);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridheight = 3;
@@ -257,7 +269,7 @@ public class GUI {
                 	}
                 });
             	wgbc.gridx = 0;
-            	wgbc.gridy = 1;
+            	wgbc.gridy = 0;
             	wgbc.insets = new Insets(5,5,5,5);
                 resetTools.add(newSize, wgbc);
                 
@@ -336,13 +348,13 @@ public class GUI {
         gbc.gridy = 0;
         controlPanel.add(reset, gbc);
         
-        
         //reset gridbag
         gbc.weighty = 0;
         gbc.gridheight = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(5,15,5,15);
+
         
         //ENVIRONMENT
         
@@ -871,7 +883,7 @@ public class GUI {
         			mainFrame.setLocationRelativeTo(null);
         			fsName = "Fullscreen";
         			isFullscreen = false;
-        			gbc.insets = new Insets(0,0,0,0);
+        			gbc.insets = new Insets(0,5,5,0);
         			gbc.weighty = 0;
         		    gbc.gridy = 0;
         		    gbc.gridx = 1;
@@ -888,7 +900,7 @@ public class GUI {
         			isFullscreen = true;
         			int left = Math.round(sizeConstraint/7);
         			int top = Math.round(sizeConstraint/90);
-        			gbc.insets = new Insets(top,left,0,0);
+        			gbc.insets = new Insets(top,left,5,0);
         			gbc.weighty = 0;
         		    gbc.gridy = 0;
         		    gbc.gridx = 1;
@@ -927,6 +939,21 @@ public class GUI {
         	}
         });
         zoomTools.add(displaySize);
+        
+      //returns to normal scale and zoom
+        JButton zoomReturn = new JButton("100%");
+        zoomReturn.setToolTipText("Returns to full scale view.");
+        zoomReturn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mainFrame.allFalse();
+            	mainFrame.sim.board.setScale(1);
+            	mainFrame.sim.board.setOrigin(0,0);
+            	mainFrame.sim.board.setMisaligned(false);
+            	controlPanel.revalidate();
+				controlPanel.repaint();
+            }
+        });
+        zoomTools.add(zoomReturn);
       
         //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer selectZoomComponents = new JXTaskPaneContainer();
@@ -946,21 +973,6 @@ public class GUI {
             }
         });
         selectZoomTools.add(zoomSelect);
-      
-        //returns to normal scale and zoom
-        JButton zoomReturn = new JButton("100%");
-        zoomReturn.setToolTipText("Returns to full scale view.");
-        zoomReturn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	mainFrame.allFalse();
-            	mainFrame.sim.board.setScale(1);
-            	mainFrame.sim.board.setOrigin(0,0);
-            	mainFrame.sim.board.setMisaligned(false);
-            	controlPanel.revalidate();
-				controlPanel.repaint();
-            }
-        });
-        selectZoomTools.add(zoomReturn);
         
         
       //drawing task pane
@@ -974,18 +986,7 @@ public class GUI {
         //--------------
         //FINISHING UP!
         //--------------
-        
-        //tools scroll bar
-        scrollTools = new JScrollPane(tools);
-        scrollTools.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.5;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridheight = 1;
-        gbc.insets = new Insets(0,5,0,5);
-        controlPanel.add(scrollTools, gbc);
-        
+
         //main frame
         mainFrame.sim = simulator;
         mainFrame.bs = bs;

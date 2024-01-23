@@ -1185,19 +1185,8 @@ public class Simulator {
 	{
 		//first find the new origin and figure the scale
 		double s = 0;
-		if(board.getMisaligned() == true)
-		{
-			Point old = board.getOrigin();
-			double oldScale = board.getScale();
-			p1 = new Point(old.x + (int)(p1.x/oldScale), old.y + (int)(p1.y/oldScale));//This is Still Wrong
-			p2 = new Point(old.x + (int)(p2.x/oldScale), old.y + (int)(p2.y/oldScale));//This is Still Wrong
-			s = (double)maxSize/ ((p2.y - p1.y) * pixelSize);
-			s += oldScale;
-		}else
-		{
-			board.setMisaligned(true);
-			s = (double)maxSize / ((p2.y - p1.y) * pixelSize);
-		}
+		board.setMisaligned(true);
+		s = (double)maxSize / ((p2.y - p1.y) * pixelSize);
 		
 		board.setOrigin(p1.x, p1.y);
 		board.setScale(s);
