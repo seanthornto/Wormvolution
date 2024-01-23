@@ -1183,11 +1183,23 @@ public class Simulator {
 	//rescales and recenters the boards display to show a larger image of a portion of the board. 
 	public void zoom(Point p1, Point p2)
 	{
-		board.setMisaligned(true);
-		board.setOrigin(p1.x, p1.y);
+		//first find the new origin and figure the scale
+		double s = 0;
+		if(board.getMisaligned() == true)
+		{
+			Point old = board.getOrigin();
+			double oldScale = board.getScale();
+			p1 = new Point(old.x + (int)(p1.x/oldScale), old.y + (int)(p1.y/oldScale));//This is Still Wrong
+			p2 = new Point(old.x + (int)(p2.x/oldScale), old.y + (int)(p2.y/oldScale));//This is Still Wrong
+			s = (double)maxSize/ ((p2.y - p1.y) * pixelSize);
+			s += oldScale;
+		}else
+		{
+			board.setMisaligned(true);
+			s = (double)maxSize / ((p2.y - p1.y) * pixelSize);
+		}
 		
-		//figure scale 
-		double s = (double)maxSize / ((p2.y - p1.y) * pixelSize);
+		board.setOrigin(p1.x, p1.y);
 		board.setScale(s);
 		board.revalidate();
 	}

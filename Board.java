@@ -51,9 +51,19 @@ public class Board extends JPanel {
 		misaligned = b;
 	}
 	
+	public boolean getMisaligned()
+	{
+		return misaligned;
+	}
+	
 	public void setOrigin(int x, int y)
 	{
 		origin = new Point(x,y);
+	}
+	
+	public Point getOrigin()
+	{
+		return origin;
 	}
 	
 	public void setBarrierWidth(int w)

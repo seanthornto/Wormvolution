@@ -954,6 +954,7 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.allFalse();
             	mainFrame.sim.board.setScale(1);
+            	mainFrame.sim.board.setOrigin(0,0);
             	mainFrame.sim.board.setMisaligned(false);
             	controlPanel.revalidate();
 				controlPanel.repaint();
