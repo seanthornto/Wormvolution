@@ -58,30 +58,24 @@ public class GUI {
     private int sleepCost;
     private int moveCost;
     private int turnCost;
-    private long speed;
-    private double mutation;
+    private int sc, mc, tc, sr; // temp variables for reset.
     private boolean barrierVis = true;
     
     //simulator environment variables
     private int foodVal;
     private int foodRate;
-    private double colorVar;
+    private double colorVar, cv;
+    private long speed;
+    private double mutation, mt;
+    private int fv, fr;
     private static int boardSize;
+    public int newBoardSize = boardSize;
     private boolean isFullscreen = false;
     private static double scale = 1;
-    
-    //COMPLETELY UNUSED VARIABLES - LMAO
-    //TODO: ??
-    private static int startsC = 0;
-    private static int startmC = 3;
-    private static int starttC = 1;
-    private int sightRange;
-    private int startSpeed = 10;
-    private double startMutate = 0.2;
-    private int startfVal = boardSize / 2;
-    private int startfRate = boardSize / 10;
+
+    //UNUSED (save?)
     private boolean run = true;
-    private JPanel displayTop;
+    
     
     
     //Control panel variables
@@ -211,11 +205,9 @@ public class GUI {
                 if (!simulator.isPaused()) {
                     simulator.pause();
                     play.setText("Start");
-                    run = true;
                 } else {
                     simulator.unpause();
                     play.setText("Stop");
-                    run = false;
                 }
             }
         });
@@ -225,14 +217,24 @@ public class GUI {
         controlPanel.add(play, gbc);
         
         //RESET - prompts user with different kinds of reset options;
-        JButton reset = new JButton("Reset");
+        JPanel resetTools = new JPanel();
+    	resetTools.setLayout(new GridBagLayout());
+    	wgbc.gridx = 0;
+    	wgbc.gridy = 0;
+    	wgbc.gridheight = 1;
+    	wgbc.insets = new Insets(5,5,5,5);
+    	JFrame resetFrame = new JFrame("Reset Options");
+    	resetFrame.setSize(boardSize/3,(int)(boardSize/2));
+    	resetTools.setSize(resetFrame.getSize());
+    	resetFrame.setLocationRelativeTo(null);
+    	
+    	JButton reset = new JButton("Reset");
         reset.setToolTipText("Prompts the user with different reset variations");
         reset.addActionListener(new ActionListener() {
-        	int newBoardSize = boardSize;
+        	
         	public void autoscale()
         	{
-        		scale = sizeConstraint - simulator.getBoardSize();
-				scale = simulator.getBoardSize()/scale;
+				scale = simulator.getBoardSize()/(sizeConstraint - simulator.getBoardSize()) * simulator.pixelSize;
 				scale +=1;
 				  
 				simulator.board.setScale(scale);
@@ -242,111 +244,65 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
             	
             	//throw pop up for reset options
-            	JFrame resetFrame = new JFrame("Reset Options");
-            	resetFrame.setSize(boardSize/4,boardSize/3);
-            	resetFrame.setLocationRelativeTo(null);
             	resetFrame.addWindowListener(new WindowAdapter() {
                     public void windowClosing(WindowEvent windowEvent) {
                         resetFrame.dispose();
+                        simulator.unpause();
                     }
                 });
             	resetFrame.setVisible(true);
-            	JPanel resetTools = new JPanel();
-            	resetTools.setLayout(new GridBagLayout());
-            	
-            	//BoardSize
-                JLabel brd = new JLabel("Board Size: " + newBoardSize);
-                brd.setToolTipText("The size of the new board.");
-                resetTools.add(brd);;
-                JSlider newSize = new JSlider(JSlider.HORIZONTAL,4, sizeConstraint,4);
-                newSize.setToolTipText("The size of the new board.");
-                newSize.setValue(boardSize);
-                newSize.addChangeListener(new ChangeListener(){
-                	public void stateChanged(ChangeEvent e) {
-                		int bw = ((JSlider) e.getSource()).getValue();
-                		newBoardSize=(bw> 30 ? bw : 30);
-                		brd.setText("Board Size: " + newBoardSize);
-                	}
-                });
-            	wgbc.gridx = 0;
-            	wgbc.gridy = 0;
-            	wgbc.insets = new Insets(5,5,5,5);
-                resetTools.add(newSize, wgbc);
-                
-            	//add default reset
-            	JButton defaults = new JButton("Reset to Defaults");
-            	defaults.setToolTipText("Starts a new simulation with default values.");
-            	defaults.addActionListener(new ActionListener()
-            			{
-            				public void actionPerformed(ActionEvent e)
-            				{
-            					simulator.pause();
-            					mainFrame.setVisible(false);
-            					mainFrame.dispose();
-            					start(0, 3, 1, newBoardSize);
-            					autoscale();
-            				}
-            			});
-            	wgbc.gridy = 2;
-            	resetTools.add(defaults,wgbc);
+            	simulator.pause();
             	
             	//add reset with keep current settings
-            	JButton current = new JButton("Reset to Current");
-            	current.setToolTipText("Starts a new simulation with values that are currently set.");
+            	JButton current = new JButton("     ----Reset----     ");
+            	current.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+            	current.setToolTipText("Starts a new simulation.");
             	current.addActionListener(new ActionListener()
             			{
             				public void actionPerformed(ActionEvent e)
             				{
-            					simulator.pause();
             					mainFrame.setVisible(false);
             					mainFrame.dispose();
             					start(sleepCost, moveCost, turnCost, newBoardSize);
             					autoscale();
+            					//Ok we need to keep track of:
+            					//food rate, food value, sight range, mutation rate, color variation, genes.
+            					simulator.setFoodRate(fr);
+            					simulator.setFoodValue(fv);
+            					simulator.setSightRange(sr);
+            					Critter.setMutationRate(mt);
+            					simulator.setColorVar(cv);
+            					//GEnes?? 
             				}
             			});
-            	wgbc.gridy = 3;
-            	resetTools.add(current,wgbc);
-            	
-            	//add reset with lowest possible values
-            	JButton minimum = new JButton("Reset to Minimum");
-            	minimum.setToolTipText("Starts a new simulation lowest possible values. Sleep: 0, Move: 0, Turn: 0 and 30px board.");
-            	minimum.addActionListener(new ActionListener()
-            			{
-            				public void actionPerformed(ActionEvent e)
-            				{
-            					simulator.pause();
-            					mainFrame.setVisible(false);
-            					mainFrame.dispose();
-            					start(0, 0, 0, newBoardSize);
-            					autoscale();
-            				}
-            			});
-            	wgbc.gridy = 4;
-            	resetTools.add(minimum,wgbc);
-            	
-            	//add reset with highest possible values
-            	JButton maximum = new JButton("Reset to Maximum");
-            	maximum.setToolTipText("Starts a new simulation highest possible values. Sleep: 10, Move: 10, Turn: 10 and largest relative board.");
-            	maximum.addActionListener(new ActionListener()
-            			{
-            				public void actionPerformed(ActionEvent e)
-            				{
-            					simulator.pause();
-            					mainFrame.setVisible(false);
-            					mainFrame.dispose();
-            					start(10, 10, 10, newBoardSize);
-            					autoscale();
-            				}
-            			});
-            	wgbc.gridy = 5;
-            	resetTools.add(maximum,wgbc);
-            	
-            	//finalize
-                resetFrame.setContentPane(resetTools);
+            	GridBagConstraints rgbc = new GridBagConstraints();
+            	rgbc.gridy = 21;
+            	rgbc.insets = new Insets(20,0,0,0);
+            	resetTools.add(current,rgbc);
             }
         });
         gbc.gridy = 0;
         controlPanel.add(reset, gbc);
+    	
+       
+    	//BoardSize
+        JLabel brd = new JLabel("Board Size: " + newBoardSize);
+        brd.setToolTipText("The size of the new board.");
+        wgbc.gridy = 0;
+        resetTools.add(brd, wgbc);
+        JSlider newSize = new JSlider(JSlider.HORIZONTAL,4, sizeConstraint,4);
+        newSize.setToolTipText("The size of the new board.");
+        newSize.setValue(boardSize);
+        newSize.addChangeListener(new ChangeListener(){
+        	public void stateChanged(ChangeEvent e) {
+        		int bw = ((JSlider) e.getSource()).getValue();
+        		newBoardSize=(bw> 30 ? bw : 30);
+        		brd.setText("Board Size: " + newBoardSize);
+        	}
+        });
+        wgbc.gridy = 1;
+        wgbc.insets = new Insets(0,0,50,0);
+        resetTools.add(newSize, wgbc);
         
         //reset gridbag
         gbc.weighty = 0;
@@ -354,6 +310,7 @@ public class GUI {
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(5,15,5,15);
+        wgbc.insets = new Insets(0,0,0,0);
 
         
         //ENVIRONMENT
@@ -391,6 +348,8 @@ public class GUI {
         JLabel fVal = new JLabel("Food Value: " + simulator.getFoodValue());
         fVal.setToolTipText(floatText);
         environmentTools.add(fVal);
+        wgbc.gridy = 2;
+        resetTools.add(fVal, wgbc);
         
         JSlider foodValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 500, 250);
         foodValueSlider.setToolTipText(floatText);
@@ -400,16 +359,21 @@ public class GUI {
                 int foodV = ((JSlider) e.getSource()).getValue();
                 foodVal = foodV;
                 simulator.setFoodValue(foodVal);
+                fv = foodVal;
                 fVal.setText("Food Value: " + simulator.getFoodValue());
             }
         });
         environmentTools.add(foodValueSlider);
+        wgbc.gridy = 5;
+        resetTools.add(foodValueSlider, wgbc);
         
         //FOOD RATE - Adjusts the amount of food that spawns per tick
         floatText = "Adjusts the amount of food that spawns per tick";
         JLabel fR8 = new JLabel("Food Rate: "+simulator.getFoodRate());
         fR8.setToolTipText(floatText);
         environmentTools.add(fR8);
+        wgbc.gridy = 6;
+        resetTools.add(fR8, wgbc);
         
         JSlider foodRateSlider = new JSlider(JSlider.HORIZONTAL, 0, bs * bs / 200, bs * bs / 500);
         foodRateSlider.setToolTipText(floatText);
@@ -419,10 +383,13 @@ public class GUI {
                 int foodR = ((JSlider) e.getSource()).getValue();
                 foodRate = foodR;
                 simulator.setFoodRate(foodRate);
+                fr = foodRate;
                 fR8.setText("Food Rate: "+simulator.getFoodRate());
             }
         });
         environmentTools.add(foodRateSlider);
+        wgbc.gridy = 7;
+        resetTools.add(foodRateSlider, wgbc);
         
       //finishing up the environment task pane
         environmentTools.setCollapsed(true);
@@ -444,9 +411,11 @@ public class GUI {
         
         //SLEEP - adjusts the amount of energy a worm spends during a sleep tick
         floatText = "Adjusts the amount of energy a worm spends during a sleep tick.";
-        JLabel sc = new JLabel("Sleep Cost: "+simulator.getSleepCost());
-        sc.setToolTipText(floatText);
-        behaviorTools.add(sc);
+        JLabel scLabel = new JLabel("Sleep Cost: "+simulator.getSleepCost());
+        scLabel.setToolTipText(floatText);
+        behaviorTools.add(scLabel);
+        wgbc.gridy = 8;
+        resetTools.add(scLabel, wgbc);
         
         JSlider sleepCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, sleepC);
         sleepCostSlider.setToolTipText(floatText);
@@ -455,17 +424,23 @@ public class GUI {
             public void stateChanged(ChangeEvent e) {
                 int sCost = ((JSlider) e.getSource()).getValue();
                 sleepCost = sCost;
+                sc = sCost;
                 simulator.setSleepCost(sleepCost);
-                sc.setText("Sleep Cost: "+simulator.getSleepCost());
+                scLabel.setText("Sleep Cost: "+simulator.getSleepCost());
             }
         });
         behaviorTools.add(sleepCostSlider);
+        wgbc = new GridBagConstraints();
+        wgbc.gridy = 9;
+        resetTools.add(sleepCostSlider,wgbc);
         
         //MOVEMENT - adjusts the amount of energy a worm spends during a movement tick
         floatText = "Adjusts the amount of energy a worm spends during a movement tick.";
-        JLabel mc = new JLabel("Move Cost: " + simulator.getMoveCost());
-        mc.setToolTipText(floatText);
-        behaviorTools.add(mc);
+        JLabel mcLabel = new JLabel("Move Cost: " + simulator.getMoveCost());
+        mcLabel.setToolTipText(floatText);
+        behaviorTools.add(mcLabel);
+        wgbc.gridy = 10;
+        resetTools.add(mcLabel, wgbc);
         
         JSlider moveCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, moveC);
         moveCostSlider.setToolTipText(floatText);
@@ -474,18 +449,23 @@ public class GUI {
             public void stateChanged(ChangeEvent e) {
                 int mCost = ((JSlider) e.getSource()).getValue();
                 moveCost = mCost;
+                mc = mCost;
                 simulator.setMoveCost(moveCost);
-                mc.setText("Move Cost: " + simulator.getMoveCost());
+                mcLabel.setText("Move Cost: " + simulator.getMoveCost());
             }
         });
         behaviorTools.add(moveCostSlider);
+        wgbc.gridy = 11;
+        resetTools.add(moveCostSlider, wgbc);
 
         
         //TURN - adjusts the amount of energy a worm spends during a turning tick
         floatText = "Adjusts the amount of energy a worm spends during a turning tick.";
-        JLabel tc = new JLabel("Turn Cost: " + simulator.getTurnCost());
-        tc.setToolTipText(floatText);
-        behaviorTools.add(tc);
+        JLabel tcLabel = new JLabel("Turn Cost: " + simulator.getTurnCost());
+        tcLabel.setToolTipText(floatText);
+        behaviorTools.add(tcLabel);
+        wgbc.gridy = 12;
+        resetTools.add(tcLabel, wgbc);
         
         JSlider turnCostSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, turnC);
         turnCostSlider.setToolTipText(floatText);
@@ -495,16 +475,21 @@ public class GUI {
                 int tCost = ((JSlider) e.getSource()).getValue();
                 turnCost = tCost;
                 simulator.setTurnCost(turnCost);
-                tc.setText("Turn Cost: " + simulator.getTurnCost());
+                tc = turnC;
+                tcLabel.setText("Turn Cost: " + simulator.getTurnCost());
             }
         });
         behaviorTools.add(turnCostSlider);
+        wgbc.gridy = 13;
+        resetTools.add(turnCostSlider, wgbc);
         
       //SIGHT - Adjusts the range a worm can detect food, barriers or other worms in front of it
         floatText = "Adjusts the range a worm can detect food, barriers or other worms in front of it.";
-        JLabel sr = new JLabel("Sight Range: "+simulator.getSightRange());
-        sr.setToolTipText(floatText);
-        behaviorTools.add(sr);
+        JLabel srLabel = new JLabel("Sight Range: "+simulator.getSightRange());
+        srLabel.setToolTipText(floatText);
+        behaviorTools.add(srLabel);
+        wgbc.gridy = 14;
+        resetTools.add(srLabel, wgbc);
         
         JSlider sightRangeSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
         sightRangeSlider.setToolTipText(floatText);
@@ -512,12 +497,14 @@ public class GUI {
         sightRangeSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int sightR = ((JSlider) e.getSource()).getValue();
-                sightRange = sightR;
+                sr = sightR;
                 simulator.setSightRange(sightR);
-                sr.setText("Sight Range: "+simulator.getSightRange());
+                srLabel.setText("Sight Range: "+simulator.getSightRange());
             }
         });
         behaviorTools.add(sightRangeSlider);
+        wgbc.gridy = 15;
+        resetTools.add(sightRangeSlider, wgbc);
         
       //finishing up the behavior task pane
         behaviorTools.setCollapsed(true);
@@ -540,6 +527,8 @@ public class GUI {
         JLabel mut8 = new JLabel("Mutation Rate: "+ Critter.getMutationRate());
         mut8.setToolTipText(floatText);
         geneticsTools.add(mut8);
+        wgbc.gridy = 16;
+        resetTools.add(mut8, wgbc);
         
         JSlider mutationSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 20);
         mutationSlider.setToolTipText(floatText);
@@ -549,16 +538,21 @@ public class GUI {
                 int mutate = ((JSlider) e.getSource()).getValue();
                 mutation = mutate / 100.0;
                 Critter.setMutationRate(mutation);
+                mt = mutation;
                 mut8.setText("Mutation Rate: " + Critter.getMutationRate());
             }
         });
         geneticsTools.add(mutationSlider);
+        wgbc.gridy = 17;
+        resetTools.add(mutationSlider, wgbc);
         
       //COLOR - Adjusts the amount of color variation in new worm species
         floatText = "Adjusts the amount of color variation in new worm species.";
-        JLabel cv = new JLabel("Color Variance: "+simulator.getColorVar());
-        cv.setToolTipText(floatText);
-        geneticsTools.add(cv);
+        JLabel cvLabel = new JLabel("Color Variance: "+simulator.getColorVar());
+        cvLabel.setToolTipText(floatText);
+        geneticsTools.add(cvLabel);
+        wgbc.gridy = 18;
+        resetTools.add(cvLabel, wgbc);
         
         JSlider colorVarSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
         colorVarSlider.setToolTipText(floatText);
@@ -568,10 +562,12 @@ public class GUI {
                 int cVar = ((JSlider) e.getSource()).getValue();
                 colorVar = cVar / 100.0;
                 simulator.setColorVar(colorVar);
-                cv.setText("Color Variance: "+simulator.getColorVar());
+                cvLabel.setText("Color Variance: "+simulator.getColorVar());
             }
         });
         geneticsTools.add(colorVarSlider);
+        wgbc.gridy = 19;
+        resetTools.add(colorVarSlider, wgbc);
         
         //DNA - opens pop-up sub-menu that allows user to select genes in the gene pool. 
         JButton comm = new JButton("Genes");
@@ -582,6 +578,8 @@ public class GUI {
             }
         });
         geneticsTools.add(comm);
+        wgbc.gridy = 20;
+        resetTools.add(comm, wgbc);
         
         //POPULATION - opens pop-up info-graphic showing the most populous worm species.
         JButton dispPop = new JButton("Disp Populations");
@@ -868,6 +866,7 @@ public class GUI {
         JXTaskPane zoomTools = new JXTaskPane();
         zoomTools.setToolTipText("Tools: Fullscreen");
         zoomTools.setTitle("Zoom Tools");
+        JButton[] zoomModes = new JButton[2];
         
         //Full Screen / Windowed
         floatText = "Toggles between fullscreen and windowed views.";
@@ -942,6 +941,9 @@ public class GUI {
         
       //returns to normal scale and zoom
         JButton zoomReturn = new JButton("100%");
+        JPanel zoomReturnBox = new JPanel(new GridBagLayout());
+        zoomReturnBox.setBorder(BorderFactory.createEtchedBorder());
+        zoomReturn.setBorder(BorderFactory.createLoweredBevelBorder());
         zoomReturn.setToolTipText("Returns to full scale view.");
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -951,9 +953,16 @@ public class GUI {
             	mainFrame.sim.board.setMisaligned(false);
             	controlPanel.revalidate();
 				controlPanel.repaint();
+				toggleZoom(0, zoomModes);
             }
         });
-        zoomTools.add(zoomReturn);
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(10,8,10,8);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1;
+        zoomReturnBox.add(zoomReturn,c);
+        zoomTools.add(zoomReturnBox);
+        zoomModes[0] = zoomReturn;
       
         //All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer selectZoomComponents = new JXTaskPaneContainer();
@@ -966,13 +975,16 @@ public class GUI {
         
       //Zooms in on a selected area
         JButton zoomSelect = new JButton("Square Zoom");
+        zoomSelect.setBorder(BorderFactory.createRaisedBevelBorder());
         zoomSelect.setToolTipText("Zooms in on the square created from mouse click to mouse release.");
         zoomSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.setListener('z');
+            	toggleZoom(1, zoomModes);
             }
         });
         selectZoomTools.add(zoomSelect);
+        zoomModes[1] = zoomSelect;
         
         
       //drawing task pane
@@ -988,6 +1000,7 @@ public class GUI {
         //--------------
 
         //main frame
+        resetFrame.setContentPane(resetTools);
         mainFrame.sim = simulator;
         mainFrame.bs = bs;
         mainFrame.setContentPane(controlPanel);
@@ -1012,6 +1025,22 @@ public class GUI {
         {
         	selected.setBorder(raised);
         	mainFrame.allFalse();
+        }
+    }
+    
+    //helper function used by zoom tools.
+    public void toggleZoom(int index, JButton[] butt)
+    {
+    	Border raised = BorderFactory.createRaisedBevelBorder();
+        Border lowered = BorderFactory.createLoweredBevelBorder();
+        JButton selected = butt[index];
+        if(selected.getBorder() == raised)
+        {
+        	selected.setBorder(lowered);
+            for(int i = 0; i < butt.length; i++)
+            {
+            	if(i != index) {butt[i].setBorder(raised);}
+            }
         }
     }
     
