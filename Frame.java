@@ -1,5 +1,6 @@
 /**
- * Write a description of class Critter here.
+ * Mouse Listeners and functionality.
+ * This class creates the ability to interact directly with the simulation via the mouse.
  *
  * @author Sean Thornton and Sky Vercauteren
  * @version 1.0 December 2023
