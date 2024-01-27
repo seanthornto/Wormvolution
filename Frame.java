@@ -142,11 +142,20 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y1 = p1.y / pixelSize;
 		p1.x = x1;
 		p1.y = y1;
+		int max = GUI.getSizeConstraint();
+		double cropScale = 1;
+		if(bs != max)
+		{
+			cropScale =  ((double)max/(double)(bs * pixelSize)) - 0.005; //TODO~!! This is still not correct!
+			System.out.println(cropScale);
+			p1.setLocation((p1.x/cropScale),(p1.y/cropScale));
+		}
 		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
-			p1.setLocation(old.x + (p1.x/oldScale), old.y + (p1.y/oldScale));
+			System.out.println("zoom"+oldScale);
+			p1.setLocation((old.x * cropScale) + (p1.x/oldScale), (old.y * cropScale) + (p1.y/oldScale));
 		}
 	}
 	public void adjustP2(Point point)
@@ -162,11 +171,20 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y2 = p2.y / pixelSize;
 		p2.x = x2;
 		p2.y = y2;
+		int max = GUI.getSizeConstraint();
+		double cropScale = 1;
+		if(bs != max)
+		{
+			cropScale =  ((double)max/(double)(bs * pixelSize)) - 0.005;
+			System.out.println(cropScale);
+			p2.setLocation((p2.x/cropScale),(p2.y/cropScale));
+		}
 		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
-			p2.setLocation(old.x + (p2.x/oldScale), old.y + (p2.y/oldScale));
+			System.out.println("zoom"+oldScale);
+			p2.setLocation((old.x * cropScale) + (p2.x/oldScale), (old.y * cropScale) + (p2.y/oldScale));
 		}
 	}
 	
