@@ -138,10 +138,13 @@ public class GUI {
 	//this should fix that.
     public static void autoscale(int newBoardSize)
 	{
-		scale = sizeConstraint/(sizeConstraint - newBoardSize);// * simulator.pixelSize;
+		scale = (double)sizeConstraint/(double)(newBoardSize * simulator.pixelSize);
 		
-		//Controls.setScale(scale);
-		//simulator.board.setScale(scale);
+		//leave a little room for the remainder.
+		scale = scale - 0.005;
+		
+		Controls.setScale(scale);
+		simulator.board.setScale(scale);
 		simulator.board.revalidate();
 		simulator.board.repaint();
 	}

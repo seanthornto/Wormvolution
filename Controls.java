@@ -824,10 +824,11 @@ public class Controls {
         
         //100% - returns to normal scale and zoom
         JButton zoomReturn = newButton("100%", "Returns to full scale view.");
+        zoomReturn.setBorder(BorderFactory.createRaisedBevelBorder());
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.allFalse();
-            	mainFrame.sim.board.setScale(1);
+            	mainFrame.sim.board.setScale(scale);
             	mainFrame.sim.board.setOrigin(0,0);
             	mainFrame.sim.board.setZoomed(false);
             	controlPanel.revalidate();
@@ -854,6 +855,7 @@ public class Controls {
         
         // -- SQUARE SELECT - "Zooms in on the square created from mouse click to mouse release."
         JButton sqZoom = newButton("Square Zoom", "Zooms in on the square created from mouse click to mouse release.");
+        sqZoom.setBorder(BorderFactory.createRaisedBevelBorder());
         sqZoom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.setListener('z');
@@ -899,6 +901,8 @@ public class Controls {
     private void addControl(Component c, int y)
     {
     	GridBagConstraints tempGBC = new GridBagConstraints();
+    	tempGBC.fill = GridBagConstraints.HORIZONTAL;
+    	tempGBC.insets = new Insets(12,5,12,5);
     	tempGBC.gridy = y;
     	controlPanel.add(c,tempGBC);
     }
@@ -1037,7 +1041,7 @@ public class Controls {
         	selected.setBorder(lowered);
             for(int i = 0; i < butt.length; i++)
             {
-            	//if(i != index) {butt[i].setBorder(raised);}
+            	if(i != index) {butt[i].setBorder(raised);}
             }
         }
     }
