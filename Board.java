@@ -16,7 +16,8 @@ public class Board extends JPanel {
 	private int pixelSize;
 	private int boardSize;
 	private int maxConstraint;
-	private Boolean misaligned;
+	private Boolean zoomed;
+	private Boolean cropped;
 	private Point origin = new Point(0,0);
 	private int barrierWidth;
 	private double scale = 1;
@@ -26,11 +27,12 @@ public class Board extends JPanel {
 		this.pixelSize = pixelSize;
 		boardSize = bs;
 		maxConstraint = max;
-		misaligned = false;
-		canvas = new BufferedImage(boardSize * pixelSize, boardSize * pixelSize, BufferedImage.TYPE_INT_ARGB);
+		zoomed = false;
+		cropped = false;
+		canvas = new BufferedImage(bs * pixelSize, bs * pixelSize, BufferedImage.TYPE_INT_ARGB);
 				
 		fillCanvas(Color.black);
-		barrierWidth = 1;
+		barrierWidth = pixelSize;
 	}
 
 	public void setBoardSize(int s) {
@@ -46,14 +48,19 @@ public class Board extends JPanel {
 		return preferredSize;
 	}
 	
-	public void setMisaligned(Boolean b)
+	public void setZoomed(Boolean b)
 	{
-		misaligned = b;
+		zoomed = b;
 	}
 	
-	public boolean getMisaligned()
+	public boolean getZoomed()
 	{
-		return misaligned;
+		return zoomed;
+	}
+	
+	public void setCropped(Boolean b)
+	{
+		cropped = b;
 	}
 	
 	public void setOrigin(double x, double y)
@@ -105,14 +112,16 @@ public class Board extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g.create();
         AffineTransform at = new AffineTransform();
-        if(misaligned == false) {
-        	double x = (maxConstraint - (canvas.getWidth() * scale))/2;
-        	at.translate(x,x);
-        }
-        else {
+        if(zoomed == true) 
+        {
         	double x = 0 - (origin.x * scale);
         	double y = 0 - (origin.y * scale);
-        	at.translate(x, y); 	
+        	at.translate(x, y); 
+        }
+        else 
+        {
+        	double x = (maxConstraint - (canvas.getWidth() * scale))/2;
+        	at.translate(x,x);
         }
         at.scale(scale, scale);
         g2d.drawImage(canvas, at, this);

@@ -46,6 +46,10 @@ public class Controls {
     private int sizeConstraint = GUI.getSizeConstraint();
     private boolean isFullscreen = false;
     private static double scale = 1;
+    public static void setScale(double ss)
+    {
+    	scale = ss;
+    }
     
     //Panels and Frames
     public JPanel getControls()
@@ -139,7 +143,7 @@ public class Controls {
     //displays the main window
     //contains event listeners
     //controls the UX 
-    public Controls(Simulator sim, Frame mf, int bs) {
+    public Controls(Simulator sim, Frame mf) {
         
     	//Set sim
     	simulator = sim; 	
@@ -284,7 +288,7 @@ public class Controls {
         		bsLabel.setText("Board Size: " + newBoardSize);
         	}
     	};
-    	JPanel boardSizeSlider = newSlider(bsLabel, 4, sizeConstraint, 4, bsListen);
+    	JPanel boardSizeSlider = newSlider(bsLabel, 30, sizeConstraint, boardSize, bsListen);
     	addReset(boardSizeSlider,2);
     	
     	
@@ -299,8 +303,8 @@ public class Controls {
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
 
-		        GUI.start(newBoardSize); //TODO//NOT STARTING!!!
-				autoscale();
+		        GUI.start(newBoardSize); 
+				GUI.autoscale(newBoardSize);
 				
 				//Ok we need to keep track of:
 				//food rate, food value, sight range, mutation rate, color variation, genes.
@@ -313,6 +317,7 @@ public class Controls {
 				Critter.setMutationRate(mt);
 				simulator.setColorVar(cv);
 				//GEnes?? 
+				resetFrame.dispose();
 			}
 		});
     	addReset(reset, 14);
@@ -799,7 +804,7 @@ public class Controls {
         tools.add(fullscreen);
         
         //DISPLAY SIZE - "Adjusts the scale of the simulation. DOES NOT CHANGE BOARD SIZE."
-        scale = 1;
+        //scale = 1;
         int mx = 10000;
         int scl = (int) scale * mx;
         
@@ -807,9 +812,9 @@ public class Controls {
         ChangeListener dispListen = new ChangeListener(){
         	public void stateChanged(ChangeEvent e) {
         		int sc = ((JSlider) e.getSource()).getValue();
-        		scale = (double)sc /mx;
-        		dispLabel.setText("Scale: "+scale);
-        		simulator.board.setScale(scale);
+        		double s = (double)sc /( mx);
+        		dispLabel.setText("Scale: "+(double)sc /mx);
+        		simulator.board.setScale(scale * s);
 				simulator.board.revalidate();
         	}
         };
@@ -824,7 +829,7 @@ public class Controls {
             	mainFrame.allFalse();
             	mainFrame.sim.board.setScale(1);
             	mainFrame.sim.board.setOrigin(0,0);
-            	mainFrame.sim.board.setMisaligned(false);
+            	mainFrame.sim.board.setZoomed(false);
             	controlPanel.revalidate();
 				controlPanel.repaint();
 				toggleZoom(0, zoomModes);
@@ -940,7 +945,7 @@ public class Controls {
     	hold.setLayout(new GridBagLayout());
     	label.setText(label.getText() + ": "+value);
     	hold.add(label,c);
-    	JSlider slider = new JSlider(min, max, 5);
+    	JSlider slider = new JSlider(min, max, min);
     	slider.setValue(value);
     	slider.setToolTipText(label.getToolTipText());
     	slider.setValue(value);
@@ -1000,17 +1005,6 @@ public class Controls {
     
     //MISC HELPERS
     //-------------------------------------
-    
-    //Used by the reset popup menu.
-    private void autoscale()
-	{
-		scale = simulator.getBoardSize()/(sizeConstraint - simulator.getBoardSize()) * simulator.pixelSize;
-		scale +=1;
-		  
-		simulator.board.setScale(scale);
-		simulator.board.revalidate();
-		simulator.board.repaint();
-	}
     
     //helper function used by the drawing tools . also Butts xD.
     public void toggleUtencil(int index, JButton[] butt)

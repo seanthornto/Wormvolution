@@ -142,7 +142,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y1 = p1.y / pixelSize;
 		p1.x = x1;
 		p1.y = y1;
-		if(sim.board.getMisaligned() == true)
+		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
@@ -162,7 +162,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		y2 = p2.y / pixelSize;
 		p2.x = x2;
 		p2.y = y2;
-		if(sim.board.getMisaligned() == true)
+		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
