@@ -83,6 +83,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		} else if (e == true) {
 			sim.removeBarrierRect(p1, p2);
 		} else if (z == true) {
+			System.out.println("first: "+sim.board.getScale());
 			sim.zoom(squarePoint1, squarePoint2);
 		} 
 	}
@@ -147,15 +148,13 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		if(bs != max)
 		{
 			cropScale =  ((double)max/(double)(bs * pixelSize)) - 0.005;
-			System.out.println(cropScale);
 			p1.setLocation((p1.x/cropScale),(p1.y/cropScale));
 		}
 		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
-			System.out.println("zoom"+oldScale);
-			p1.setLocation((old.x) + (p1.x/oldScale)*cropScale, (old.y) + (p1.y/oldScale)*cropScale);
+			p1.setLocation((old.x) + ((p1.x/oldScale)), (old.y) + ((p1.y/oldScale)));
 		}
 	}
 	public void adjustP2(Point point)
@@ -176,15 +175,13 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 		if(bs != max)
 		{
 			cropScale =  ((double)max/(double)(bs * pixelSize)) - 0.005;
-			System.out.println(cropScale);
 			p2.setLocation((p2.x/cropScale),(p2.y/cropScale));
 		}
 		if(sim.board.getZoomed() == true)
 		{
 			Point old = sim.board.getOrigin();
 			double oldScale = sim.board.getScale();
-			System.out.println("zoom"+oldScale);
-			p2.setLocation((old.x ) + (p2.x/oldScale) * cropScale, (old.y ) + (p2.y/oldScale)* cropScale);
+			p2.setLocation((old.x ) + ((p2.x/oldScale)), (old.y ) + ((p2.y/oldScale)));
 		}
 	}
 	

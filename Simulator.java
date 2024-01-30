@@ -1182,8 +1182,7 @@ public class Simulator {
 		//first find the new origin and figure the scale
 		double scale = 0;
 		board.setZoomed(true);
-		scale = (double)(boardSize) / ((p2.y * pixelSize) - (p1.y * pixelSize));
-		
+		scale = (double)(boardSize) / ((p2.y) - (p1.y));
 		board.setOrigin(p1.x, p1.y);
 		board.setScale(scale);
 		board.revalidate();

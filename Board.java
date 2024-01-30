@@ -114,8 +114,8 @@ public class Board extends JPanel {
         AffineTransform at = new AffineTransform();
         if(zoomed == true) 
         {
-        	double x = 0 - (origin.x * scale);
-        	double y = 0 - (origin.y * scale);
+        	double x = (0 - (origin.x * scale)) * pixelSize;
+        	double y = (0 - (origin.y * scale)) * pixelSize;
         	at.translate(x, y); 
         }
         else 
