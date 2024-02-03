@@ -28,6 +28,7 @@ public class Controls {
     private int sleepCost = 0;
     private int moveCost = 3;
     private int turnCost = 1;
+    private int sightRange = 0;
     private int sc, mc, tc, sr; // temp variables for reset.
     private boolean barrierVis = true;
     
@@ -178,13 +179,14 @@ public class Controls {
             	
             	//Pause the simulation and collect current values.
             	simulator.pause();
-            	fv = foodVal;
-            	fr = foodRate;
-            	sc = sleepCost;
-            	mc = moveCost;
-            	tc = turnCost;
-            	mt = mutation;
-            	cv = colorVar;
+            	fv = simulator.getFoodValue();
+            	fr = simulator.getFoodRate();
+            	sr = simulator.getSightRange();
+            	sc = simulator.getSleepCost();
+            	mc = simulator.getMoveCost();
+            	tc = simulator.getTurnCost();
+            	mt = Critter.getMutationRate();
+            	cv = simulator.getColorVar();
             }
         });
     	packResetMenu();
@@ -272,10 +274,36 @@ public class Controls {
     	String presetTip = "Presets simply sets a specific combination of the below sliders. Feel free to set them yourself.";
         JLabel presetLabel = newLabel("Easy Presets:", presetTip);
     	addReset(presetLabel,0);
-    	String[] choices = {"Minimum", "Maximum","Default","Current"};
+    	String[] choices = {"Easy","Hard","Default","Current"};
     	JComboBox<String> presets = new JComboBox<String>(choices);
     	presets.setToolTipText(presetTip);
-    	//TODO - add preset choices action listener!
+    	presets.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e)
+    		{
+    			switch((String)presets.getSelectedItem())
+    			{
+    			//set reset sliders: 
+    			//sleep cost, move cost, turn cost, food rate (divisor), food value, sight range, mutation, color variance, new board size
+    			case "Easy":
+    				setResetSliders(0,0,0,200,500,20, 0.2, 0.5, sizeConstraint); //Easy: Worms have life so good.
+    							//Minimum: sleep, move, turn. Maximum: food value, rate, and sight range.
+    							//Default mutation and color variation and largest board size.
+    				break;
+    			case "Hard":
+    				setResetSliders(10,10,10,800,25,0,0.2,0.5, 50); //Hard: Life is hell for a worm.
+					  			//Maximum: sleep, move, turn. Minimum: food value, rate, and sight range.
+    							//Default mutation and color variation and small board size.
+    				break;
+    			case "Current":
+    				int r = boardSize*boardSize/fr;
+    				setResetSliders(sc,mc,tc,r,fv,sr,mt,cv, boardSize); //whatever the sliders where at before reset was clicked.
+    				break;
+    			case "Default":
+    				setResetSliders(0,3,1,200,50,10,0.2,0.5, sizeConstraint); //as far as I know these are all the constructor defaults.
+    				break;
+    			}
+    		}
+    	});
     	addReset(presets,1);
     	
     	
@@ -306,18 +334,23 @@ public class Controls {
 		        GUI.start(newBoardSize); 
 				GUI.autoscale(newBoardSize);
 				
+				//TODO: BUG!! these values aren't actually being updated after the board resets!! 
+				
 				//Ok we need to keep track of:
 				//food rate, food value, sight range, mutation rate, color variation, genes.
-				simulator.setSleepCost(sc);
-				simulator.setMoveCost(mc);
-				simulator.setTurnCost(tc);
-				simulator.setFoodRate(fr);
-				simulator.setFoodValue(fv);
-				simulator.setSightRange(sr);
-				Critter.setMutationRate(mt);
-				simulator.setColorVar(cv);
+				simulator.setSleepCost(sleepCost);
+				simulator.setMoveCost(moveCost);
+				simulator.setTurnCost(turnCost);
+				simulator.setFoodRate(foodRate);
+				simulator.setFoodValue(foodVal);
+				simulator.setSightRange(sightRange);
+				Critter.setMutationRate(mutation);
+				simulator.setColorVar(colorVar);
 				//GEnes?? 
 				resetFrame.dispose();
+				
+				//and a new tick speed, if you happened to change it.
+				simulator.setSpeed(speed);
 			}
 		});
     	addReset(reset, 14);
@@ -339,8 +372,7 @@ public class Controls {
                 int sp = ((JSlider) e.getSource()).getValue();
                 speed = (long) (200000000 * Math.exp(-sp * 0.02)) - 27067056;
                 simulator.setSpeed(speed);
-                String isN = (int)simulator.getSpeed() == 0 ? "" : "-";
-                spdLabel.setText("Tick Speed: "+ isN + sp);
+                spdLabel.setText("Tick Speed: "+ sp);
             }
         };
         JPanel speedSlider = newSlider(spdLabel,0,100,spdValue, spdListen);
@@ -372,7 +404,7 @@ public class Controls {
                 int foodR = ((JSlider) e.getSource()).getValue();
                 foodRate = foodR;
                 simulator.setFoodRate(foodRate);
-                frLabel.setText("Food Rate: "+simulator.getFoodRate());
+                frLabel.setText("Food Rate: "+foodRate);
             }
         };
         JPanel frSlider = newSlider(frLabel,0, boardSize * boardSize / 200, frVal, frListen);
@@ -444,6 +476,7 @@ public class Controls {
         ChangeListener srListen = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int sightR = ((JSlider) e.getSource()).getValue();
+                sightRange = sightR;
                 simulator.setSightRange(sightR);
                 srLabel.setText("Sight Range: "+simulator.getSightRange());
             }
@@ -950,7 +983,7 @@ public class Controls {
     	label.setText(label.getText() + ": "+value);
     	hold.add(label,c);
     	JSlider slider = new JSlider(min, max, min);
-    	slider.setValue(value);
+    	slider.setName(label.getText().split(":", 2)[0]);
     	slider.setToolTipText(label.getToolTipText());
     	slider.setValue(value);
     	slider.addChangeListener(l);
@@ -963,8 +996,9 @@ public class Controls {
     {
     	
     	//initial values for new slider and label
-    	String name = ""; 
+    	String text = ""; 
     	String tip = "";
+    	String name = "";
     	int min = 0; int max = 0; int value = 0;
     	ChangeListener l = new ChangeListener() {public void stateChanged(ChangeEvent e) {}};
 
@@ -974,11 +1008,12 @@ public class Controls {
     	{
     		if(field instanceof JLabel)
     		{
-    			name = ((JLabel) field).getText();
+    			text = ((JLabel) field).getText();
     			tip = ((JLabel) field).getToolTipText();
     		}
     		else if(field instanceof JSlider)
     		{
+    			name = ((JSlider) field).getName();
     			min = ((JSlider) field).getMinimum();
     			max = ((JSlider) field).getMaximum();
     			value = ((JSlider) field).getValue();
@@ -994,14 +1029,21 @@ public class Controls {
 
     	//set values.
     	JLabel label = new JLabel();
-    	label.setText(name);
+    	label.setText(text);
     	label.setToolTipText(tip);
     	hold.add(label,c);
     	
     	JSlider slider = new JSlider(JSlider.HORIZONTAL, min, max, value);
+    	slider.setName(name);
     	slider.setToolTipText(tip);
     	slider.setValue(value);
     	slider.addChangeListener(l);
+    	slider.addChangeListener(new ChangeListener(){
+    		public void stateChanged(ChangeEvent e)
+    		{
+    			label.setText(slider.getName()+": "+slider.getValue());
+    		}
+    			});
     	c.gridy++;
     	hold.add(slider,c);
     	return hold;
@@ -1009,6 +1051,64 @@ public class Controls {
     
     //MISC HELPERS
     //-------------------------------------
+    
+    //sets all the dynamic slider values to given args
+    //r is JUST THE DENOMINATOR of the food rate fraction. where the numerator is the boardSize squared. 
+    public void setResetSliders(int sc, int mc, int tc, int r, int fv, int sr, double mt, double cv, int nbs)
+    {
+    	Component[] comps = resetTools.getComponents();
+    	for(Component comp : comps)
+    	{
+    		if(comp instanceof JPanel)
+    		{
+    			Component subComps[] = ((JPanel) comp).getComponents();
+    			Component l = subComps[0];
+    			Component c = subComps[1];
+    			if(c instanceof JSlider)
+        		{
+        			switch(c.getName())
+        			{
+        			case "Board Size": 
+        				((JSlider) c).setValue(nbs); 
+        				((JLabel) l).setText("Board Size: "+ nbs);
+        				break;
+        			case "Food Value": 
+        				((JSlider) c).setValue(fv);
+        				((JLabel) l).setText("Food Value: " + fv);
+        				break;
+        			case "Food Rate": 
+        				((JSlider) c).setValue((nbs * nbs)/r);
+        				((JLabel) l).setText("Food Rate: "+ (nbs*nbs)/r);
+        				break;
+        			case "Sight Range": 
+        				((JSlider) c).setValue(sr);
+        				((JLabel) l).setText("Sight Range: "+ sr);
+        				break;
+        			case "Sleep Cost": 
+        				((JSlider) c).setValue(sc);
+        				((JLabel) l).setText("Sleep cost: "+ sc);
+        				break;
+        			case "Move Cost": 
+        				((JSlider) c).setValue(mc);
+        				((JLabel) l).setText("Move Cost: "+mc);
+        				break;
+        			case "Turn Cost": 
+        				((JSlider) c).setValue(tc);
+        				((JLabel) l).setText("Turn Cost: "+tc);
+        				break;
+        			case "Mutation Rate": 
+        				((JSlider) c).setValue((int)mt*100);
+        				((JLabel) l).setText("Mutation Rate: "+(int)mt*100);
+        				break;
+        			case "Color Variance": 
+        				((JSlider) c).setValue((int)cv*100);
+        				((JLabel) l).setText("Color Variance: "+ (int)cv*100);
+        				break;
+        			}
+        		}
+    		}
+    	}
+    }
     
     //helper function used by the drawing tools . also Butts xD.
     public void toggleUtencil(int index, JButton[] butt)
