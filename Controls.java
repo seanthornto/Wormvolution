@@ -280,28 +280,44 @@ public class Controls {
     	presets.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e)
     		{
+    			//Temp values! 
+    			int s_c =0, m_c=0, t_c=0, f_r=0, f_v=0, s_r=0, b_s = 0;
+    			double m_t = 0, c_v = 0;
     			switch((String)presets.getSelectedItem())
     			{
     			//set reset sliders: 
     			//sleep cost, move cost, turn cost, food rate (divisor), food value, sight range, mutation, color variance, new board size
     			case "Easy":
-    				setResetSliders(0,0,0,200,500,20, 0.2, 0.5, sizeConstraint); //Easy: Worms have life so good.
-    							//Minimum: sleep, move, turn. Maximum: food value, rate, and sight range.
-    							//Default mutation and color variation and largest board size.
+    				s_c = 0; m_c = 0; t_c = 0;  f_r = 200; f_v= 500; s_r = 20;
+    				m_t = 0.2; c_v = 0.5;
+    				b_s = sizeConstraint;
+    				//Easy: Worms have life so good.
+    				//Minimum: sleep, move, turn. Maximum: food value, rate, and sight range.
+    				//Default mutation and color variation and largest board size.
     				break;
     			case "Hard":
-    				setResetSliders(10,10,10,800,25,0,0.2,0.5, 50); //Hard: Life is hell for a worm.
-					  			//Maximum: sleep, move, turn. Minimum: food value, rate, and sight range.
-    							//Default mutation and color variation and small board size.
+    				s_c = 10; m_c = 10; t_c = 10;  f_r = 800; f_v= 25; s_r = 0;
+    				m_t = 0.2; c_v = 0.5;
+    				b_s = 50;
+    				//Hard: Life is hell for a worm.
+					//Maximum: sleep, move, turn. Minimum: food value, rate, and sight range.
+    				//Default mutation and color variation and small board size.
     				break;
     			case "Current":
     				int r = boardSize*boardSize/fr;
-    				setResetSliders(sc,mc,tc,r,fv,sr,mt,cv, boardSize); //whatever the sliders where at before reset was clicked.
+    				s_c = sc; m_c = mc; t_c = tc;  f_r = r; f_v= fv; s_r = sr;
+    				m_t = mt; c_v = cv;
+    				b_s = boardSize;
+    				//whatever the sliders where at before reset was clicked.
     				break;
     			case "Default":
-    				setResetSliders(0,3,1,200,50,10,0.2,0.5, sizeConstraint); //as far as I know these are all the constructor defaults.
+    				s_c = 0; m_c = 03; t_c = 1;  f_r = 200; f_v= 50; s_r = 10;
+    				m_t = 0.2; c_v = 0.5;
+    				b_s = sizeConstraint;
+    				//as far as I know these are all the constructor defaults.
     				break;
     			}
+    			setSliders(s_c, m_c, t_c, f_r, f_v, s_r, m_t, c_v, b_s, resetTools);
     		}
     	});
     	addReset(presets,1);
@@ -332,9 +348,7 @@ public class Controls {
 				mainFrame.dispose();
 
 		        GUI.start(newBoardSize); 
-				GUI.autoscale(newBoardSize);
-				
-				//TODO: BUG!! these values aren't actually being updated after the board resets!! 
+				GUI.autoscale(newBoardSize);	
 				
 				//Ok we need to keep track of:
 				//food rate, food value, sight range, mutation rate, color variation, genes.
@@ -347,10 +361,15 @@ public class Controls {
 				Critter.setMutationRate(mutation);
 				simulator.setColorVar(colorVar);
 				//GEnes?? 
-				resetFrame.dispose();
 				
 				//and a new tick speed, if you happened to change it.
 				simulator.setSpeed(speed);
+				
+				//update original sliders.
+				setSliders(sleepCost, moveCost, turnCost, foodRate, foodVal, sightRange, mutation, colorVar, newBoardSize, tools);
+				
+				resetFrame.dispose();
+				
 			}
 		});
     	addReset(reset, 14);
@@ -1054,9 +1073,10 @@ public class Controls {
     
     //sets all the dynamic slider values to given args
     //r is JUST THE DENOMINATOR of the food rate fraction. where the numerator is the boardSize squared. 
-    public void setResetSliders(int sc, int mc, int tc, int r, int fv, int sr, double mt, double cv, int nbs)
+    public void setSliders(int sc, int mc, int tc, int r, int fv, int sr, double mt, double cv, int nbs, JPanel panel)
     {
-    	Component[] comps = resetTools.getComponents();
+    	//TODO: Bug: make this work for mainframe tools sliders. not just reset menu.
+    	Component[] comps = panel.getComponents();
     	for(Component comp : comps)
     	{
     		if(comp instanceof JPanel)
