@@ -19,27 +19,34 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Stack;
 
 
 public class Controls {
 	
 	//Behavior variables
 	//Default Starting Values.
-    private int sleepCost = 0;
-    private int moveCost = 3;
-    private int turnCost = 1;
-    private int sightRange = 0;
+    private static int sleepCost = 0;
+    private static int moveCost = 3;
+    private static int turnCost = 1;
+    private static int sightRange = 0;
     private int sc, mc, tc, sr; // temp variables for reset.
     private boolean barrierVis = true;
     
     //simulator environment variables
-    private Simulator simulator;
-    private int foodVal;
-    private int foodRate;
-    private double colorVar, cv = 0.5;
+    private static Simulator simulator;
+    private static int foodVal;
+    private static int foodRate;
+    private static double colorVar = 0.5;
+    private double cv = 0.5;
     private long speed;
-    private double mutation, mt;
+    private static double mutation;
+    private double mt;
     private int fv, fr;
+    public static void setSimulator(Simulator sim)
+    {
+    	simulator = sim;
+    }
     
     //Sizing and scale variables
     private int boardSize = GUI.getBoardSize();
@@ -58,7 +65,15 @@ public class Controls {
     	return controlPanel;
     }
     private JPanel controlPanel = new JPanel();
-    private JPanel tools = new JPanel();
+    private static JPanel tools = new JPanel();
+    public static void setTools(JPanel t)
+    {
+    	tools = t;
+    }
+    public JPanel getTools()
+    {
+    	return tools;
+    }
     private JScrollPane scrollTools;
     JPanel resetTools = new JPanel();
     JFrame resetFrame = new JFrame("Reset Options");
@@ -158,6 +173,16 @@ public class Controls {
         resetFrame.setSize(boardSize/3,(int)(boardSize/2));
     	resetTools.setSize(resetFrame.getSize());
     	resetFrame.setLocationRelativeTo(null);
+    	
+    	//initialize global vars
+    	foodVal = simulator.getFoodValue();
+    	foodRate = simulator.getFoodRate();
+    	sightRange = simulator.getSightRange();
+    	sleepCost = simulator.getSleepCost();
+    	moveCost = simulator.getMoveCost();
+    	turnCost = simulator.getTurnCost();
+    	mutation = Critter.getMutationRate();
+    	colorVar = simulator.getColorVar();
         
       //----------
       //COMPONENTS
@@ -317,7 +342,7 @@ public class Controls {
     				//as far as I know these are all the constructor defaults.
     				break;
     			}
-    			setSliders(s_c, m_c, t_c, f_r, f_v, s_r, m_t, c_v, b_s, resetTools);
+    			setResetSliders(s_c, m_c, t_c, f_r, f_v, s_r, m_t, c_v, b_s);
     		}
     	});
     	addReset(presets,1);
@@ -343,10 +368,12 @@ public class Controls {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				//TODO: Bug! - reset only works one time?? - and it resizes the tool panel when values are changed??
+				
 				//destroy old board
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
-
+				
 		        GUI.start(newBoardSize); 
 				GUI.autoscale(newBoardSize);	
 				
@@ -360,16 +387,11 @@ public class Controls {
 				simulator.setSightRange(sightRange);
 				Critter.setMutationRate(mutation);
 				simulator.setColorVar(colorVar);
-				//GEnes?? 
 				
 				//and a new tick speed, if you happened to change it.
 				simulator.setSpeed(speed);
 				
-				//update original sliders.
-				setSliders(sleepCost, moveCost, turnCost, foodRate, foodVal, sightRange, mutation, colorVar, newBoardSize, tools);
-				
 				resetFrame.dispose();
-				
 			}
 		});
     	addReset(reset, 14);
@@ -1061,6 +1083,7 @@ public class Controls {
     		public void stateChanged(ChangeEvent e)
     		{
     			label.setText(slider.getName()+": "+slider.getValue());
+    			setMainSlider(slider.getName(), slider.getValue());
     		}
     			});
     	c.gridy++;
@@ -1071,17 +1094,65 @@ public class Controls {
     //MISC HELPERS
     //-------------------------------------
     
-    //sets all the dynamic slider values to given args
-    //r is JUST THE DENOMINATOR of the food rate fraction. where the numerator is the boardSize squared. 
-    public void setSliders(int sc, int mc, int tc, int r, int fv, int sr, double mt, double cv, int nbs, JPanel panel)
+    //called on reset to update new INITIAL sliders to reflect updated reset values
+    public static void setMainSliders()
     {
-    	//TODO: Bug: make this work for mainframe tools sliders. not just reset menu.
-    	Component[] comps = panel.getComponents();
-    	for(Component comp : comps)
+    	//make sure the new window reflects the correct slider values. 
+		setMainSlider("Sleep Cost", sleepCost);
+		setMainSlider("Move Cost", moveCost);
+		setMainSlider("Turn Cost", turnCost);
+		setMainSlider("Food Rate", foodRate);
+		setMainSlider("Food Value", foodVal);
+		setMainSlider("Sight Range", sightRange);
+		setMainSlider("Mutation Rate", (int)mutation * 100);
+		setMainSlider("Color Variance", (int)colorVar * 100);
+    }
+    
+    //used by reset menu action listeners to update the corresponding slider on the main control panel - kinda useless. kinda cools to see.
+    public static void setMainSlider(String name, int value)
+    {
+    	Component[] main = tools.getComponents();
+    	
+    	for (Component container : main)
+    	{
+    		Component[] taskContainer = ((JXTaskPaneContainer) container).getComponents();
+    		JXTaskPane pane = (JXTaskPane) taskContainer[0];
+    		String title = ((JXTaskPane) pane).getTitle();
+    		if(title == "Environment Tools" || title == "Behavior Tools" || title == "Genetics Tools")
+    		{
+    			Component[] taskTools = pane.getContentPane().getComponents();
+    			for(Component t : taskTools)
+    			{
+    				if (t instanceof JPanel)
+    				{
+    					Component[] sliders = ((JPanel) t).getComponents();
+    					for (Component s : sliders)
+    					{
+    						if(s instanceof JSlider && s.getName() == name)
+    						{
+    							((JSlider) s).setValue(value);
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
+    }
+    
+    //sets all the reset menu slider values to given args - used by the preset dropdpwn
+    //r is JUST THE DENOMINATOR of the food rate fraction. where the numerator is the boardSize squared. 
+    public void setResetSliders(int sc, int mc, int tc, int r, int fv, int sr, double mt, double cv, int nbs)
+    {
+    	//Grab ALL panels we need to find sliders in.
+    	Component[] reset = resetTools.getComponents();
+    	
+    	
+    	for(Component comp : reset)
     	{
     		if(comp instanceof JPanel)
     		{
     			Component subComps[] = ((JPanel) comp).getComponents();
+    			
     			Component l = subComps[0];
     			Component c = subComps[1];
     			if(c instanceof JSlider)

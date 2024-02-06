@@ -78,6 +78,7 @@ public class GUI {
     	mainFrame.sim = simulator;
     	mainFrame.pixelSize = simulator.pixelSize;
     	mainFrame.bs = bs;
+    	Controls.setSimulator(simulator);
     	
     	//instantiate control panel.
     	controls = new Controls(simulator, mainFrame);
@@ -107,8 +108,8 @@ public class GUI {
     	//this is to let the board populate before creating worms so no one gets "unlucky"
         int startingPopulation = (bs/10);
         //simulator.gameTimeStep(boardSize/3);
+        Controls.setMainSliders();
         simulator.addCritter("M", startingPopulation);
-    	
     }
 
 	public static int getSizeConstraint() {
