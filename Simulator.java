@@ -60,6 +60,8 @@ public class Simulator {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Critter> critters;
 	public Board board;
+	public Point[] oldZoomView;
+	public Point[] currentZoomView;
 	public PopulationDisplay popDisp;
 	private int foodRate;
 	private int foodValue;
@@ -96,6 +98,10 @@ public class Simulator {
 		pixelSize = max / boardSize;
 		barrierColor = Color.GRAY;
 		board = new Board(pixelSize, bs, max);
+		currentZoomView = new Point[2];
+		currentZoomView[0] = new Point(0,0);
+		currentZoomView[1] = new Point(boardSize,boardSize);
+		oldZoomView = currentZoomView;
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
 		inactiveGenes = new ArrayList<String>();
@@ -1177,9 +1183,25 @@ public class Simulator {
 	//ZOOM STUFF
 	//-------------------------------------------------------------------------
 	//rescales and recenters the boards display to show a larger image of a portion of the board. 
+	public void rememberZoom(Point p1, Point p2)
+	{
+		// set the new zoom as the current, and whatever was current as old
+		oldZoomView = currentZoomView.clone();
+		currentZoomView[0] = p1;
+		currentZoomView[1] = p2;
+	}
+
+	public void recallZoom()
+	{
+		System.out.println(oldZoomView[0] +", "+ oldZoomView[1]);
+		zoom(oldZoomView[0], oldZoomView[1]);
+	}
+
 	public void zoom(Point p1, Point p2)
 	{
-		//first find the new origin and figure the scale
+		//first, push current zoom into the stack and the old current back to old. 
+		rememberZoom(p1,p2);
+		// find the new origin and figure the scale
 		double scale = 0;
 		board.setZoomed(true);
 		scale = (double)(boardSize) / ((p2.y) - (p1.y));

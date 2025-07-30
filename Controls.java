@@ -828,7 +828,7 @@ public class Controls {
     {
     	GridBagConstraints c = new GridBagConstraints();
     	
-    	JButton[] zoomModes = new JButton[2];
+    	JButton[] zoomModes = new JButton[3];
     	
     	//Fullscreen vs Windowed
     	JButton fullscreen = newButton("Fullscreen", "Toggles between fullscreen and windowed views.");
@@ -902,6 +902,7 @@ public class Controls {
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.allFalse();
+                mainFrame.sim.rememberZoom(new Point(0,0), new Point(boardSize,boardSize));
             	mainFrame.sim.board.setScale(scale);
             	mainFrame.sim.board.setOrigin(0,0);
             	mainFrame.sim.board.setZoomed(false);
@@ -917,9 +918,23 @@ public class Controls {
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.weightx = 1;
         zoomReturnBox.add(zoomReturn,gc);
-        c.gridy++;
-        tools.add(zoomReturnBox);
         zoomModes[0] = zoomReturn;
+
+        //Back button used to toggle back to the previous zoom selection
+        JButton zoomRecall = newButton("<- Previous Zoom", "Returns to the previous zoom selection");
+        zoomRecall.setBorder(BorderFactory.createRaisedBevelBorder());
+        zoomRecall.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                mainFrame.sim.recallZoom();
+            }
+        });
+        gc.gridy++;
+        zoomReturnBox.add(zoomRecall, gc);
+        c.gridy++;
+        tools.add(zoomReturnBox, c);
+        zoomModes[2] = zoomRecall;
         
         //ZOOM MODES submenu - All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer selectZoomComponents = new JXTaskPaneContainer();

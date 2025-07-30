@@ -152,8 +152,10 @@ public class Board extends JPanel {
 	public void erase(Point point) {
 		draw(point, Color.black);
 	}
+
 	
-	public BufferedImage zoom(double p)
+	//I believe this is isnt being used by anything. 
+	/* public BufferedImage zoom(double p)
 	{
 		BufferedImage after = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();
@@ -162,5 +164,5 @@ public class Board extends JPanel {
 		after = scaleOp.filter(canvas, after);
 		
 		return after;
-	}
+	} */
 }
