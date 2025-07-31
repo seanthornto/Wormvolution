@@ -153,6 +153,7 @@ public class Simulator {
 		return newString;
 	}
 
+	// clock controlls
 	public void pause() {
 		paused = true;
 	}
@@ -173,12 +174,13 @@ public class Simulator {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-	// Method used by UI to change the size.
+	
+	//worm controlls. (getters and setters)
+	//sleep, move, turn cost
 	public void setSleepCost(int sC) {
 		sleepC = sC;
 	}
-	
+
 	public int getSleepCost()
 	{
 		return this.sleepC;
@@ -187,7 +189,7 @@ public class Simulator {
 	public void setMoveCost(int mC) {
 		moveC = mC;
 	}
-	
+
 	public int getMoveCost()
 	{
 		return this.moveC;
@@ -196,13 +198,13 @@ public class Simulator {
 	public void setTurnCost(int tC) {
 		turnC = tC;
 	}
+
 	public int getTurnCost()
 	{
 		return this.turnC;
 	}
 	
 	// Methods used by refresh()
-
 	public void setSpeed(long speed) {
 		this.speed = speed;
 	}
@@ -327,6 +329,7 @@ public class Simulator {
 		return isCritter(point.x, point.y);
 	}
 
+	//world state (should these be in "board"?)
 	public void addCritterPoint(Point point, Critter critter) {
 		isCritter[point.x][point.y] = critter;
 		board.draw(point, critter.getColor());
@@ -492,6 +495,8 @@ public class Simulator {
 	// -------------------------------------------------------------------------
 		//DNA SEQUENCE EXECUTION
 	// -------------------------------------------------------------------------
+	//should these be in the critter class themselves?
+
 	public void addCritter(String dna) {
 		Critter critter = new Critter(dna, (int) (Math.random() * boardSize), (int) (Math.random() * boardSize));
 		addCritter(critter);
@@ -924,6 +929,7 @@ public class Simulator {
 	// -------------------------------------------------------------------------
 	//BARRIER STUFF
 	// -------------------------------------------------------------------------
+	//(should this be in the board object?)
 
 	public void setBarrierColor(Color color)
 	{
@@ -1202,6 +1208,7 @@ public class Simulator {
 	//-------------------------------------------------------------------------
 	//ZOOM STUFF
 	//-------------------------------------------------------------------------
+	// should this be in the board stuff?
 	
 	// stores the current view in the zoom history
 	public void storeZoom(Point p1, Point p2)
@@ -1243,6 +1250,7 @@ public class Simulator {
 	// -------------------------------------------------------------------------
 	//GAME STUFF//ENVIRONMENT STUFF
 	//--------------------------------------------------------------------------
+	// Idk I think maybe the clock should be its own class. 
 	
 	public void gameTimeStep() {
 		long startTime = 0;
