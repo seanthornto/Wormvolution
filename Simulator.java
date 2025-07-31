@@ -57,24 +57,32 @@ import java.awt.geom.AffineTransform;
  */
 
 public class Simulator {
+	//Admin stuff
 	private static final long serialVersionUID = 1L;
+
+	//worm vars
 	private ArrayList<Critter> critters;
-	public Board board;
-	public Point[] oldZoomView;
-	public Point[] currentZoomView;
-	public PopulationDisplay popDisp;
 	private int foodRate;
 	private int foodValue;
 	private int maxTimeSteps;
 	private long speed;
-	public int pixelSize;
-	private int boardSize;
 	private int maxSize;
 	private int sleepC;
 	private int moveC;
 	private int turnC;
 	private double colorVar;
 	private int sightRange;
+
+	//frame vars 
+	public Board board;
+	private Point[][] oldZoomViews; // each element is a "view". [0] is most recent, [3] is the oldest. 
+	private int zoomIndex; 			// the index which points to whichever element in the zoom history is currently selected.
+	private Point[] currentZoomView;// a tuple of points representing a square segment of board space. say a "view"
+	public PopulationDisplay popDisp;
+	public int pixelSize;
+	private int boardSize;
+	
+	//simulation vars
 	private boolean paused = false;
 	private boolean[][] isFood;
 	private boolean[][] isBarrier;
@@ -90,29 +98,41 @@ public class Simulator {
 	// ------------------------------CONSTRUCTOR-------------------------------
 	//needs board size, max size constraint, sleep cost, move cost and turn cost
 	public Simulator(int bs, int max, int sC, int mC, int tC) {
+
+		//set board vars
 		boardSize = bs;
 		maxSize = max;
-		setSleepCost(sC);
-		setMoveCost(mC);
-		setTurnCost(tC);
 		pixelSize = max / boardSize;
 		barrierColor = Color.GRAY;
 		board = new Board(pixelSize, bs, max);
 		currentZoomView = new Point[2];
-		currentZoomView[0] = new Point(0,0);
-		currentZoomView[1] = new Point(boardSize,boardSize);
-		oldZoomView = currentZoomView;
+		currentZoomView[0] = new Point(0,0); currentZoomView[1] =new Point(boardSize,boardSize);
+		oldZoomViews = new Point[4][2]; // the zoom memory is set to have 4 buffer slots.
+		for(int i=0; i<4; i++)
+		{
+			oldZoomViews[i] = currentZoomView;
+		}
+		zoomIndex = 0;
+		barrierColor = Color.gray;
+		boardTick = 1;
+
+		//set worm vars
+		setSleepCost(sC);
+		setMoveCost(mC);
+		setTurnCost(tC);
 		critters = new ArrayList<Critter>();
 		populations = new ArrayList<Population>();
 		inactiveGenes = new ArrayList<String>();
+
+		//hard coded initial worm values
 		this.foodRate = bs * bs / 200;
 		this.foodValue = 50;
 		maxTimeSteps = 10;
 		this.speed = 30;
 		colorVar = 0.5;
 		sightRange = 10;
-		boardTick = 1;
-		barrierColor = Color.gray;
+		
+		// painting the initial board.
 		isFood = new boolean[bs][bs];
 		isCritter = new Critter[bs][bs];
 		isBarrier = new boolean[bs][bs];
@@ -242,7 +262,7 @@ public class Simulator {
 		return inactiveGenes;
 	}
 
-	// --------------------------------NEXT SPACE-------------------------------------
+	// --------------------------------NEXT SPACE- ("forsight") -------------------------
 	//methods to check the next space  for food, barriers, and other critters
 	//Add food, barriers,
 	//move and get worm locations
@@ -1182,25 +1202,34 @@ public class Simulator {
 	//-------------------------------------------------------------------------
 	//ZOOM STUFF
 	//-------------------------------------------------------------------------
-	//rescales and recenters the boards display to show a larger image of a portion of the board. 
-	public void rememberZoom(Point p1, Point p2)
+	
+	// stores the current view in the zoom history
+	public void storeZoom(Point p1, Point p2)
 	{
+		// push all the elements down by one and discard the last element.
+		oldZoomViews[3] = oldZoomViews[2].clone();
+		oldZoomViews[2] = oldZoomViews[1].clone();
+		oldZoomViews[1] = oldZoomViews[0].clone();
+
 		// set the new zoom as the current, and whatever was current as old
-		oldZoomView = currentZoomView.clone();
+		oldZoomViews[0] = currentZoomView.clone();
 		currentZoomView[0] = p1;
 		currentZoomView[1] = p2;
 	}
 
-	public void recallZoom()
+	//displays the zoom view either forward or backward in the zoom history.
+	public void recallZoom(int step)
 	{
-		System.out.println(oldZoomView[0] +", "+ oldZoomView[1]);
-		zoom(oldZoomView[0], oldZoomView[1]);
+		// "next" if at 4, or "back" if at 0 wont do anything.
+		if((zoomIndex + step) <4 && (zoomIndex + step > -1))
+		{
+			zoomIndex += step;
+		}
+		zoom(oldZoomViews[zoomIndex][0], oldZoomViews[zoomIndex][1]);
 	}
 
 	public void zoom(Point p1, Point p2)
 	{
-		//first, push current zoom into the stack and the old current back to old. 
-		rememberZoom(p1,p2);
 		// find the new origin and figure the scale
 		double scale = 0;
 		board.setZoomed(true);

@@ -902,7 +902,7 @@ public class Controls {
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mainFrame.allFalse();
-                mainFrame.sim.rememberZoom(new Point(0,0), new Point(boardSize,boardSize));
+                mainFrame.sim.storeZoom(new Point(0,0), new Point(boardSize,boardSize));
             	mainFrame.sim.board.setScale(scale);
             	mainFrame.sim.board.setOrigin(0,0);
             	mainFrame.sim.board.setZoomed(false);
@@ -916,7 +916,9 @@ public class Controls {
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(10,8,10,8);
         gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridy = 0;
         gc.weightx = 1;
+        gc.gridwidth = 2;
         zoomReturnBox.add(zoomReturn,gc);
         zoomModes[0] = zoomReturn;
 
@@ -927,14 +929,29 @@ public class Controls {
         {
             public void actionPerformed(ActionEvent e)
             {
-                mainFrame.sim.recallZoom();
+                mainFrame.sim.recallZoom(1);
             }
         });
         gc.gridy++;
+        gc.gridwidth = 1;
+        gc.insets = new Insets(0,8,10,3);
         zoomReturnBox.add(zoomRecall, gc);
+
+        //forward button used to toggle back to the previous zoom selection
+        JButton zoomRecallNext = newButton("Next Zoom ->", "Goes to the previous previous zoom selection");
+        zoomRecallNext.setBorder(BorderFactory.createRaisedBevelBorder());
+        zoomRecallNext.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                mainFrame.sim.recallZoom(-1);
+            }
+        });
+
+        gc.insets = new Insets(0,3,10,8);
+        zoomReturnBox.add(zoomRecallNext, gc);
         c.gridy++;
         tools.add(zoomReturnBox, c);
-        zoomModes[2] = zoomRecall;
         
         //ZOOM MODES submenu - All of these components exist inside a task panel within the gridBag
         JXTaskPaneContainer selectZoomComponents = new JXTaskPaneContainer();

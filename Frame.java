@@ -84,6 +84,7 @@ public class Frame extends JFrame implements MouseListener, MouseMotionListener 
 			sim.removeBarrierRect(p1, p2);
 		} else if (z == true) {
 			System.out.println("first: "+sim.board.getScale());
+			sim.storeZoom(squarePoint1, squarePoint2);
 			sim.zoom(squarePoint1, squarePoint2);
 		} 
 	}
