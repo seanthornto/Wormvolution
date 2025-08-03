@@ -857,23 +857,38 @@ public class Controls {
         			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         			fsName = "Windowed";
         			isFullscreen = true;
-        			int left = Math.round(sizeConstraint/7);
-        			int top = Math.round(sizeConstraint/90);
-                    //remove components and re add them to correct gridbag
-                    controlPanel.remove(simulator.board);
+
+                    //re -add components to extended frame
+                    JPanel all = new JPanel();
+                    all.setLayout(new GridBagLayout());
                     GridBagConstraints newGbc = new GridBagConstraints();
-        			newGbc.insets = new Insets(top,left,5,0);
+                    
+                    //tools
+                    //gbc.fill = GridBagConstraints=BOTH;
+                    controlPanel.revalidate();
+                    //int left = Math.round(sizeConstraint/7);
+        			//int top = Math.round(sizeConstraint/90);
+        			newGbc.insets = new Insets(0,5,0,5);
         			newGbc.weighty = 0;
         		    newGbc.gridy = 0;
-        		    newGbc.gridx = 1;
-        		    newGbc.fill = GridBagConstraints.BOTH;
+                    newGbc.gridx=0;
+                    newGbc.gridwidth=2;
+                    newGbc.weightx=0.4;
+                    newGbc.ipadx = 
+                    newGbc.fill = GridBagConstraints.BOTH;
         		    newGbc.anchor = GridBagConstraints.CENTER;
+                    all.add(controlPanel, newGbc);
+
+                    //baord
+        		    newGbc.gridx = 2;
         		    newGbc.gridheight = 3;
         		    newGbc.gridwidth = 3;
-                    controlPanel.add(simulator.board, newGbc);
+                    newGbc.weightx=0.2;
+                    all.add(simulator.board, newGbc);
                     //repaint
-    				controlPanel.revalidate();
-    				controlPanel.repaint();
+                    mainFrame.setContentPane(all);
+    				mainFrame.revalidate();
+    				mainFrame.repaint();
         		}
         		fullscreen.setText(fsName);		
         	}
