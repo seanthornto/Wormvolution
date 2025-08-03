@@ -220,7 +220,7 @@ public class Controls {
       //ALL TOOLS - scroll bar panel
         scrollTools = new JScrollPane(tools);
         scrollTools.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-        scrollTools.setPreferredSize(new Dimension(boardSize/4 + 30, boardSize - 100));
+        scrollTools.setPreferredSize(new Dimension(GUI.getWindowSize().width-boardSize -70, boardSize - 100));
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(0,5,0,5);
         gbc.gridy = 1;
@@ -842,15 +842,8 @@ public class Controls {
         			mainFrame.setLocationRelativeTo(null);
         			fsName = "Fullscreen";
         			isFullscreen = false;
-        			gbc.insets = new Insets(0,5,5,0);
-        			gbc.weighty = 0;
-        		    gbc.gridy = 0;
-        		    gbc.gridx = 1;
-        		    gbc.fill = GridBagConstraints.BOTH;
-        		    gbc.anchor = GridBagConstraints.CENTER;
-        		    gbc.gridheight = 3;
-        		    gbc.gridwidth = 3;
-        			gbl.setConstraints(simulator.board, gbc);
+        			
+                    toggleFullscreen(GUI.getWindowSize().width-boardSize-70);
         		}else
         		{
         			//make it fullscreen
@@ -858,37 +851,7 @@ public class Controls {
         			fsName = "Windowed";
         			isFullscreen = true;
 
-                    //re -add components to extended frame
-                    JPanel all = new JPanel();
-                    all.setLayout(new GridBagLayout());
-                    GridBagConstraints newGbc = new GridBagConstraints();
-                    
-                    //tools
-                    //gbc.fill = GridBagConstraints=BOTH;
-                    controlPanel.revalidate();
-                    //int left = Math.round(sizeConstraint/7);
-        			//int top = Math.round(sizeConstraint/90);
-        			newGbc.insets = new Insets(0,5,0,5);
-        			newGbc.weighty = 0;
-        		    newGbc.gridy = 0;
-                    newGbc.gridx=0;
-                    newGbc.gridwidth=2;
-                    newGbc.weightx=0.4;
-                    newGbc.ipadx = 
-                    newGbc.fill = GridBagConstraints.BOTH;
-        		    newGbc.anchor = GridBagConstraints.CENTER;
-                    all.add(controlPanel, newGbc);
-
-                    //baord
-        		    newGbc.gridx = 2;
-        		    newGbc.gridheight = 3;
-        		    newGbc.gridwidth = 3;
-                    newGbc.weightx=0.2;
-                    all.add(simulator.board, newGbc);
-                    //repaint
-                    mainFrame.setContentPane(all);
-    				mainFrame.revalidate();
-    				mainFrame.repaint();
+                    toggleFullscreen(GUI.getScreenSize().width-boardSize - 150);
         		}
         		fullscreen.setText(fsName);		
         	}
@@ -1002,7 +965,50 @@ public class Controls {
     //
     //HELPERS
     //
-    
+    public void toggleFullscreen(int width)
+    {
+        //re -add components to extended frame
+        JPanel all = new JPanel();
+        all.setLayout(new GridBagLayout());
+        GridBagConstraints newGbc = new GridBagConstraints();
+        
+        //tools
+        //remove and readd tools from control panel
+        controlPanel.remove(scrollTools);
+        scrollTools.setPreferredSize(new Dimension(width, boardSize - 100));
+        newGbc.fill = GridBagConstraints.HORIZONTAL;
+        newGbc.insets = new Insets(0,5,0,5);
+        newGbc.gridy = 1;
+        controlPanel.add(scrollTools, gbc);
+        controlPanel.revalidate();
+
+        //Not sure what this inset was doing, but on a small screen it breaks fullscreen.
+        //int left = Math.round(sizeConstraint/7);
+    	//int top = Math.round(sizeConstraint/90);
+    	//newGbc.insets = new Insets(top,left,0,5);
+        newGbc.insets = new Insets(0,5,0,5);
+    	newGbc.weighty = 0;
+    	newGbc.gridy = 0;
+        newGbc.gridx=0;
+        newGbc.gridwidth=2;
+        newGbc.weightx=0.4;
+        newGbc.ipadx = 
+        newGbc.fill = GridBagConstraints.BOTH;
+    	newGbc.anchor = GridBagConstraints.CENTER;
+        all.add(controlPanel, newGbc);
+
+        //baord
+    	newGbc.gridx = 2;
+    	newGbc.gridheight = 3;
+    	newGbc.gridwidth = 3;
+        newGbc.weightx=0.2;
+        all.add(simulator.board, newGbc);
+
+        //repaint
+        mainFrame.setContentPane(all);
+    	mainFrame.revalidate();
+    	mainFrame.repaint();
+    }
     
     //NEW COMPONENT HELPERS:
     //----------------------
@@ -1014,6 +1020,7 @@ public class Controls {
     	GridBagConstraints tempGBC = new GridBagConstraints();
     	//reset gridbag
     	tempGBC.weighty = 0;
+        tempGBC.weightx=0.8;
     	tempGBC.gridheight = 1;
     	tempGBC.gridwidth = 1;
     	tempGBC.fill = GridBagConstraints.BOTH;
@@ -1080,6 +1087,8 @@ public class Controls {
     	slider.setValue(value);
     	slider.addChangeListener(l);
     	c.gridy++;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx=1;
     	hold.add(slider, c);
     	return hold;
     }
@@ -1138,6 +1147,7 @@ public class Controls {
     		}
     			});
     	c.gridy++;
+        c.weightx=1;
     	hold.add(slider,c);
     	return hold;
     }

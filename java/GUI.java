@@ -115,6 +115,10 @@ public class GUI {
 	public static int getSizeConstraint() {
 		return sizeConstraint;
 	}
+	public static Dimension getScreenSize()
+	{
+		return screenSize;
+	}
 	public static Dimension getWindowSize()
 	{
 		return windowSize;
