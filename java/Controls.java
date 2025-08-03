@@ -859,15 +859,19 @@ public class Controls {
         			isFullscreen = true;
         			int left = Math.round(sizeConstraint/7);
         			int top = Math.round(sizeConstraint/90);
-        			gbc.insets = new Insets(top,left,5,0);
-        			gbc.weighty = 0;
-        		    gbc.gridy = 0;
-        		    gbc.gridx = 1;
-        		    gbc.fill = GridBagConstraints.BOTH;
-        		    gbc.anchor = GridBagConstraints.CENTER;
-        		    gbc.gridheight = 3;
-        		    gbc.gridwidth = 3;
-        			gbl.setConstraints(simulator.board, gbc);
+                    //remove components and re add them to correct gridbag
+                    controlPanel.remove(simulator.board);
+                    GridBagConstraints newGbc = new GridBagConstraints();
+        			newGbc.insets = new Insets(top,left,5,0);
+        			newGbc.weighty = 0;
+        		    newGbc.gridy = 0;
+        		    newGbc.gridx = 1;
+        		    newGbc.fill = GridBagConstraints.BOTH;
+        		    newGbc.anchor = GridBagConstraints.CENTER;
+        		    newGbc.gridheight = 3;
+        		    newGbc.gridwidth = 3;
+                    controlPanel.add(simulator.board, newGbc);
+                    //repaint
     				controlPanel.revalidate();
     				controlPanel.repaint();
         		}
