@@ -870,6 +870,8 @@ public class Controls {
         		int sc = ((JSlider) e.getSource()).getValue();
         		double s = (double)sc /( mx);
         		dispLabel.setText("Scale: "+(double)sc /mx);
+                zoom100();
+                toggleZoom(0, zoomModes);
         		simulator.board.setScale(scale * s);
 				simulator.board.revalidate();
         	}
@@ -883,14 +885,8 @@ public class Controls {
         zoomReturn.setBorder(BorderFactory.createRaisedBevelBorder());
         zoomReturn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	mainFrame.allFalse();
-                mainFrame.sim.storeZoom(new Point(0,0), new Point(boardSize,boardSize));
-            	mainFrame.sim.board.setScale(scale);
-            	mainFrame.sim.board.setOrigin(0,0);
-            	mainFrame.sim.board.setZoomed(false);
-            	controlPanel.revalidate();
-				controlPanel.repaint();
-				toggleZoom(0, zoomModes);
+                zoom100();
+                toggleZoom(0, zoomModes);
             }
         });
         JPanel zoomReturnBox = new JPanel(new GridBagLayout());
@@ -1008,6 +1004,16 @@ public class Controls {
         mainFrame.setContentPane(all);
     	mainFrame.revalidate();
     	mainFrame.repaint();
+    }
+
+    public void zoom100(){
+        mainFrame.allFalse();
+        mainFrame.sim.storeZoom(new Point(0,0), new Point(boardSize,boardSize));
+    	mainFrame.sim.board.setScale(scale);
+        mainFrame.sim.board.setOrigin(0,0);
+    	mainFrame.sim.board.setZoomed(false);
+        controlPanel.revalidate();
+		controlPanel.repaint();
     }
     
     //NEW COMPONENT HELPERS:
