@@ -167,7 +167,9 @@ public class Controls {
     	
     	//Create Layout
         controlPanel.setLayout(gbl);
+        controlPanel.setBackground(GUI.background_color);
         tools.setLayout(new GridBagLayout());
+        tools.setBackground(GUI.panel_primary);
         //reset pane
         resetTools.setLayout(new GridBagLayout());
         resetFrame.setSize(boardSize/3,(int)(boardSize/2));
@@ -966,6 +968,7 @@ public class Controls {
         //re -add components to extended frame
         JPanel all = new JPanel();
         all.setLayout(new GridBagLayout());
+        all.setBackground(GUI.background_color);
         GridBagConstraints newGbc = new GridBagConstraints();
         
         //tools

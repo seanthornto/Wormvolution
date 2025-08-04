@@ -17,6 +17,9 @@ public class GUI {
 	private static Dimension windowSize = new Dimension(1200,1100);
 	private static Frame mainFrame;
 	private static JPanel all;
+	public static Color background_color = new Color(20, 26, 31);
+	public static Color panel_primary = new Color(7, 3, 28);
+	public static Color panel_secondary = Color.decode("#131b33ff");
 	
 	//Board Sizes
 	private static int sizeConstraint;
@@ -85,6 +88,7 @@ public class GUI {
 
     	//pack simulator and controls together
     	all = new JPanel();
+		all.setBackground(background_color);
         all.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         //CONTROLS
