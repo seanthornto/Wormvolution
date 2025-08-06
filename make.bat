@@ -1,6 +1,6 @@
 @echo off
 set PROJECT_NAME=Wormvolution
-set MAIN_CLASS=java/GUI.java
+set MAIN_CLASS=objects/GUI.java
 set CLASSPATH=dependencies/swingx-all-1.6.5-1.jar
 set BUILD_DIR=class
 
@@ -11,7 +11,7 @@ if exist %BUILD_DIR% (
 mkdir %BUILD_DIR%
 
 echo --- Compiling Java files ---
-javac -d %BUILD_DIR% -cp %CLASSPATH% java/*.java
+javac -d %BUILD_DIR% -cp %CLASSPATH% objects/*.java objects/ui_components/*.java
 
 if %errorlevel% neq 0 (
     echo.

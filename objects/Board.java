@@ -24,7 +24,7 @@ public class Board extends JPanel {
 	private Dimension preferredSize = new Dimension(850,850);
 
 	public Board(int pixelSize, int bs, int max) {
-		this.setBackground(GUI.background_color);
+		this.setBackground(GUI.color_background);
 		this.pixelSize = pixelSize;
 		boardSize = bs;
 		maxConstraint = max;

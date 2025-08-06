@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import objects.ui_components.Button;
 
 public class Controls {
 	
@@ -167,9 +168,9 @@ public class Controls {
     	
     	//Create Layout
         controlPanel.setLayout(gbl);
-        controlPanel.setBackground(GUI.background_color);
+        controlPanel.setBackground(GUI.color_background);
         tools.setLayout(new GridBagLayout());
-        tools.setBackground(GUI.panel_primary);
+        tools.setBackground(GUI.color_primary);
         //reset pane
         resetTools.setLayout(new GridBagLayout());
         resetFrame.setSize(boardSize/3,(int)(boardSize/2));
@@ -689,8 +690,7 @@ public class Controls {
         GridBagConstraints dc = new GridBagConstraints();
         dc.fill = GridBagConstraints.HORIZONTAL;
         dc.weightx = 1;
-        JPanel utencilPadding = new JPanel(new GridBagLayout());
-        utencilPadding.setBorder(lowered);
+        JPanel utencilPadding = newSubpanel(lowered);
         
         // - ERASE - Erases a barriers based on a line from mouse position.
         eraseRect.setBorder(raised);
@@ -702,9 +702,9 @@ public class Controls {
         });
         JPanel erasePadding = new JPanel(new GridBagLayout());
         erasePadding.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-        dc.insets = new Insets(5,5,5,5);
+        dc.insets = new Insets(11,8,11,8);
         erasePadding.add(eraseRect,dc);
-        dc.insets = new Insets(10,10,1,10);
+        dc.insets = new Insets(10,10,4,10);
         utencilPadding.add(erasePadding,dc);
         
         // - LINE - Drags a line from mouse position
@@ -845,14 +845,21 @@ public class Controls {
                 }
 
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    GUI.background_color = GUI.themeColors[0];
-		            GUI.panel_primary = GUI.themeColors[1];
+                    GUI.color_primary = GUI.themeColors[0];
+                    GUI.color_secondary = GUI.themeColors[1];
+                    GUI.color_background = GUI.themeColors[2];
+                    GUI.color_button = GUI.themeColors[3];
+                    GUI.color_text = GUI.themeColors[4];
+		            
                 } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-                    GUI.background_color = null;
-		            GUI.panel_primary = null;
+                    GUI.color_primary = null;
+                    GUI.color_secondary = null;
+                    GUI.color_background = null;
+                    GUI.color_button = null;
+                    GUI.color_text =  null;
                 }
-                simulator.board.setBackground(GUI.background_color);
-                controlPanel.setBackground(GUI.background_color);
+                simulator.board.setBackground(GUI.color_background);
+                controlPanel.setBackground(GUI.color_background);
                 toggleFullscreen(width);
             }
         });
@@ -991,62 +998,6 @@ public class Controls {
     //
     //HELPERS
     //
-    public void toggleFullscreen(int width)
-    {
-        //re -add components to extended frame
-        JPanel all = new JPanel();
-        all.setLayout(new GridBagLayout());
-        all.setBackground(GUI.background_color);
-        GridBagConstraints newGbc = new GridBagConstraints();
-        
-        //tools
-        //remove and readd tools from control panel
-        controlPanel.remove(scrollTools);
-        tools.setBackground(GUI.panel_primary);
-        scrollTools.setPreferredSize(new Dimension(width, boardSize - 100));
-        newGbc.fill = GridBagConstraints.HORIZONTAL;
-        newGbc.insets = new Insets(0,5,0,5);
-        newGbc.gridy = 1;
-        controlPanel.add(scrollTools, gbc);
-        controlPanel.revalidate();
-
-        //Not sure what this inset was doing, but on a small screen it breaks fullscreen.
-        //int left = Math.round(sizeConstraint/7);
-    	//int top = Math.round(sizeConstraint/90);
-    	//newGbc.insets = new Insets(top,left,0,5);
-        newGbc.insets = new Insets(0,5,0,5);
-    	newGbc.weighty = 0;
-    	newGbc.gridy = 0;
-        newGbc.gridx=0;
-        newGbc.gridwidth=2;
-        newGbc.weightx=0.4;
-        newGbc.ipadx = 
-        newGbc.fill = GridBagConstraints.BOTH;
-    	newGbc.anchor = GridBagConstraints.CENTER;
-        all.add(controlPanel, newGbc);
-
-        //baord
-    	newGbc.gridx = 2;
-    	newGbc.gridheight = 3;
-    	newGbc.gridwidth = 3;
-        newGbc.weightx=0.2;
-        all.add(simulator.board, newGbc);
-
-        //repaint
-        mainFrame.setContentPane(all);
-    	mainFrame.revalidate();
-    	mainFrame.repaint();
-    }
-
-    public void zoom100(){
-        mainFrame.allFalse();
-        mainFrame.sim.storeZoom(new Point(0,0), new Point(boardSize,boardSize));
-    	mainFrame.sim.board.setScale(scale);
-        mainFrame.sim.board.setOrigin(0,0);
-    	mainFrame.sim.board.setZoomed(false);
-        controlPanel.revalidate();
-		controlPanel.repaint();
-    }
     
     //NEW COMPONENT HELPERS:
     //----------------------
@@ -1093,12 +1044,24 @@ public class Controls {
     	hold.setToolTipText(tip);
     	return hold;
     }
+
+    //for nested panels (not task panes! e.g. button panels)
+    private JPanel newSubpanel(Border border)
+    {
+        JPanel subpanel = new JPanel(new GridBagLayout());
+        if(border != null)
+        {
+            subpanel.setBorder(border);
+        }
+        subpanel.setBackground(GUI.color_secondary);
+        return subpanel;
+    }
     
     //nifty time saver.
     private JButton newButton(String name, String tip)
     {
     	JButton butt = new JButton(name);
-    	butt.setToolTipText(tip);
+        //, tip, GUI.color_button, GUI.color_primary, Color.BLACK, GUI.color_text, 5);
     	return butt;
     }
     
@@ -1106,6 +1069,8 @@ public class Controls {
     private JLabel newLabel(String name, String tip)
     {
     	JLabel label = new JLabel(name);
+        label.setBackground(GUI.color_secondary);
+        label.setOpaque(true);
     	label.setToolTipText(tip);
     	return label;
     }
@@ -1117,9 +1082,11 @@ public class Controls {
     	c.gridy=0;
     	JPanel hold = new JPanel();
     	hold.setLayout(new GridBagLayout());
+        hold.setBackground(GUI.color_secondary);
     	label.setText(label.getText() + ": "+value);
     	hold.add(label,c);
     	JSlider slider = new JSlider(min, max, min);
+        slider.setBackground(GUI.color_secondary);
     	slider.setName(label.getText().split(":", 2)[0]);
     	slider.setToolTipText(label.getToolTipText());
     	slider.setValue(value);
@@ -1162,17 +1129,20 @@ public class Controls {
     	
     	//init new component
     	JPanel hold = new JPanel();
+        hold.setBackground(GUI.color_secondary);
     	hold.setLayout(new GridBagLayout());
     	GridBagConstraints c = new GridBagConstraints();
     	c.gridy=0;
 
     	//set values.
     	JLabel label = new JLabel();
+        label.setBackground(GUI.color_secondary);
     	label.setText(text);
     	label.setToolTipText(tip);
     	hold.add(label,c);
     	
     	JSlider slider = new JSlider(JSlider.HORIZONTAL, min, max, value);
+        slider.setBackground(GUI.color_secondary);
     	slider.setName(name);
     	slider.setToolTipText(tip);
     	slider.setValue(value);
@@ -1334,6 +1304,63 @@ public class Controls {
             	if(i != index) {butt[i].setBorder(raised);}
             }
         }
+    }
+
+    public void toggleFullscreen(int width)
+    {
+        //re -add components to extended frame
+        JPanel all = new JPanel();
+        all.setLayout(new GridBagLayout());
+        all.setBackground(GUI.color_background);
+        GridBagConstraints newGbc = new GridBagConstraints();
+        
+        //tools
+        //remove and readd tools from control panel
+        controlPanel.remove(scrollTools);
+        tools.setBackground(GUI.color_primary);
+        scrollTools.setPreferredSize(new Dimension(width, boardSize - 100));
+        newGbc.fill = GridBagConstraints.HORIZONTAL;
+        newGbc.insets = new Insets(0,5,0,5);
+        newGbc.gridy = 1;
+        controlPanel.add(scrollTools, gbc);
+        controlPanel.revalidate();
+
+        //Not sure what this inset was doing, but on a small screen it breaks fullscreen.
+        //int left = Math.round(sizeConstraint/7);
+    	//int top = Math.round(sizeConstraint/90);
+    	//newGbc.insets = new Insets(top,left,0,5);
+        newGbc.insets = new Insets(0,5,0,5);
+    	newGbc.weighty = 0;
+    	newGbc.gridy = 0;
+        newGbc.gridx=0;
+        newGbc.gridwidth=2;
+        newGbc.weightx=0.4;
+        newGbc.ipadx = 
+        newGbc.fill = GridBagConstraints.BOTH;
+    	newGbc.anchor = GridBagConstraints.CENTER;
+        all.add(controlPanel, newGbc);
+
+        //baord
+    	newGbc.gridx = 2;
+    	newGbc.gridheight = 3;
+    	newGbc.gridwidth = 3;
+        newGbc.weightx=0.2;
+        all.add(simulator.board, newGbc);
+
+        //repaint
+        mainFrame.setContentPane(all);
+    	mainFrame.revalidate();
+    	mainFrame.repaint();
+    }
+
+    public void zoom100(){
+        mainFrame.allFalse();
+        mainFrame.sim.storeZoom(new Point(0,0), new Point(boardSize,boardSize));
+    	mainFrame.sim.board.setScale(scale);
+        mainFrame.sim.board.setOrigin(0,0);
+    	mainFrame.sim.board.setZoomed(false);
+        controlPanel.revalidate();
+		controlPanel.repaint();
     }
     
     //helper function used by the displayPopulation button

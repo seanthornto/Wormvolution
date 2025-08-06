@@ -1,6 +1,6 @@
 @echo off
 set PROJECT_NAME=Wormvolution
-set MAIN_CLASS=java/GUI.java
+set MAIN_CLASS=objects/GUI.java
 set CLASSPATH=dependencies/swingx-all-1.6.5-1.jar
 set BUILD_DIR=class
 

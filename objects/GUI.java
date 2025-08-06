@@ -20,10 +20,13 @@ public class GUI {
 	private static Dimension windowSize = new Dimension(1200,1100);
 	private static Frame mainFrame;
 	private static JPanel all;
-	public static Color[] themeColors = {new Color(34, 46, 56), new Color(7, 3, 28), Color.decode("#131b33ff")};
-	public static Color background_color;
-	public static Color panel_primary;
-	public static Color panel_secondary;
+	//[0] = primary, [1] = secondary, [2] = background, [3] = button, [4] = label
+	public static Color[] themeColors = {new Color(7, 3, 28), new Color(197, 215, 252), new Color(34, 46, 56), new Color(99, 129, 138), new Color(255,255,255)};
+	public static Color color_background;
+	public static Color color_text;
+	public static Color color_button;
+	public static Color color_primary;
+	public static Color color_secondary;
 	
 	//Board Sizes
 	private static int sizeConstraint;
@@ -61,8 +64,11 @@ public class GUI {
     	windowSize.height = (int)(boardSize*0.06) + boardSize;
 
 		//dark mode as default
-		background_color = themeColors[0];
-		panel_primary = themeColors[1]; 	
+		color_primary = themeColors[0];
+		color_secondary = themeColors[1];
+		color_background = themeColors[2];
+		color_button = themeColors[3];
+		color_text = themeColors[4];
 
         //build sim and controls, pack and display!
         start(boardSize);
@@ -104,7 +110,7 @@ public class GUI {
 
     	//pack simulator and controls together
     	all = new JPanel();
-		all.setBackground(background_color);
+		all.setBackground(color_background);
         all.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         //CONTROLS
