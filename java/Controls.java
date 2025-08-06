@@ -831,6 +831,34 @@ public class Controls {
     	GridBagConstraints c = new GridBagConstraints();
     	
     	JButton[] zoomModes = new JButton[3];
+
+        // Dark Mode
+        JCheckBox darkMode = new JCheckBox("Dark Mode",true);
+        darkMode.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                int width = GUI.getWindowSize().width-boardSize-70;
+                if(!isFullscreen){
+                    width = GUI.getWindowSize().width-boardSize-70;
+                }else{
+                    width = GUI.getScreenSize().width-boardSize-150;
+                }
+
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    GUI.background_color = GUI.themeColors[0];
+		            GUI.panel_primary = GUI.themeColors[1];
+                } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+                    GUI.background_color = null;
+		            GUI.panel_primary = null;
+                }
+                simulator.board.setBackground(GUI.background_color);
+                controlPanel.setBackground(GUI.background_color);
+                toggleFullscreen(width);
+            }
+        });
+        c.gridy=0;
+        tools.add(darkMode);
+
     	
     	//Fullscreen vs Windowed
     	JButton fullscreen = newButton("Fullscreen", "Toggles between fullscreen and windowed views.");
@@ -858,7 +886,7 @@ public class Controls {
         		fullscreen.setText(fsName);		
         	}
         });
-    	c.gridy=0;
+    	c.gridy++;
         tools.add(fullscreen);
         
         //DISPLAY SIZE - "Adjusts the scale of the simulation. DOES NOT CHANGE BOARD SIZE."
@@ -974,6 +1002,7 @@ public class Controls {
         //tools
         //remove and readd tools from control panel
         controlPanel.remove(scrollTools);
+        tools.setBackground(GUI.panel_primary);
         scrollTools.setPreferredSize(new Dimension(width, boardSize - 100));
         newGbc.fill = GridBagConstraints.HORIZONTAL;
         newGbc.insets = new Insets(0,5,0,5);

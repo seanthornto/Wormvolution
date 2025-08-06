@@ -9,6 +9,9 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 
 public class GUI {
 	
@@ -17,9 +20,10 @@ public class GUI {
 	private static Dimension windowSize = new Dimension(1200,1100);
 	private static Frame mainFrame;
 	private static JPanel all;
-	public static Color background_color = new Color(20, 26, 31);
-	public static Color panel_primary = new Color(7, 3, 28);
-	public static Color panel_secondary = Color.decode("#131b33ff");
+	public static Color[] themeColors = {new Color(34, 46, 56), new Color(7, 3, 28), Color.decode("#131b33ff")};
+	public static Color background_color;
+	public static Color panel_primary;
+	public static Color panel_secondary;
 	
 	//Board Sizes
 	private static int sizeConstraint;
@@ -36,6 +40,14 @@ public class GUI {
     //MAIN
     //Finds default starting information. Starts the tick loop.
     public static void main(String[] args) {
+
+		try {
+            // Set the Look and Feel to the system's native L&F
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace(); // Handle any exceptions that occur
+        }
+        
     	
     	//find board size by finding the smallest dimension, and extrapolate size information
     	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -47,7 +59,11 @@ public class GUI {
     	//build initial window frame
     	windowSize.width = boardSize + 15 + (boardSize/3);
     	windowSize.height = (int)(boardSize*0.06) + boardSize;
-        
+
+		//dark mode as default
+		background_color = themeColors[0];
+		panel_primary = themeColors[1]; 	
+
         //build sim and controls, pack and display!
         start(boardSize);
         
