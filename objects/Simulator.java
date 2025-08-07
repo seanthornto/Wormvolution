@@ -172,6 +172,7 @@ public class Simulator {
 		} else {
 			boardTick++;
 		}
+		Controls.tickWorldTime();
 	}
 
 	

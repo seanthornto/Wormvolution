@@ -67,6 +67,15 @@ public class Controls {
     }
     private JPanel controlPanel = new JPanel();
     private static JPanel tools = new JPanel();
+    private static JLabel worldTime = new JLabel("0");
+    public static void tickWorldTime()
+    {
+        int tick = Integer.parseInt(worldTime.getText());
+        tick++;
+        String tickText= String.valueOf(tick);
+        worldTime.setFont(new Font("Serif", Font.PLAIN, 25)); 
+        worldTime.setText(tickText);
+    }
     public static void setTools(JPanel t)
     {
     	tools = t;
@@ -84,7 +93,7 @@ public class Controls {
   //to reference the gridbag itself
     GridBagLayout gbl = new GridBagLayout();
     
-    //Genes: Expand comment for more info.
+    //Genes: Expand comment for more info.pro
     /*
      * ------
      *
@@ -190,6 +199,12 @@ public class Controls {
       //----------
       //COMPONENTS
       //----------
+      
+      //CLOCK - tracks the ticks 
+      JPanel worldclock = newSubpanel(javax.swing.BorderFactory.createEtchedBorder());
+      gbc.gridy=0;
+      worldclock.add(worldTime,gbc);
+      addControl(worldclock,0);
        
       //RESET - prompts user with different kinds of reset options;
     	JButton reset = newButton("Reset", "Prompts the user with different reset variations.");
@@ -218,15 +233,15 @@ public class Controls {
             }
         });
     	packResetMenu();
-    	addControl(reset, 0);
+    	addControl(reset, 1);
     	
       //ALL TOOLS - scroll bar panel
         scrollTools = new JScrollPane(tools);
         scrollTools.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-        scrollTools.setPreferredSize(new Dimension(GUI.getWindowSize().width-boardSize -70, boardSize - 100));
+        scrollTools.setPreferredSize(new Dimension(GUI.getWindowSize().width-boardSize -70, boardSize - 150));
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(0,5,0,5);
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         controlPanel.add(scrollTools, gbc);
         
         // -- ENVIRONMENT
@@ -288,7 +303,7 @@ public class Controls {
                 }
             }
         });
-       addControl(play,2);
+       addControl(play,3);
     }
     
     //
@@ -1061,7 +1076,14 @@ public class Controls {
     private JButton newButton(String name, String tip)
     {
     	JButton butt = new JButton(name);
-        //, tip, GUI.color_button, GUI.color_primary, Color.BLACK, GUI.color_text, 5);
+        butt.setToolTipText(tip);
+        // ^^
+        // Switch these lines: up for normal, down for "darkmode" buttons
+        // vv
+        //JButton butt = new Button(name, tip, GUI.color_button, GUI.color_primary, Color.BLACK, GUI.color_text, 5);
+
+        //It would be cool if toggling the dark mode would switch these buttons, but that means replacing all the buttons
+        //theres not an effective way to do that, being honest, it would merit an overhaul refactor. 
     	return butt;
     }
     
