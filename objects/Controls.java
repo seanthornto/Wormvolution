@@ -1340,7 +1340,7 @@ public class Controls {
         //remove and readd tools from control panel
         controlPanel.remove(scrollTools);
         tools.setBackground(GUI.color_primary);
-        scrollTools.setPreferredSize(new Dimension(width, boardSize - 100));
+        scrollTools.setPreferredSize(new Dimension(width, boardSize - 200));
         newGbc.fill = GridBagConstraints.HORIZONTAL;
         newGbc.insets = new Insets(0,5,0,5);
         newGbc.gridy = 1;
